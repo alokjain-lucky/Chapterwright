@@ -1,0 +1,16 @@
+{
+  "name": "make-a-book",
+  "version": "1.1.0",
+  "private": true,
+  "description": "Local WordPress test environment for the Make a Book plugin.",
+  "scripts": {
+    "env:start": "wp-env start",
+    "env:stop": "wp-env stop",
+    "env:clean": "wp-env clean all",
+    "env:seed": "wp-env run cli wp eval-file wp-content/plugins/makeabook/tests/fixtures/seed-books.php",
+    "env:test": "wp-env run cli wp eval-file wp-content/plugins/makeabook/tests/smoke.php"
+  },
+  "devDependencies": {
+    "@wordpress/env": "^11.5.0"
+  }
+}

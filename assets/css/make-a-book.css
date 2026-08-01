@@ -1,0 +1,155 @@
+:root {
+	--mab-ink: #171716;
+	--mab-paper: #f6f3ec;
+	--mab-surface: #fff;
+	--mab-muted: #716e67;
+	--mab-line: rgba(23, 23, 22, 0.14);
+	--mab-code: #202124;
+	--mab-code-ink: #f5f2ea;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root:not([data-mab-mode="light"]) {
+		--mab-ink: #f5f2ea;
+		--mab-paper: #252521;
+		--mab-surface: #171716;
+		--mab-muted: #b8b4aa;
+		--mab-line: rgba(245, 242, 234, 0.18);
+		--mab-code: #090a0b;
+		--mab-code-ink: #f7f4ed;
+	}
+}
+
+:root[data-mab-mode="dark"] {
+	--mab-ink: #f5f2ea;
+	--mab-paper: #252521;
+	--mab-surface: #171716;
+	--mab-muted: #b8b4aa;
+	--mab-line: rgba(245, 242, 234, 0.18);
+	--mab-code: #090a0b;
+	--mab-code-ink: #f7f4ed;
+}
+
+:root[data-mab-mode="light"] {
+	--mab-ink: #171716;
+	--mab-paper: #f6f3ec;
+	--mab-surface: #fff;
+	--mab-muted: #716e67;
+	--mab-line: rgba(23, 23, 22, 0.14);
+	--mab-code: #202124;
+	--mab-code-ink: #f5f2ea;
+}
+
+.mab-page {
+	box-sizing: border-box;
+	background: var(--mab-surface);
+	color: var(--mab-ink);
+	font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+	font-size: 18px;
+	line-height: 1.65;
+	margin-inline: auto;
+	max-width: 1440px;
+	padding: clamp(2rem, 5vw, 5rem);
+}
+
+.mab-skip-link { background: var(--mab-ink); color: var(--mab-surface); left: 1rem; padding: .75rem 1rem; position: fixed; top: 1rem; transform: translateY(-200%); z-index: 99999; }
+.mab-skip-link:focus { transform: translateY(0); }
+.mab-page :focus-visible { outline: 3px solid var(--mab-accent, #f45d48); outline-offset: 4px; }
+.mab-display-controls { display: flex; justify-content: flex-end; }
+.mab-mode-toggle { align-items: center; background: var(--mab-paper); border: 1px solid var(--mab-line); border-radius: 999px; color: var(--mab-ink); cursor: pointer; display: inline-flex; font: inherit; font-size: .72rem; font-weight: 700; gap: .5rem; line-height: 1; padding: .7rem .9rem; }
+.mab-reading-progress { background: var(--mab-line); height: 3px; inset: 0 0 auto; position: fixed; z-index: 9999; }
+.mab-reading-progress span { background: var(--mab-accent, #f45d48); display: block; height: 100%; transform: scaleX(0); transform-origin: left center; will-change: transform; }
+
+.mab-page *, .mab-page *::before, .mab-page *::after { box-sizing: border-box; }
+.mab-page h1, .mab-page h2, .mab-page h3 { color: var(--mab-ink); font-family: Georgia, "Times New Roman", serif; letter-spacing: -0.035em; line-height: 1.02; }
+.mab-page a { color: inherit; }
+.mab-eyebrow { color: var(--mab-muted); font-size: .72rem; font-weight: 750; letter-spacing: .16em; margin: 0 0 1rem; text-transform: uppercase; }
+
+.mab-book-hero { align-items: center; display: grid; gap: clamp(3rem, 8vw, 8rem); grid-template-columns: minmax(0, 1.15fr) minmax(240px, .85fr); min-height: 72vh; padding-block: 3rem 7rem; }
+.mab-book-hero h1 { font-size: clamp(4rem, 9vw, 9rem); margin: 0; max-width: 9ch; }
+.mab-book-hero__subtitle { font-family: Georgia, "Times New Roman", serif; font-size: clamp(1.4rem, 2.2vw, 2rem); line-height: 1.35; margin: 2rem 0 1rem; max-width: 29ch; }
+.mab-book-hero__description { color: var(--mab-muted); max-width: 48ch; }
+.mab-book-hero__cover img { box-shadow: 1.4rem 1.4rem 0 var(--mab-accent); display: block; height: auto; transform: rotate(1.5deg); width: 100%; }
+.mab-button { background: var(--mab-ink); border-radius: 999px; color: #fff !important; display: inline-flex; font-size: .85rem; font-weight: 700; gap: 1.5rem; margin-top: 1.5rem; padding: .9rem 1.4rem; text-decoration: none; transition: transform .2s ease; }
+.mab-button:hover { transform: translateY(-3px); }
+.mab-book-intro { border-block: 1px solid var(--mab-line); font-family: Georgia, "Times New Roman", serif; font-size: clamp(1.35rem, 2.5vw, 2rem); margin: 0 auto 7rem; max-width: 920px; padding: 4rem 0; }
+
+.mab-toc { background: var(--mab-paper); border-radius: 2rem; padding: clamp(2rem, 6vw, 6rem); }
+.mab-toc__heading { margin-bottom: 5rem; }
+.mab-toc__heading h2 { font-size: clamp(3rem, 6vw, 6rem); margin: 0; }
+.mab-toc-section { display: grid; gap: 2rem; grid-template-columns: minmax(170px, .35fr) 1fr; padding: 2rem 0; }
+.mab-toc-section + .mab-toc-section { border-top: 1px solid var(--mab-line); }
+.mab-toc-section h3 { font-size: 1.35rem; margin: .7rem 0; text-transform: uppercase; }
+.mab-toc-section ol { list-style: none; margin: 0; padding: 0; }
+.mab-toc-section li + li { border-top: 1px solid var(--mab-line); }
+.mab-toc-section a { align-items: center; display: grid; gap: 1rem; grid-template-columns: 1fr 2fr 2rem; padding: 1.1rem 0; text-decoration: none; }
+.mab-toc-section a:hover span { color: var(--mab-accent); }
+.mab-toc-section small { color: var(--mab-muted); line-height: 1.4; }
+.mab-toc-section b { font-size: .8rem; font-variant-numeric: tabular-nums; text-align: right; }
+
+.mab-reader { max-width: 1120px; }
+.mab-reader__bar { align-items: center; border-bottom: 1px solid var(--mab-line); display: flex; font-size: .75rem; font-weight: 700; justify-content: space-between; letter-spacing: .08em; padding-bottom: 1rem; text-transform: uppercase; }
+.mab-reader__bar a { text-decoration: none; }
+.mab-chapter { margin: 0 auto; max-width: 720px; padding-block: clamp(4rem, 9vw, 7rem); }
+.mab-chapter__header { margin-bottom: 4rem; }
+.mab-chapter h1 { font-size: clamp(2.8rem, 6vw, 4.6rem); line-height: 1.08; margin: 0; }
+.mab-chapter__deck { color: var(--mab-muted); font-family: Georgia, "Times New Roman", serif; font-size: clamp(1.3rem, 2.5vw, 1.65rem); line-height: 1.42; margin: 1.5rem 0 2rem; }
+.mab-chapter__meta { align-items: center; display: flex; font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: .85rem; gap: .8rem; line-height: 1.35; }
+.mab-chapter__avatar { border-radius: 50%; height: 40px; width: 40px; }
+.mab-chapter__meta div { display: flex; flex-direction: column; }
+.mab-chapter__meta small { color: var(--mab-muted); font-size: .75rem; }
+.mab-chapter__image { margin: 0 0 4rem; }
+.mab-chapter__image img { height: auto; width: 100%; }
+.mab-chapter__content { font-family: Georgia, "Times New Roman", serif; font-size: clamp(1.12rem, 2vw, 1.25rem); line-height: 1.78; overflow-wrap: break-word; }
+.mab-chapter__content p { margin: 0 0 1.55em; }
+.mab-chapter__content h2 { font-size: clamp(1.8rem, 4vw, 2.5rem); line-height: 1.2; margin: 2.6em 0 .8em; }
+.mab-chapter__content h3 { font-size: clamp(1.35rem, 3vw, 1.7rem); line-height: 1.3; margin: 2.2em 0 .7em; }
+.mab-chapter__content ul, .mab-chapter__content ol { margin: 0 0 1.8em; padding-left: 1.25em; }
+.mab-chapter__content li { margin-bottom: .65em; padding-left: .25em; }
+.mab-chapter__content a { text-decoration-color: var(--mab-accent); text-decoration-thickness: .1em; text-underline-offset: .16em; }
+.mab-chapter__content blockquote { border-left: 5px solid var(--mab-accent); font-size: 1.35em; font-style: italic; margin: 3rem 0; padding: .5rem 0 .5rem 2rem; }
+.mab-chapter__content code { background: var(--mab-paper); border-radius: .25rem; font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; font-size: .82em; padding: .12em .35em; }
+.mab-chapter__content pre { background: var(--mab-code); border-radius: .8rem; color: var(--mab-code-ink); font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; font-size: .88rem; line-height: 1.65; margin: 2rem 0; max-width: 100%; overflow-x: auto; padding: 1.5rem; tab-size: 4; white-space: pre; }
+.mab-chapter__content pre code { background: none; color: inherit; font-size: inherit; padding: 0; }
+.mab-chapter__content .mab-callout { background: var(--mab-paper); border-left: 4px solid var(--mab-accent); border-radius: 0 .5rem .5rem 0; font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: .92rem; line-height: 1.65; margin: 2.25rem 0; padding: 1.25rem 1.5rem; }
+.mab-chapter__content .mab-callout > :first-child { margin-top: 0; }
+.mab-chapter__content .mab-callout > :last-child { margin-bottom: 0; }
+.mab-chapter__content .mab-callout--warning { --mab-accent: #d97706; }
+.mab-chapter__content table { border-collapse: collapse; display: block; margin: 2rem 0; max-width: 100%; overflow-x: auto; width: max-content; }
+.mab-chapter__content th, .mab-chapter__content td { border-bottom: 1px solid var(--mab-line); padding: .75rem 1rem; text-align: left; }
+.mab-chapter__content th { background: var(--mab-paper); font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+.mab-reader__next { border-top: 1px solid var(--mab-line); display: grid; gap: 2rem; grid-template-columns: 1fr 1fr; padding-top: 2rem; }
+.mab-reader__next a { display: flex; flex-direction: column; text-decoration: none; }
+.mab-reader__next .is-next { text-align: right; }
+.mab-reader__next small { color: var(--mab-muted); font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; }
+
+.mab-archive__header { margin: 3rem 0 7rem; max-width: 900px; }
+.mab-archive__header h1 { font-size: clamp(4rem, 9vw, 9rem); margin: 0 0 1.5rem; }
+.mab-book-grid { display: grid; gap: clamp(2rem, 5vw, 5rem); grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
+.mab-book-card__cover { align-items: center; aspect-ratio: 4/5; background: var(--mab-accent); box-shadow: .8rem .8rem 0 var(--mab-ink); display: flex; justify-content: center; overflow: hidden; text-decoration: none; }
+.mab-book-card__cover img { height: 100%; object-fit: cover; transition: transform .35s ease; width: 100%; }
+.mab-book-card__cover:hover img { transform: scale(1.025); }
+.mab-book-card__cover > span { color: #fff; font-family: Georgia, "Times New Roman", serif; font-size: 2.2rem; padding: 2rem; text-align: center; }
+.mab-book-card__body { padding: 2rem .5rem; }
+.mab-book-card__body h2 { font-size: 2.4rem; margin: 0 0 1rem; }
+.mab-book-card__body h2 a, .mab-text-link { text-decoration: none; }
+.mab-book-card__body > p:not(.mab-eyebrow) { color: var(--mab-muted); }
+.mab-text-link { border-bottom: 2px solid var(--mab-accent); font-size: .85rem; font-weight: 750; padding-bottom: .25rem; }
+
+@media (max-width: 720px) {
+	.mab-page { padding: 1.25rem; }
+	.mab-book-hero { grid-template-columns: 1fr; min-height: 0; padding-block: 3rem 6rem; }
+	.mab-book-hero__copy { order: 2; }
+	.mab-book-hero__cover { margin-inline: auto; max-width: 70vw; order: 1; }
+	.mab-toc { border-radius: 1rem; padding: 1.5rem; }
+	.mab-toc-section { grid-template-columns: 1fr; }
+	.mab-toc-section a { align-items: start; grid-template-columns: 1fr auto; }
+	.mab-toc-section small { grid-column: 1 / -1; }
+	.mab-toc-section b { grid-column: 2; grid-row: 1; }
+	.mab-reader__next { grid-template-columns: 1fr; }
+	.mab-reader__next .is-next { text-align: left; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.mab-page * { scroll-behavior: auto !important; transition: none !important; }
+}

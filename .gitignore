@@ -1,0 +1,39 @@
+# AI assistant instructions and workspace state.
+AGENTS.md
+.agents/
+.codex/
+.claude/
+.cursor/
+.github/copilot-instructions.md
+CLAUDE.md
+GEMINI.md
+
+# Generated demonstration content used only by local tests.
+tests/fixtures/
+
+# Local WordPress development environment.
+.wp-env/
+wp-content/
+
+# Installed development dependencies.
+node_modules/
+
+# Generated packages, reports, caches, and logs.
+make-a-book.zip
+coverage/
+.phpunit.cache/
+.phpcs-cache
+*.log
+
+# Local configuration and secrets.
+.env
+.env.*
+!.env.example
+
+# Operating-system and editor files.
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/
