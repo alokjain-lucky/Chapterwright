@@ -9,7 +9,7 @@ Make a Book is a function-based (procedural) plugin: every file registers its ow
 3. `includes/queries.php` exposes the canonical ordered-chapter query (`mab_get_chapters()`) and small admin-facing helpers (`mab_get_all_chapters_for_admin()`, `mab_get_next_chapter_order()`).
 4. `admin/settings.php` always loads (not gated by `is_admin()`), since its `mab_get_settings()` / `mab_show_mode_toggle()` / `mab_get_text()` helpers are read by the public templates, not just the admin screens that write them.
 5. When `is_admin()` is true, `admin/meta-boxes.php`, `admin/list-table.php`, `admin/chapter-order.php`, and `admin/assets.php` register editor panels, verify and sanitize save requests, extend the Chapters list table, and enqueue admin-only scripts and styles.
-6. `public/assets.php`, `public/schema.php`, `public/template-router.php`, `public/shortcode.php`, and `public/reading-time.php` conditionally load front-end CSS, print JSON-LD, choose front-end templates, and render the library shortcode.
+6. `public/assets.php`, `public/schema.php`, `public/template-router.php`, `public/shortcode.php`, `public/reading-time.php`, and `public/credit.php` conditionally load front-end CSS, print JSON-LD, choose front-end templates, render the library shortcode, and render the optional "Created with Make a Book" credit line.
 7. `blocks/code-snippet/code-snippet.php` registers the Code Snippet block on `init` regardless of admin/front end, since the editor needs it in wp-admin and the dynamic render needs it on the front end.
 
 Each file's functions are prefixed `mab_` and are called directly by name — there is no autoloading and no class instantiation anywhere in the plugin.

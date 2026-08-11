@@ -74,5 +74,6 @@ foreach ( $chapters as $index => $chapter ) {
 		<?php if ( $previous ) : ?><a href="<?php echo esc_url( get_permalink( $previous ) ); ?>"><small><?php esc_html_e( 'Previous', 'make-a-book' ); ?></small><span>← <?php echo esc_html( get_the_title( $previous ) ); ?></span></a><?php else : ?><span></span><?php endif; ?>
 		<?php if ( $next ) : ?><a class="is-next" href="<?php echo esc_url( get_permalink( $next ) ); ?>"><small><?php esc_html_e( 'Next', 'make-a-book' ); ?></small><span><?php echo esc_html( get_the_title( $next ) ); ?> →</span></a><?php elseif ( $book_id ) : ?><a class="is-next" href="<?php echo esc_url( get_permalink( $book_id ) ); ?>"><small><?php esc_html_e( 'Finished', 'make-a-book' ); ?></small><span><?php esc_html_e( 'Back to contents', 'make-a-book' ); ?> →</span></a><?php endif; ?>
 	</nav>
+	<?php mab_render_credit(); ?>
 </main>
 <?php require MAKE_A_BOOK_PATH . 'templates/partials/document-end.php'; ?>

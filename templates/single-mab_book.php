@@ -27,11 +27,12 @@ $toc_heading = mab_get_text( 'toc_heading' );
 ?>
 <a class="mab-skip-link" href="#mab-main-content"><?php esc_html_e( 'Skip to book content', 'make-a-book' ); ?></a>
 <main id="mab-main-content" class="mab-page mab-book" style="--mab-accent:<?php echo esc_attr( $accent ? $accent : '#f45d48' ); ?>" tabindex="-1">
-	<?php if ( mab_show_mode_toggle() ) : ?>
-		<div class="mab-display-controls">
+	<div class="mab-display-controls">
+		<a class="mab-back-link" href="<?php echo esc_url( get_post_type_archive_link( MAB_BOOK_POST_TYPE ) ); ?>"><span aria-hidden="true">←</span> <?php esc_html_e( 'Back to library', 'make-a-book' ); ?></a>
+		<?php if ( mab_show_mode_toggle() ) : ?>
 			<button class="mab-mode-toggle" type="button" aria-live="polite"><span aria-hidden="true">◐</span> <span data-mab-mode-label><?php esc_html_e( 'Color mode', 'make-a-book' ); ?></span></button>
-		</div>
-	<?php endif; ?>
+		<?php endif; ?>
+	</div>
 	<section class="mab-book-hero">
 		<div class="mab-book-hero__copy">
 			<p class="mab-eyebrow"><?php esc_html_e( 'A book by', 'make-a-book' ); ?> <?php the_author(); ?></p>
@@ -79,5 +80,6 @@ $toc_heading = mab_get_text( 'toc_heading' );
 			<p><?php esc_html_e( 'Chapters are coming soon.', 'make-a-book' ); ?></p>
 		<?php endif; ?>
 	</section>
+	<?php mab_render_credit(); ?>
 </main>
 <?php require MAKE_A_BOOK_PATH . 'templates/partials/document-end.php'; ?>

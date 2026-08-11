@@ -78,10 +78,14 @@
 .mab-skip-link { background: var(--mab-ink); color: var(--mab-surface); left: 1rem; padding: .75rem 1rem; position: fixed; top: 1rem; transform: translateY(-200%); z-index: 99999; }
 .mab-skip-link:focus { transform: translateY(0); }
 .mab-page :focus-visible { outline: 3px solid var(--mab-accent, #f45d48); outline-offset: 4px; }
-.mab-display-controls { display: flex; justify-content: flex-end; }
+.mab-display-controls { align-items: center; display: flex; gap: 1rem; justify-content: space-between; }
+.mab-back-link { align-items: center; color: var(--mab-muted); display: inline-flex; font-size: .8rem; font-weight: 700; gap: .4rem; text-decoration: none; }
+.mab-back-link:hover { color: var(--mab-ink); }
 .mab-mode-toggle { align-items: center; background: var(--mab-paper); border: 1px solid var(--mab-line); border-radius: 999px; color: var(--mab-ink); cursor: pointer; display: inline-flex; font: inherit; font-size: .72rem; font-weight: 700; gap: .5rem; line-height: 1; padding: .7rem .9rem; }
 .mab-reading-progress { background: var(--mab-line); height: 3px; inset: 0 0 auto; position: fixed; z-index: 9999; }
 .mab-reading-progress span { background: var(--mab-accent, #f45d48); display: block; height: 100%; transform: scaleX(0); transform-origin: left center; will-change: transform; }
+.mab-credit { color: var(--mab-muted); font-size: .75rem; margin-top: 4rem; text-align: center; }
+.mab-credit a { color: inherit; text-decoration: underline; text-underline-offset: .18em; }
 
 .mab-page *, .mab-page *::before, .mab-page *::after { box-sizing: border-box; }
 .mab-page h1, .mab-page h2, .mab-page h3 { color: var(--mab-ink); font-family: inherit; letter-spacing: -0.035em; line-height: 1.02; }
