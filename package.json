@@ -7,8 +7,7 @@
     "env:start": "wp-env start",
     "env:stop": "wp-env stop",
     "env:clean": "wp-env clean all",
-    "env:seed": "wp-env run cli wp eval-file wp-content/plugins/makeabook/tests/fixtures/seed-books.php",
-    "env:test": "wp-env run cli wp eval-file wp-content/plugins/makeabook/tests/smoke.php"
+    "env:seed": "wp-env run cli wp eval-file wp-content/plugins/makeabook/tests/fixtures/seed-books.php"
   },
   "devDependencies": {
     "@wordpress/env": "^11.5.0"

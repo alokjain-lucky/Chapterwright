@@ -9,7 +9,7 @@ Publish multiple web-native ebooks in WordPress, with book landing pages, groupe
 | WordPress | 6.4 or newer |
 | PHP | 7.4 or newer |
 | Tested through | WordPress 6.8 |
-| Plugin version | 1.5.0 |
+| Plugin version | 1.5.1 |
 
 Make a Book adds two content types to WordPress: **Books** and **Chapters**. Each book can have its own cover, subtitle, accent color, introduction, and table of contents. Chapters can be grouped into named sections and receive automatic previous/next navigation.
 
@@ -329,26 +329,25 @@ The plugin is organized by responsibility:
 admin/       Editor panels, metadata persistence, admin UX, and dashboard columns
 assets/      Scoped visitor-facing and admin-only CSS and JavaScript
 blocks/      The Code Snippet Gutenberg block (make-a-book/code-snippet)
-docs/        Architecture documentation
 includes/    Content type registration and the shared chapter/order queries
 public/      Template routing, conditional assets, structured data, and shortcodes
 templates/   Visitor-facing presentation files
-tests/       Runtime smoke checks and demo-content fixtures
 ```
 
-Every file is function-based: hooks are registered at the top level when the file loads, and every public entry point is a global `mab_*()` function rather than a class method. See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the full request lifecycle.
+Every file is function-based: hooks are registered at the top level when the file loads, and every public entry point is a global `mab_*()` function rather than a class method.
 
 Start the local WordPress environment with:
 
 ```bash
 npm install
 npm run env:start
-npm run env:test
 ```
 
-See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the component and content architecture.
-
 ## Changelog
+
+### 1.5.1
+
+- Removed `docs/` and `tests/smoke.php` from the repository to keep it focused on the plugin itself. The architecture reference and wp-env smoke test were internal developer aids, not something an installed site needs.
 
 ### 1.5.0
 
