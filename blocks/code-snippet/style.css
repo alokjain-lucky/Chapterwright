@@ -1,0 +1,124 @@
+/**
+ * make-a-book/code-snippet — front end and editor.
+ *
+ * Reuses the --mab-code / --mab-code-ink variables defined in
+ * assets/css/make-a-book.css so a snippet matches the surrounding
+ * chapter's <pre>/<code> look in both light and dark reading mode, even
+ * though this stylesheet loads independently (block.json's "style" field
+ * is enqueued only on pages that actually contain the block).
+ *
+ * @package Make_A_Book
+ */
+
+.mab-code {
+	margin: 2rem 0;
+}
+
+.mab-code__caption {
+	color: var(--mab-muted, #716e67);
+	font-size: 0.85rem;
+	margin: 0 0 0.5rem;
+}
+
+.mab-code__frame {
+	background: var(--mab-code, #202124);
+	border-radius: 0.8rem;
+	color: var(--mab-code-ink, #f5f2ea);
+	position: relative;
+}
+
+.mab-code__lang {
+	color: var(--mab-code-ink, #f5f2ea);
+	font-family: inherit;
+	font-size: 0.68rem;
+	font-weight: 700;
+	left: 1.5rem;
+	letter-spacing: 0.08em;
+	opacity: 0.55;
+	position: absolute;
+	top: 1rem;
+}
+
+.mab-code__copy {
+	background: rgba(255, 255, 255, 0.08);
+	border: 1px solid rgba(255, 255, 255, 0.18);
+	border-radius: 999px;
+	color: var(--mab-code-ink, #f5f2ea);
+	cursor: pointer;
+	font-family: inherit;
+	font-size: 0.7rem;
+	font-weight: 700;
+	padding: 0.35rem 0.8rem;
+	position: absolute;
+	right: 0.9rem;
+	top: 0.8rem;
+}
+
+.mab-code__copy:hover,
+.mab-code__copy:focus-visible {
+	background: rgba(255, 255, 255, 0.18);
+}
+
+.mab-code__copy.is-copied {
+	background: var(--mab-accent, #f45d48);
+	border-color: transparent;
+	color: #fff;
+}
+
+.mab-code pre {
+	font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+	font-size: 0.88rem;
+	line-height: 1.65;
+	margin: 0;
+	max-width: 100%;
+	overflow-x: auto;
+	padding: 2.75rem 1.5rem 1.5rem;
+	tab-size: 4;
+	white-space: pre;
+}
+
+.mab-code pre code {
+	background: none;
+	color: inherit;
+	font-size: inherit;
+	padding: 0;
+}
+
+/* Editor-only: the block appears while it's being edited, not saved markup. */
+.mab-code--editing .mab-code__caption-input input {
+	background: transparent;
+	border: none;
+	color: var(--mab-muted, #716e67);
+	font-size: 0.85rem;
+	margin: 0 0 0.5rem;
+	padding: 0;
+}
+
+.mab-code--editing .mab-code__frame {
+	padding: 2.75rem 1.5rem 1.5rem;
+}
+
+.mab-code--editing .mab-code__editor {
+	background: none;
+	border: none;
+	color: inherit;
+	font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+	font-size: 0.88rem;
+	line-height: 1.65;
+	min-height: 4em;
+	padding: 0;
+	resize: vertical;
+	tab-size: 4;
+	white-space: pre;
+	width: 100%;
+}
+
+.mab-code--editing .mab-code__editor:focus {
+	outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.mab-code * {
+		transition: none !important;
+	}
+}

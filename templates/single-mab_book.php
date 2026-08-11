@@ -13,7 +13,7 @@ require MAKE_A_BOOK_PATH . 'templates/partials/document-start.php';
 the_post();
 
 $book_id  = get_the_ID();
-$chapters = Make_A_Book::get_chapters( $book_id );
+$chapters = mab_get_chapters( $book_id );
 $subtitle = get_post_meta( $book_id, '_mab_subtitle', true );
 $accent   = get_post_meta( $book_id, '_mab_accent', true );
 $sections = array();

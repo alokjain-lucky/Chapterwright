@@ -1,0 +1,19 @@
+/**
+ * Small admin-only styling for the Book and Chapter meta boxes.
+ *
+ * @package Make_A_Book
+ */
+
+.mab-admin-chapter-list {
+	margin: 0.5em 0 0;
+	padding-left: 1.4em;
+}
+
+.mab-admin-chapter-list li {
+	margin-bottom: 0.4em;
+}
+
+.mab-admin-chapter-status {
+	color: #646970;
+	font-size: 0.9em;
+}

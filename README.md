@@ -9,7 +9,7 @@ Publish multiple web-native ebooks in WordPress, with book landing pages, groupe
 | WordPress | 6.4 or newer |
 | PHP | 7.4 or newer |
 | Tested through | WordPress 6.8 |
-| Plugin version | 1.1.0 |
+| Plugin version | 1.2.0 |
 
 Make a Book adds two content types to WordPress: **Books** and **Chapters**. Each book can have its own cover, subtitle, accent color, introduction, and table of contents. Chapters can be grouped into named sections and receive automatic previous/next navigation.
 
@@ -26,6 +26,10 @@ Make a Book adds two content types to WordPress: **Books** and **Chapters**. Eac
 - Add Book and Chapter schema.org structured data.
 - Provide accessible skip links, landmarks, focus indicators, and reduced-motion support.
 - Style code blocks, tables, and reusable note or warning callouts for comfortable technical reading.
+- Add a **Code Snippet** block for formatted, copyable code examples with an optional caption and language label.
+- See every chapter attached to a book, and jump straight to adding the next one, right from the Book editor.
+- Filter the Chapters list by book, and get the next chapter order number suggested automatically.
+- Typography inherits the active theme's fonts, so the reader looks like a native part of the site instead of a bundled font stack.
 
 ## Installation
 
@@ -57,6 +61,8 @@ The table of contents is built from all published Chapters assigned to the book.
 
 ## Adding and organizing chapters
 
+The fastest way to add a chapter is from the Book itself: open the Book, and in **Book Details** use the **"+ Add chapter to this book"** link. It opens a new Chapter screen with the Book and the next chapter number already filled in.
+
 1. Go to **Chapters → Add New**.
 2. Use the title for the chapter name and the main editor for the complete chapter content. You can use normal blocks, headings, images, links, lists, tables, code, and shortcodes.
 3. Add an optional excerpt. It appears beneath the chapter title, in the table of contents, and in structured data.
@@ -72,6 +78,19 @@ Chapter order runs from the lowest number to the highest. Publication date break
 
 > [!IMPORTANT]
 > A chapter must be published and assigned to a Book to participate in that book's table of contents and reading navigation.
+
+If you change the Book selected on a Chapter, the **Chapter number / order** field automatically fills with a suggested next number for that book. Typing your own value always takes priority — the suggestion never overwrites a number you entered yourself.
+
+The **Chapters** admin list can be filtered by Book using the dropdown above the list table, so it's easy to review one book's chapters in order without scanning the whole library.
+
+## The Code Snippet block
+
+For chapters that include code, add a **Code Snippet** block (search for "Code Snippet" in the block inserter) instead of a plain Code block. It provides:
+
+- A monospace editor that preserves exact whitespace, like the core Code block.
+- A language label (PHP, JavaScript, CSS, HTML, Shell, or Plain text).
+- An optional caption, useful for a filename or a one-line description.
+- A front-end **Copy** button so readers can copy the snippet without selecting text manually.
 
 ## Displaying the book library
 
@@ -112,6 +131,8 @@ The reader stores the visitor's color preference under the `make-a-book-color-mo
 
 The bundled stylesheet is [`assets/css/make-a-book.css`](assets/css/make-a-book.css). Visitor-facing selectors use the `.mab-` prefix, and the selected book accent is available through the `--mab-accent` custom property.
 
+Body and heading text use `font-family: inherit` throughout, so the reader automatically picks up your active theme's fonts — there is nothing to configure. Code blocks are the one deliberate exception and always use a fixed monospace stack, since code needs to stay legible and evenly spaced regardless of theme.
+
 Do not edit the bundled stylesheet directly because plugin updates will overwrite those changes. Add overrides in one of these places instead:
 
 - A child theme's `style.css`.
@@ -126,7 +147,7 @@ Example child-theme CSS:
 }
 
 .mab-chapter__content {
-    font-family: Georgia, serif;
+    font-family: "Iowan Old Style", Georgia, serif;
 }
 
 .mab-book-hero {
@@ -284,14 +305,17 @@ Uninstalling Make a Book intentionally retains all user-authored Books, Chapters
 The plugin is organized by responsibility:
 
 ```text
-admin/       Editor panels, metadata persistence, and dashboard columns
-assets/      Scoped visitor-facing CSS and JavaScript
+admin/       Editor panels, metadata persistence, admin UX, and dashboard columns
+assets/      Scoped visitor-facing and admin-only CSS and JavaScript
+blocks/      The Code Snippet Gutenberg block (make-a-book/code-snippet)
 docs/        Architecture documentation
-includes/    Bootstrap coordination and shared content model
-public/      Template routing, conditional assets, and shortcodes
+includes/    Content type registration and the shared chapter/order queries
+public/      Template routing, conditional assets, structured data, and shortcodes
 templates/   Visitor-facing presentation files
-tests/       Runtime smoke checks
+tests/       Runtime smoke checks and demo-content fixtures
 ```
+
+Every file is function-based: hooks are registered at the top level when the file loads, and every public entry point is a global `mab_*()` function rather than a class method. See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the full request lifecycle.
 
 Start the local WordPress environment with:
 
@@ -304,6 +328,13 @@ npm run env:test
 See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the component and content architecture.
 
 ## Changelog
+
+### 1.2.0
+
+- **Breaking (internal API):** rewrote the plugin from a class-based architecture to a function-based one. `Make_A_Book`, `Make_A_Book_Content_Types`, `Make_A_Book_Admin`, and `Make_A_Book_Public` no longer exist; use the equivalent `mab_*()` functions instead (for example, `mab_get_chapters()` in place of `Make_A_Book::get_chapters()`). Post types, meta keys, the `[make_a_book]` shortcode, and the `/books/` and `/book-chapter/` URL bases are unchanged.
+- Added the **Code Snippet** block (`make-a-book/code-snippet`) for formatted, copyable code examples with a language label and optional caption.
+- Added a chapter list with quick-add link to the Book editor, a Book filter on the Chapters list, and automatic chapter-order suggestions.
+- Reader and block typography now use `font-family: inherit` so the plugin adopts the active theme's fonts instead of shipping its own.
 
 ### 1.1.0
 

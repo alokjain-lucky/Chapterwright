@@ -1,0 +1,33 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "make-a-book/code-snippet",
+	"title": "Code Snippet",
+	"category": "text",
+	"icon": "editor-code",
+	"description": "A formatted code example with an optional caption, language label, and copy button, styled to match the Make a Book reader.",
+	"keywords": [ "code", "snippet", "programming", "syntax" ],
+	"textdomain": "make-a-book",
+	"attributes": {
+		"code": {
+			"type": "string",
+			"default": ""
+		},
+		"language": {
+			"type": "string",
+			"default": "php"
+		},
+		"caption": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"supports": {
+		"html": false,
+		"anchor": true
+	},
+	"editorScript": "file:./edit.js",
+	"style": "file:./style.css",
+	"viewScript": "file:./view.js",
+	"render": "file:./render.php"
+}

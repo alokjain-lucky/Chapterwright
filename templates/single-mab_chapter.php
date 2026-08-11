@@ -14,7 +14,7 @@ the_post();
 
 $chapter_id = get_the_ID();
 $book_id    = absint( get_post_meta( $chapter_id, '_mab_book_id', true ) );
-$chapters   = $book_id ? Make_A_Book::get_chapters( $book_id ) : array();
+$chapters   = $book_id ? mab_get_chapters( $book_id ) : array();
 $current    = false;
 $previous   = null;
 $next       = null;
@@ -56,7 +56,7 @@ foreach ( $chapters as $index => $chapter ) {
 							sprintf(
 								/* translators: 1: estimated reading minutes, 2: publication date. */
 								__( '%1$d min read · %2$s', 'make-a-book' ),
-								Make_A_Book_Public::reading_time( $chapter_id ),
+								mab_reading_time( $chapter_id ),
 								get_the_date()
 							)
 						);
