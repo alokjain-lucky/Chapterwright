@@ -8,7 +8,7 @@ Make a Book is a function-based (procedural) plugin: every file registers its ow
 2. `includes/content-types.php` registers Books and Chapters on `init` (`mab_register_post_types()`).
 3. `includes/queries.php` exposes the canonical ordered-chapter query (`mab_get_chapters()`) and small admin-facing helpers (`mab_get_all_chapters_for_admin()`, `mab_get_next_chapter_order()`).
 4. `admin/settings.php` always loads (not gated by `is_admin()`), since its `mab_get_settings()` / `mab_show_mode_toggle()` / `mab_get_text()` helpers are read by the public templates, not just the admin screens that write them.
-5. When `is_admin()` is true, `admin/meta-boxes.php`, `admin/list-table.php`, `admin/chapter-order.php`, and `admin/assets.php` register editor panels, verify and sanitize save requests, extend the Chapters list table, and enqueue admin-only scripts and styles.
+5. When `is_admin()` is true, `admin/meta-boxes.php`, `admin/list-table.php`, `admin/chapter-order.php`, `admin/assets.php`, and `admin/help.php` register editor panels, verify and sanitize save requests, extend the Chapters list table, enqueue admin-only scripts and styles, and add the Book/Chapter screens' contextual Help tabs.
 6. `public/assets.php`, `public/schema.php`, `public/template-router.php`, `public/shortcode.php`, `public/reading-time.php`, and `public/credit.php` conditionally load front-end CSS, print JSON-LD, choose front-end templates, render the library shortcode, and render the optional "Created with Make a Book" credit line.
 7. `blocks/code-snippet/code-snippet.php` registers the Code Snippet block on `init` regardless of admin/front end, since the editor needs it in wp-admin and the dynamic render needs it on the front end.
 
@@ -32,6 +32,7 @@ The admin layer is built around making it fast to write a book with several chap
 - The Chapters list table gains a Book filter dropdown (`mab_chapter_book_filter()` / `mab_filter_chapters_by_book()`) so an author working on one book isn't scanning every chapter across the library.
 - `admin/settings.php` adds a Settings page (`mab_render_settings_page()`) for the handful of things a site owner reasonably wants to change without editing code: whether the reader's own color-mode toggle appears, and the editable/removable copy on the library page and each book's table-of-contents heading (`mab_get_text()`). Settings are stored as one `mab_settings` option array rather than several separate rows.
 - The Chapter post type registers with `'show_in_menu' => 'edit.php?post_type=' . MAB_BOOK_POST_TYPE` (see `includes/content-types.php`) and the Book post type's `menu_name` label is "Make a Book", so Books, Chapters, and Settings all appear under one top-level admin menu instead of Chapters getting its own.
+- `admin/help.php` adds WordPress's native contextual Help panel (`WP_Screen::add_help_tab()`) to the Book and Chapter list/edit screens — Overview, field-by-field explanations, and a "For more information" sidebar — so usage instructions live where an author is already working instead of a separate docs page.
 
 ## Presentation
 

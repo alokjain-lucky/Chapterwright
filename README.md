@@ -9,7 +9,7 @@ Publish multiple web-native ebooks in WordPress, with book landing pages, groupe
 | WordPress | 6.4 or newer |
 | PHP | 7.4 or newer |
 | Tested through | WordPress 6.8 |
-| Plugin version | 1.4.0 |
+| Plugin version | 1.5.0 |
 
 Make a Book adds two content types to WordPress: **Books** and **Chapters**. Each book can have its own cover, subtitle, accent color, introduction, and table of contents. Chapters can be grouped into named sections and receive automatic previous/next navigation.
 
@@ -32,6 +32,7 @@ Make a Book adds two content types to WordPress: **Books** and **Chapters**. Eac
 - Typography inherits the active theme's fonts and heading sizes, so the reader looks like a native part of the site instead of a bundled font stack.
 - Books, Chapters, and Settings are grouped under one **Make a Book** admin menu.
 - A Settings page lets you turn the reader's color-mode toggle on or off, and edit or remove the library page's heading text and each book's table-of-contents heading.
+- Built-in usage instructions in the Book and Chapter screens' native WordPress "Help" tab — no separate documentation page to hunt for.
 
 ## Installation
 
@@ -54,7 +55,7 @@ Books, Chapters, and Settings all live under one **Make a Book** entry in the ad
 Go to **Make a Book → Settings** to:
 
 - Turn the reader's own light/dark color-mode toggle on or off (shown on book and chapter pages). This is separate from any color-mode switch your theme puts in the site header — turn this off if the two feel redundant.
-- Turn the "Created with Make a Book" credit line at the bottom of book, chapter, and library pages on or off.
+- Turn the "This book is created with Make a Book" credit line at the bottom of book, chapter, and library pages on or off.
 - Edit or remove the library page's (`/books/`) eyebrow label, heading, and subheading.
 - Edit or remove the "Read at your own pace" heading shown above each book's table of contents.
 
@@ -142,7 +143,7 @@ Chapter pages automatically include:
 
 The reader stores the visitor's color preference under the `make-a-book-color-mode` local-storage key. The selected mode is exposed on the document root through `data-mab-mode`, allowing custom styles for each mode.
 
-Book pages also include a "← Back to library" link to `/books/`. Book, chapter, and library pages can optionally show a small "Created with Make a Book" credit at the bottom, linking to the plugin's repository — see [Settings](#settings).
+Book pages also include a "← Back to library" link to `/books/`. Book, chapter, and library pages can optionally show a small credit at the bottom linking to the plugin's repository — "This book is created with Make a Book" on book/chapter pages, "This library is powered by Make a Book" on `/books/` — see [Settings](#settings).
 
 ## Custom styling
 
@@ -349,10 +350,16 @@ See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the component and content
 
 ## Changelog
 
+### 1.5.0
+
+- Added contextual Help tabs (the "Help" panel in the top-right corner of the Book and Chapter list/edit screens) covering how to create a book, add and organize chapters, use the Code Snippet block, and display the library — no separate documentation page to find.
+- Reworded the credit line to "This book is created with Make a Book" on book/chapter pages, and "This library is powered by Make a Book" on the `/books/` library page.
+- Security/standards fixes: added missing `wp_unslash()` calls before sanitizing a few `$_POST` values (Settings page fields, Chapter Book/Order fields) so a saved value with an apostrophe no longer picks up a stray backslash; added `ABSPATH` guards to the block's `*.asset.php` files for consistency with the rest of the plugin.
+
 ### 1.4.0
 
 - Added a "← Back to library" link to the top of every book page, linking to `/books/`.
-- Added an optional "Created with Make a Book" credit line at the bottom of book, chapter, and library pages, linking to the plugin's repository. On by default; turn it off under **Make a Book → Settings**.
+- Added an optional "This book is created with Make a Book" credit line at the bottom of book, chapter, and library pages, linking to the plugin's repository. On by default; turn it off under **Make a Book → Settings**.
 
 ### 1.3.1
 

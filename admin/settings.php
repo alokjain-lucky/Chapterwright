@@ -74,10 +74,10 @@ function mab_sanitize_settings( $input ) {
 	return array(
 		'show_mode_toggle'   => empty( $input['show_mode_toggle'] ) ? '0' : '1',
 		'show_credit'        => empty( $input['show_credit'] ) ? '0' : '1',
-		'archive_eyebrow'    => isset( $input['archive_eyebrow'] ) ? sanitize_text_field( $input['archive_eyebrow'] ) : $defaults['archive_eyebrow'],
-		'archive_heading'    => isset( $input['archive_heading'] ) ? sanitize_text_field( $input['archive_heading'] ) : $defaults['archive_heading'],
-		'archive_subheading' => isset( $input['archive_subheading'] ) ? sanitize_text_field( $input['archive_subheading'] ) : $defaults['archive_subheading'],
-		'toc_heading'        => isset( $input['toc_heading'] ) ? sanitize_text_field( $input['toc_heading'] ) : $defaults['toc_heading'],
+		'archive_eyebrow'    => isset( $input['archive_eyebrow'] ) ? sanitize_text_field( wp_unslash( $input['archive_eyebrow'] ) ) : $defaults['archive_eyebrow'],
+		'archive_heading'    => isset( $input['archive_heading'] ) ? sanitize_text_field( wp_unslash( $input['archive_heading'] ) ) : $defaults['archive_heading'],
+		'archive_subheading' => isset( $input['archive_subheading'] ) ? sanitize_text_field( wp_unslash( $input['archive_subheading'] ) ) : $defaults['archive_subheading'],
+		'toc_heading'        => isset( $input['toc_heading'] ) ? sanitize_text_field( wp_unslash( $input['toc_heading'] ) ) : $defaults['toc_heading'],
 	);
 }
 
@@ -106,9 +106,10 @@ function mab_show_mode_toggle() {
 }
 
 /**
- * Whether the "Created with Make a Book" credit line should be rendered at
- * the bottom of book/chapter/archive pages. On by default; a site owner
- * can turn it off in Settings.
+ * Whether the "This book is created with Make a Book" / "This library is
+ * powered by Make a Book" credit line should be rendered at the bottom of
+ * book/chapter/archive pages. On by default; a site owner can turn it off
+ * in Settings.
  *
  * @return bool
  */
@@ -182,7 +183,7 @@ function mab_render_settings_page() {
 					<td>
 						<label>
 							<input type="checkbox" name="mab_settings[show_credit]" value="1" <?php checked( '1', $settings['show_credit'] ); ?> />
-							<?php esc_html_e( 'Show "Created with Make a Book" at the bottom of book, chapter, and library pages', 'make-a-book' ); ?>
+							<?php esc_html_e( 'Show "This book is created with Make a Book" at the bottom of book, chapter, and library pages', 'make-a-book' ); ?>
 						</label>
 					</td>
 				</tr>

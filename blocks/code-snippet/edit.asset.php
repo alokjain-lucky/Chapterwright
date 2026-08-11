@@ -10,6 +10,10 @@
  * @package Make_A_Book
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 return array(
 	'dependencies' => array( 'wp-blocks', 'wp-element', 'wp-block-editor', 'wp-components', 'wp-i18n' ),
 	'version'      => MAKE_A_BOOK_VERSION,

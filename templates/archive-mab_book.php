@@ -27,6 +27,6 @@ $has_header_text    = $archive_eyebrow || $archive_heading || $archive_subheadin
 		</header>
 	<?php endif; ?>
 	<?php include MAKE_A_BOOK_PATH . 'templates/book-grid.php'; ?>
-	<?php mab_render_credit(); ?>
+	<?php mab_render_credit( 'archive' ); ?>
 </main>
 <?php require MAKE_A_BOOK_PATH . 'templates/partials/document-end.php'; ?>

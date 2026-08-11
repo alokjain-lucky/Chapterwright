@@ -170,9 +170,9 @@ function mab_save_chapter_meta( $post_id ) {
 		return;
 	}
 
-	$book_id = isset( $_POST['mab_book_id'] ) ? absint( $_POST['mab_book_id'] ) : 0;
+	$book_id = isset( $_POST['mab_book_id'] ) ? absint( wp_unslash( $_POST['mab_book_id'] ) ) : 0;
 	$section = isset( $_POST['mab_section'] ) ? sanitize_text_field( wp_unslash( $_POST['mab_section'] ) ) : '';
-	$order   = isset( $_POST['mab_order'] ) ? absint( $_POST['mab_order'] ) : 0;
+	$order   = isset( $_POST['mab_order'] ) ? absint( wp_unslash( $_POST['mab_order'] ) ) : 0;
 
 	if ( $book_id && MAB_BOOK_POST_TYPE === get_post_type( $book_id ) ) {
 		update_post_meta( $post_id, '_mab_book_id', $book_id );
