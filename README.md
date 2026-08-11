@@ -9,7 +9,7 @@ Publish multiple web-native ebooks in WordPress, with book landing pages, groupe
 | WordPress | 6.4 or newer |
 | PHP | 7.4 or newer |
 | Tested through | WordPress 6.8 |
-| Plugin version | 1.3.0 |
+| Plugin version | 1.3.1 |
 
 Make a Book adds two content types to WordPress: **Books** and **Chapters**. Each book can have its own cover, subtitle, accent color, introduction, and table of contents. Chapters can be grouped into named sections and receive automatic previous/next navigation.
 
@@ -154,6 +154,7 @@ Do not edit the bundled stylesheet directly because plugin updates will overwrit
 - A child theme's `style.css`.
 - Your theme's supported custom-CSS area.
 - A small site-specific plugin.
+- A dedicated stylesheet your theme enqueues itself, with `array( 'make-a-book' )` as its dependency so it's guaranteed to print after this plugin's own CSS. This is the most maintainable option for a theme that wants to closely match its own design tokens (color palette, card radius, button styling) — remap the `--mab-*` custom properties to your theme's own CSS variables rather than hardcoding colors, so the reader keeps tracking your theme's light/dark toggle automatically.
 
 Example child-theme CSS:
 
@@ -344,6 +345,12 @@ npm run env:test
 See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the component and content architecture.
 
 ## Changelog
+
+### 1.3.1
+
+- Fixed the book page's hero section forcing `min-height: 72vh`, which left a large, mostly-empty gap above the title on most screens. Removed it and trimmed the top padding on the book hero, book intro, table-of-contents card, and chapter reader, since the header-to-content gap is already handled by `.mab-page`'s own padding.
+- Fixed the archive page's `.mab-archive__header` still adding its own top margin on top of `.mab-page`'s padding, which doubled the gap below the site header on `/books/`.
+- Fixed `.mab-archive__header h1` still using the old, oversized bundled font size (up to 9rem) — missed in 1.3.0's heading-inheritance change.
 
 ### 1.3.0
 

@@ -88,17 +88,17 @@
 .mab-page a { color: inherit; }
 .mab-eyebrow { color: var(--mab-muted); font-size: .72rem; font-weight: 750; letter-spacing: .16em; margin: 0 0 1rem; text-transform: uppercase; }
 
-.mab-book-hero { align-items: center; display: grid; gap: clamp(3rem, 8vw, 8rem); grid-template-columns: minmax(0, 1.15fr) minmax(240px, .85fr); min-height: 72vh; padding-block: 3rem 7rem; }
+.mab-book-hero { align-items: center; display: grid; gap: clamp(2rem, 6vw, 5rem); grid-template-columns: minmax(0, 1.15fr) minmax(240px, .85fr); padding-block: 1.5rem 4rem; }
 .mab-book-hero h1 { margin: 0; }
 .mab-book-hero__subtitle { font-family: inherit; font-size: clamp(1.4rem, 2.2vw, 2rem); line-height: 1.35; margin: 2rem 0 1rem; max-width: 29ch; }
 .mab-book-hero__description { color: var(--mab-muted); max-width: 48ch; }
 .mab-book-hero__cover img { box-shadow: 1.4rem 1.4rem 0 var(--mab-accent); display: block; height: auto; transform: rotate(1.5deg); width: 100%; }
 .mab-button { background: var(--mab-ink); border-radius: 999px; color: #fff !important; display: inline-flex; font-size: .85rem; font-weight: 700; gap: 1.5rem; margin-top: 1.5rem; padding: .9rem 1.4rem; text-decoration: none; transition: transform .2s ease; }
 .mab-button:hover { transform: translateY(-3px); }
-.mab-book-intro { border-block: 1px solid var(--mab-line); font-family: inherit; font-size: clamp(1.35rem, 2.5vw, 2rem); margin: 0 auto 7rem; max-width: 920px; padding: 4rem 0; }
+.mab-book-intro { border-block: 1px solid var(--mab-line); font-family: inherit; font-size: clamp(1.2rem, 2vw, 1.5rem); margin: 0 auto 4rem; max-width: 920px; padding: 2.5rem 0; }
 
-.mab-toc { background: var(--mab-paper); border-radius: 2rem; padding: clamp(2rem, 6vw, 6rem); }
-.mab-toc__heading { margin-bottom: 5rem; }
+.mab-toc { background: var(--mab-paper); border-radius: 2rem; padding: clamp(1.5rem, 4vw, 3rem); }
+.mab-toc__heading { margin-bottom: 2.5rem; }
 .mab-toc__heading h2 { margin: 0; }
 .mab-toc-section { display: grid; gap: 2rem; grid-template-columns: minmax(170px, .35fr) 1fr; padding: 2rem 0; }
 .mab-toc-section + .mab-toc-section { border-top: 1px solid var(--mab-line); }
@@ -113,7 +113,7 @@
 .mab-reader { max-width: 1120px; }
 .mab-reader__bar { align-items: center; border-bottom: 1px solid var(--mab-line); display: flex; font-size: .75rem; font-weight: 700; justify-content: space-between; letter-spacing: .08em; padding-bottom: 1rem; text-transform: uppercase; }
 .mab-reader__bar a { text-decoration: none; }
-.mab-chapter { margin: 0 auto; max-width: 720px; padding-block: clamp(4rem, 9vw, 7rem); }
+.mab-chapter { margin: 0 auto; max-width: 720px; padding-block: clamp(2rem, 5vw, 3rem) clamp(4rem, 9vw, 7rem); }
 .mab-chapter__header { margin-bottom: 4rem; }
 .mab-chapter h1 { line-height: 1.08; margin: 0; }
 .mab-chapter__deck { color: var(--mab-muted); font-family: inherit; font-size: clamp(1.3rem, 2.5vw, 1.65rem); line-height: 1.42; margin: 1.5rem 0 2rem; }
@@ -146,8 +146,8 @@
 .mab-reader__next .is-next { text-align: right; }
 .mab-reader__next small { color: var(--mab-muted); font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; }
 
-.mab-archive__header { margin: 5rem 0 7rem; max-width: 900px; }
-.mab-archive__header h1 { font-size: clamp(4rem, 9vw, 9rem); margin: 0 0 1.5rem; }
+.mab-archive__header { margin: 0 0 4rem; max-width: 900px; }
+.mab-archive__header h1 { margin: 0 0 1.5rem; }
 .mab-book-grid { display: grid; gap: clamp(2rem, 5vw, 5rem); grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
 .mab-book-card__cover { align-items: center; aspect-ratio: 4/5; background: var(--mab-accent); box-shadow: .8rem .8rem 0 var(--mab-ink); display: flex; justify-content: center; overflow: hidden; text-decoration: none; }
 .mab-book-card__cover img { height: 100%; object-fit: cover; transition: transform .35s ease; width: 100%; }
@@ -161,7 +161,7 @@
 
 @media (max-width: 720px) {
 	.mab-page { padding: 1.25rem; }
-	.mab-book-hero { grid-template-columns: 1fr; min-height: 0; padding-block: 3rem 6rem; }
+	.mab-book-hero { grid-template-columns: 1fr; padding-block: 1rem 3rem; }
 	.mab-book-hero__copy { order: 2; }
 	.mab-book-hero__cover { margin-inline: auto; max-width: 70vw; order: 1; }
 	.mab-toc { border-radius: 1rem; padding: 1.5rem; }
