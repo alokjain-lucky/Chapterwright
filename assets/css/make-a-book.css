@@ -82,7 +82,7 @@
 .mab-page a { color: inherit; }
 .mab-eyebrow { color: var(--mab-muted); font-size: .72rem; font-weight: 750; letter-spacing: .16em; margin: 0 0 1rem; text-transform: uppercase; }
 
-.mab-book-hero { align-items: center; display: grid; gap: clamp(3rem, 8vw, 8rem); grid-template-columns: minmax(0, 1.15fr) minmax(240px, .85fr); min-height: 72vh; padding-block: 3rem 7rem; }
+.mab-book-hero { align-items: center; display: grid; gap: clamp(3rem, 8vw, 8rem); grid-template-columns: minmax(0, 1.15fr) minmax(240px, .85fr); min-height: 72vh; padding-block: 5rem 7rem; }
 .mab-book-hero h1 { font-size: clamp(4rem, 9vw, 9rem); margin: 0; max-width: 9ch; }
 .mab-book-hero__subtitle { font-family: inherit; font-size: clamp(1.4rem, 2.2vw, 2rem); line-height: 1.35; margin: 2rem 0 1rem; max-width: 29ch; }
 .mab-book-hero__description { color: var(--mab-muted); max-width: 48ch; }
@@ -140,7 +140,7 @@
 .mab-reader__next .is-next { text-align: right; }
 .mab-reader__next small { color: var(--mab-muted); font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; }
 
-.mab-archive__header { margin: 3rem 0 7rem; max-width: 900px; }
+.mab-archive__header { margin: 5rem 0 7rem; max-width: 900px; }
 .mab-archive__header h1 { font-size: clamp(4rem, 9vw, 9rem); margin: 0 0 1.5rem; }
 .mab-book-grid { display: grid; gap: clamp(2rem, 5vw, 5rem); grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
 .mab-book-card__cover { align-items: center; aspect-ratio: 4/5; background: var(--mab-accent); box-shadow: .8rem .8rem 0 var(--mab-ink); display: flex; justify-content: center; overflow: hidden; text-decoration: none; }
