@@ -39,7 +39,9 @@ foreach ( $chapters as $index => $chapter ) {
 		<?php if ( false !== $current && count( $chapters ) > 0 ) : ?>
 			<span><?php echo esc_html( sprintf( __( '%1$d of %2$d', 'make-a-book' ), $current + 1, count( $chapters ) ) ); ?></span>
 		<?php endif; ?>
-		<button class="mab-mode-toggle" type="button" aria-live="polite"><span aria-hidden="true">◐</span> <span data-mab-mode-label><?php esc_html_e( 'Color mode', 'make-a-book' ); ?></span></button>
+		<?php if ( mab_show_mode_toggle() ) : ?>
+			<button class="mab-mode-toggle" type="button" aria-live="polite"><span aria-hidden="true">◐</span> <span data-mab-mode-label><?php esc_html_e( 'Color mode', 'make-a-book' ); ?></span></button>
+		<?php endif; ?>
 	</nav>
 	<article class="mab-chapter">
 		<header class="mab-chapter__header">

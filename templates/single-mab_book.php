@@ -23,12 +23,15 @@ foreach ( $chapters as $chapter ) {
 	$section = $section ? $section : __( 'Chapters', 'make-a-book' );
 	$sections[ $section ][] = $chapter;
 }
+$toc_heading = mab_get_text( 'toc_heading' );
 ?>
 <a class="mab-skip-link" href="#mab-main-content"><?php esc_html_e( 'Skip to book content', 'make-a-book' ); ?></a>
 <main id="mab-main-content" class="mab-page mab-book" style="--mab-accent:<?php echo esc_attr( $accent ? $accent : '#f45d48' ); ?>" tabindex="-1">
-	<div class="mab-display-controls">
-		<button class="mab-mode-toggle" type="button" aria-live="polite"><span aria-hidden="true">◐</span> <span data-mab-mode-label><?php esc_html_e( 'Color mode', 'make-a-book' ); ?></span></button>
-	</div>
+	<?php if ( mab_show_mode_toggle() ) : ?>
+		<div class="mab-display-controls">
+			<button class="mab-mode-toggle" type="button" aria-live="polite"><span aria-hidden="true">◐</span> <span data-mab-mode-label><?php esc_html_e( 'Color mode', 'make-a-book' ); ?></span></button>
+		</div>
+	<?php endif; ?>
 	<section class="mab-book-hero">
 		<div class="mab-book-hero__copy">
 			<p class="mab-eyebrow"><?php esc_html_e( 'A book by', 'make-a-book' ); ?> <?php the_author(); ?></p>
@@ -50,10 +53,10 @@ foreach ( $chapters as $chapter ) {
 		<section class="mab-book-intro"><?php the_content(); ?></section>
 	<?php endif; ?>
 
-	<section class="mab-toc" aria-labelledby="mab-toc-title">
+	<section class="mab-toc" aria-labelledby="mab-toc-eyebrow<?php echo $toc_heading ? ' mab-toc-title' : ''; ?>">
 		<div class="mab-toc__heading">
-			<p class="mab-eyebrow"><?php esc_html_e( 'Table of contents', 'make-a-book' ); ?></p>
-			<h2 id="mab-toc-title"><?php esc_html_e( 'Read at your own pace', 'make-a-book' ); ?></h2>
+			<p class="mab-eyebrow" id="mab-toc-eyebrow"><?php esc_html_e( 'Table of contents', 'make-a-book' ); ?></p>
+			<?php if ( $toc_heading ) : ?><h2 id="mab-toc-title"><?php echo esc_html( $toc_heading ); ?></h2><?php endif; ?>
 		</div>
 		<?php if ( $sections ) : ?>
 			<?php foreach ( $sections as $section_name => $section_chapters ) : ?>

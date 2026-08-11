@@ -9,7 +9,7 @@ Publish multiple web-native ebooks in WordPress, with book landing pages, groupe
 | WordPress | 6.4 or newer |
 | PHP | 7.4 or newer |
 | Tested through | WordPress 6.8 |
-| Plugin version | 1.2.0 |
+| Plugin version | 1.3.0 |
 
 Make a Book adds two content types to WordPress: **Books** and **Chapters**. Each book can have its own cover, subtitle, accent color, introduction, and table of contents. Chapters can be grouped into named sections and receive automatic previous/next navigation.
 
@@ -29,15 +29,17 @@ Make a Book adds two content types to WordPress: **Books** and **Chapters**. Eac
 - Add a **Code Snippet** block for formatted, copyable code examples with an optional caption and language label.
 - See every chapter attached to a book, and jump straight to adding the next one, right from the Book editor.
 - Filter the Chapters list by book, and get the next chapter order number suggested automatically.
-- Typography inherits the active theme's fonts, so the reader looks like a native part of the site instead of a bundled font stack.
+- Typography inherits the active theme's fonts and heading sizes, so the reader looks like a native part of the site instead of a bundled font stack.
+- Books, Chapters, and Settings are grouped under one **Make a Book** admin menu.
+- A Settings page lets you turn the reader's color-mode toggle on or off, and edit or remove the library page's heading text and each book's table-of-contents heading.
 
 ## Installation
 
 1. Download the plugin ZIP.
 2. In WordPress, go to **Plugins → Add New → Upload Plugin**.
 3. Upload the ZIP and activate **Make a Book**.
-4. Go to **Books → Add New** and publish your first book.
-5. Go to **Chapters → Add New**, add the chapter content, assign it to the book, and publish it.
+4. Go to **Make a Book → Add New** and publish your first book.
+5. Go to **Make a Book → Chapters → Add New**, add the chapter content, assign it to the book, and publish it.
 6. Open the book's **View** link, visit `/books/`, or add `[make_a_book]` to a page.
 
 You can also install the plugin manually by copying the `make-a-book` directory to `/wp-content/plugins/` and activating it from the **Plugins** screen.
@@ -45,11 +47,23 @@ You can also install the plugin manually by copying the `make-a-book` directory 
 > [!TIP]
 > If a book URL returns a 404 after activation, go to **Settings → Permalinks** and click **Save Changes** once.
 
+Books, Chapters, and Settings all live under one **Make a Book** entry in the admin sidebar.
+
+## Settings
+
+Go to **Make a Book → Settings** to:
+
+- Turn the reader's own light/dark color-mode toggle on or off (shown on book and chapter pages). This is separate from any color-mode switch your theme puts in the site header — turn this off if the two feel redundant.
+- Edit or remove the library page's (`/books/`) eyebrow label, heading, and subheading.
+- Edit or remove the "Read at your own pace" heading shown above each book's table of contents.
+
+Clearing a text field removes that line from the page entirely rather than falling back to the default wording — this is the intended way to drop placeholder copy you don't want.
+
 ## Creating a book
 
 Books provide the landing page and table of contents for a publication.
 
-1. Go to **Books → Add New**.
+1. Go to **Make a Book → Add New**.
 2. Enter the book title.
 3. Add an excerpt. It appears in the book hero, library cards, and structured data. When omitted, WordPress may generate one from the main content.
 4. Add an optional introduction or front matter in the main editor. It appears between the book hero and table of contents.
@@ -63,7 +77,7 @@ The table of contents is built from all published Chapters assigned to the book.
 
 The fastest way to add a chapter is from the Book itself: open the Book, and in **Book Details** use the **"+ Add chapter to this book"** link. It opens a new Chapter screen with the Book and the next chapter number already filled in.
 
-1. Go to **Chapters → Add New**.
+1. Go to **Make a Book → Chapters → Add New**.
 2. Use the title for the chapter name and the main editor for the complete chapter content. You can use normal blocks, headings, images, links, lists, tables, code, and shortcodes.
 3. Add an optional excerpt. It appears beneath the chapter title, in the table of contents, and in structured data.
 4. Add an optional featured image. It appears below the chapter header.
@@ -132,6 +146,8 @@ The reader stores the visitor's color preference under the `make-a-book-color-mo
 The bundled stylesheet is [`assets/css/make-a-book.css`](assets/css/make-a-book.css). Visitor-facing selectors use the `.mab-` prefix, and the selected book accent is available through the `--mab-accent` custom property.
 
 Body and heading text use `font-family: inherit` throughout, so the reader automatically picks up your active theme's fonts — there is nothing to configure. Code blocks are the one deliberate exception and always use a fixed monospace stack, since code needs to stay legible and evenly spaced regardless of theme.
+
+Headings (`h1`–`h3`) don't set their own `font-size` either — they inherit whatever size your theme applies to headings (or the browser default if your theme doesn't style headings globally), rather than a large size bundled with the plugin.
 
 Do not edit the bundled stylesheet directly because plugin updates will overwrite those changes. Add overrides in one of these places instead:
 
@@ -328,6 +344,13 @@ npm run env:test
 See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the component and content architecture.
 
 ## Changelog
+
+### 1.3.0
+
+- Added a **Settings** page (**Make a Book → Settings**) to turn the reader's own color-mode toggle on or off, and to edit or remove the library page's heading text and each book's table-of-contents heading.
+- Books, Chapters, and Settings are now grouped under one **Make a Book** admin menu instead of Books and Chapters each having their own top-level entry.
+- Heading font sizes (`h1`–`h3`) in the reader no longer ship a large bundled size — they inherit from the active theme (or the browser default) like the font family already did.
+- Fixed the gap below the site header on book/chapter/archive pages to reliably match the rest of the theme; it no longer depends on WordPress reprinting the header block's own per-instance layout CSS, which isn't guaranteed on templates rendered outside the full block-template canvas.
 
 ### 1.2.0
 

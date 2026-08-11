@@ -41,9 +41,13 @@ function mab_register_post_types() {
 			'public'       => true,
 			'has_archive'  => false,
 			'rewrite'      => array( 'slug' => 'book-chapter' ),
-			'menu_icon'    => 'dashicons-media-document',
 			'show_in_rest' => true,
 			'supports'     => array( 'title', 'editor', 'excerpt', 'thumbnail', 'revisions' ),
+			// Nest under the Books admin menu (relabeled "Make a Book" — see
+			// mab_book_labels()) instead of giving Chapters its own
+			// top-level menu, so Books, Chapters, and Settings all live
+			// under one entry in the admin sidebar.
+			'show_in_menu' => 'edit.php?post_type=' . MAB_BOOK_POST_TYPE,
 		)
 	);
 }
@@ -66,7 +70,10 @@ function mab_book_labels() {
 		'not_found'          => __( 'No books found.', 'make-a-book' ),
 		'not_found_in_trash' => __( 'No books found in Trash.', 'make-a-book' ),
 		'all_items'          => __( 'All Books', 'make-a-book' ),
-		'menu_name'          => __( 'Books', 'make-a-book' ),
+		// The admin sidebar's top-level label for this whole menu (Books +
+		// Chapters + Settings), not just this post type — see
+		// mab_register_post_types() for how Chapters nests under it.
+		'menu_name'          => __( 'Make a Book', 'make-a-book' ),
 	);
 }
 

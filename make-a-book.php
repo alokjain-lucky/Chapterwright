@@ -3,7 +3,7 @@
  * Plugin Name:       Make a Book
  * Plugin URI:        https://alokjain.dev
  * Description:       Create and publish multiple, beautifully readable ebooks with chapters, sections, and code-friendly formatting.
- * Version:           1.2.0
+ * Version:           1.3.0
  * Requires at least: 6.4
  * Requires PHP:      7.4
  * Author:            Alok Jain
@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'MAKE_A_BOOK_VERSION', '1.2.0' );
+define( 'MAKE_A_BOOK_VERSION', '1.3.0' );
 define( 'MAKE_A_BOOK_FILE', __FILE__ );
 define( 'MAKE_A_BOOK_PATH', plugin_dir_path( __FILE__ ) );
 define( 'MAKE_A_BOOK_URL', plugin_dir_url( __FILE__ ) );
@@ -40,6 +40,11 @@ define( 'MAB_CHAPTER_POST_TYPE', 'mab_chapter' );
  */
 require_once MAKE_A_BOOK_PATH . 'includes/content-types.php';
 require_once MAKE_A_BOOK_PATH . 'includes/queries.php';
+
+// mab_get_settings()/mab_show_mode_toggle()/mab_get_text() in
+// admin/settings.php are used by the public templates too, so this file
+// loads unconditionally rather than only when is_admin().
+require_once MAKE_A_BOOK_PATH . 'admin/settings.php';
 
 if ( is_admin() ) {
 	require_once MAKE_A_BOOK_PATH . 'admin/meta-boxes.php';

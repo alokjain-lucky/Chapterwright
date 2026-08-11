@@ -67,6 +67,12 @@
 	margin-inline: auto;
 	max-width: 1440px;
 	padding: clamp(2rem, 5vw, 5rem);
+	/* Top padding is fixed rather than clamped so the gap below the site
+	   header is a known, exact value the theme can match — see
+	   .bento-wrap's padding-top in the theme's bento.css. Individual page
+	   headers (.mab-archive__header, .mab-book-hero) no longer add their
+	   own extra top spacing on top of this. */
+	padding-top: 80px;
 }
 
 .mab-skip-link { background: var(--mab-ink); color: var(--mab-surface); left: 1rem; padding: .75rem 1rem; position: fixed; top: 1rem; transform: translateY(-200%); z-index: 99999; }
@@ -82,8 +88,8 @@
 .mab-page a { color: inherit; }
 .mab-eyebrow { color: var(--mab-muted); font-size: .72rem; font-weight: 750; letter-spacing: .16em; margin: 0 0 1rem; text-transform: uppercase; }
 
-.mab-book-hero { align-items: center; display: grid; gap: clamp(3rem, 8vw, 8rem); grid-template-columns: minmax(0, 1.15fr) minmax(240px, .85fr); min-height: 72vh; padding-block: 5rem 7rem; }
-.mab-book-hero h1 { font-size: clamp(4rem, 9vw, 9rem); margin: 0; max-width: 9ch; }
+.mab-book-hero { align-items: center; display: grid; gap: clamp(3rem, 8vw, 8rem); grid-template-columns: minmax(0, 1.15fr) minmax(240px, .85fr); min-height: 72vh; padding-block: 3rem 7rem; }
+.mab-book-hero h1 { margin: 0; }
 .mab-book-hero__subtitle { font-family: inherit; font-size: clamp(1.4rem, 2.2vw, 2rem); line-height: 1.35; margin: 2rem 0 1rem; max-width: 29ch; }
 .mab-book-hero__description { color: var(--mab-muted); max-width: 48ch; }
 .mab-book-hero__cover img { box-shadow: 1.4rem 1.4rem 0 var(--mab-accent); display: block; height: auto; transform: rotate(1.5deg); width: 100%; }
@@ -93,7 +99,7 @@
 
 .mab-toc { background: var(--mab-paper); border-radius: 2rem; padding: clamp(2rem, 6vw, 6rem); }
 .mab-toc__heading { margin-bottom: 5rem; }
-.mab-toc__heading h2 { font-size: clamp(3rem, 6vw, 6rem); margin: 0; }
+.mab-toc__heading h2 { margin: 0; }
 .mab-toc-section { display: grid; gap: 2rem; grid-template-columns: minmax(170px, .35fr) 1fr; padding: 2rem 0; }
 .mab-toc-section + .mab-toc-section { border-top: 1px solid var(--mab-line); }
 .mab-toc-section h3 { font-size: 1.35rem; margin: .7rem 0; text-transform: uppercase; }
@@ -109,7 +115,7 @@
 .mab-reader__bar a { text-decoration: none; }
 .mab-chapter { margin: 0 auto; max-width: 720px; padding-block: clamp(4rem, 9vw, 7rem); }
 .mab-chapter__header { margin-bottom: 4rem; }
-.mab-chapter h1 { font-size: clamp(2.8rem, 6vw, 4.6rem); line-height: 1.08; margin: 0; }
+.mab-chapter h1 { line-height: 1.08; margin: 0; }
 .mab-chapter__deck { color: var(--mab-muted); font-family: inherit; font-size: clamp(1.3rem, 2.5vw, 1.65rem); line-height: 1.42; margin: 1.5rem 0 2rem; }
 .mab-chapter__meta { align-items: center; display: flex; font-family: inherit; font-size: .85rem; gap: .8rem; line-height: 1.35; }
 .mab-chapter__avatar { border-radius: 50%; height: 40px; width: 40px; }
