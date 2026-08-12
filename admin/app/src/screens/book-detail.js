@@ -11,6 +11,7 @@
 import { useState, useEffect, useCallback } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import {
+	BaseControl,
 	Button,
 	Card,
 	CardHeader,
@@ -58,11 +59,19 @@ export default function BookDetail( { bookId } ) {
 	useEffect( load, [ load ] );
 
 	if ( error ) {
-		return <Notice status="error" isDismissible={ false }>{ error }</Notice>;
+		return (
+			<Notice status="error" isDismissible={ false } className="mab-notice">
+				{ error }
+			</Notice>
+		);
 	}
 
 	if ( ! book ) {
-		return <Spinner />;
+		return (
+			<div className="mab-loading">
+				<Spinner />
+			</div>
+		);
 	}
 
 	const adminUrl = window.makeABookApp?.adminUrl || '/wp-admin/';
@@ -70,13 +79,19 @@ export default function BookDetail( { bookId } ) {
 
 	return (
 		<div className="mab-book-detail">
-			<p><a href="#/books">&larr; { __( 'All books', 'make-a-book' ) }</a></p>
+			<a className="mab-back-link" href="#/books">
+				<span aria-hidden="true">&larr;</span> { __( 'All books', 'make-a-book' ) }
+			</a>
 
-			{ notice && <Notice status="success" onRemove={ () => setNotice( '' ) }>{ notice }</Notice> }
+			{ notice && (
+				<Notice status="success" className="mab-notice" onRemove={ () => setNotice( '' ) }>
+					{ notice }
+				</Notice>
+			) }
 
 			<div className="mab-book-detail__title-row">
-				<h2>{ book.title?.raw || book.title?.rendered }</h2>
-				<Button variant="secondary" href={ editLink( book.id ) } target="_blank">
+				<h2 className="mab-book-detail__title">{ book.title?.raw || book.title?.rendered }</h2>
+				<Button __next40pxDefaultSize variant="secondary" href={ editLink( book.id ) } target="_blank">
 					{ __( 'Edit content, cover & excerpt →', 'make-a-book' ) }
 				</Button>
 			</div>
@@ -127,25 +142,42 @@ function BookFields( { book, onSaved } ) {
 	};
 
 	return (
-		<Card className="mab-book-fields">
-			<CardHeader>{ __( 'Book details', 'make-a-book' ) }</CardHeader>
+		<Card className="mab-panel">
+			<CardHeader>
+				<h3 className="mab-panel__title">{ __( 'Book details', 'make-a-book' ) }</h3>
+			</CardHeader>
 			<CardBody>
-				<TextareaControl
-					label={ __( 'Subtitle', 'make-a-book' ) }
-					value={ subtitle }
-					onChange={ setSubtitle }
-					rows={ 2 }
-				/>
-				<div className="mab-accent-field">
-					<label htmlFor="mab-accent-input">{ __( 'Accent color', 'make-a-book' ) }</label>
-					<input
-						id="mab-accent-input"
-						type="color"
-						value={ accent }
-						onChange={ ( event ) => setAccent( event.target.value ) }
+				<div className="mab-field-row">
+					<TextareaControl
+						__nextHasNoMarginBottom
+						label={ __( 'Subtitle', 'make-a-book' ) }
+						value={ subtitle }
+						onChange={ setSubtitle }
+						rows={ 2 }
 					/>
 				</div>
-				<Button variant="primary" isBusy={ saving } disabled={ saving } onClick={ save }>
+				<div className="mab-field-row">
+					<BaseControl
+						__nextHasNoMarginBottom
+						id="mab-accent-input"
+						label={ __( 'Accent color', 'make-a-book' ) }
+					>
+						<input
+							id="mab-accent-input"
+							className="mab-color-input"
+							type="color"
+							value={ accent }
+							onChange={ ( event ) => setAccent( event.target.value ) }
+						/>
+					</BaseControl>
+				</div>
+				<Button
+					__next40pxDefaultSize
+					variant="primary"
+					isBusy={ saving }
+					disabled={ saving }
+					onClick={ save }
+				>
 					{ __( 'Save book details', 'make-a-book' ) }
 				</Button>
 			</CardBody>
@@ -207,26 +239,40 @@ function SectionsManager( { bookId, sections, onChange, onError } ) {
 	};
 
 	return (
-		<Card className="mab-sections-manager">
-			<CardHeader>{ __( 'Sections', 'make-a-book' ) }</CardHeader>
+		<Card className="mab-panel">
+			<CardHeader>
+				<h3 className="mab-panel__title">{ __( 'Sections', 'make-a-book' ) }</h3>
+			</CardHeader>
 			<CardBody>
-				<p className="description">
+				<p className="mab-panel__description">
 					{ __( 'Group chapters under a heading, such as "Part I" or "Getting Started". The description shows under the heading in the table of contents. Optional — chapters with no section appear under a default "Chapters" heading.', 'make-a-book' ) }
 				</p>
 
-				{ sections.map( ( section, index ) => (
-					<SectionRow
-						key={ section.id }
-						section={ section }
-						onSave={ ( fields ) => saveSection( section, fields ) }
-						onDelete={ () => removeSection( section ) }
-						onMoveUp={ index > 0 ? () => move( index, -1 ) : null }
-						onMoveDown={ index < sections.length - 1 ? () => move( index, 1 ) : null }
-					/>
-				) ) }
+				{ 0 === sections.length && (
+					<p className="mab-empty-state mab-empty-state--inline">
+						{ __( 'No sections yet — chapters will appear under a default "Chapters" heading until you add one.', 'make-a-book' ) }
+					</p>
+				) }
 
-				<form onSubmit={ addSection } className="mab-add-section">
+				{ sections.length > 0 && (
+					<div className="mab-row-list">
+						{ sections.map( ( section, index ) => (
+							<SectionRow
+								key={ section.id }
+								section={ section }
+								onSave={ ( fields ) => saveSection( section, fields ) }
+								onDelete={ () => removeSection( section ) }
+								onMoveUp={ index > 0 ? () => move( index, -1 ) : null }
+								onMoveDown={ index < sections.length - 1 ? () => move( index, 1 ) : null }
+							/>
+						) ) }
+					</div>
+				) }
+
+				<form onSubmit={ addSection } className="mab-inline-form mab-inline-form--section">
 					<TextControl
+						__next40pxDefaultSize
+						__nextHasNoMarginBottom
 						label={ __( 'New section name', 'make-a-book' ) }
 						hideLabelFromVision
 						placeholder={ __( 'e.g. Getting Started', 'make-a-book' ) }
@@ -234,13 +280,21 @@ function SectionsManager( { bookId, sections, onChange, onError } ) {
 						onChange={ setName }
 					/>
 					<TextControl
+						__next40pxDefaultSize
+						__nextHasNoMarginBottom
 						label={ __( 'New section description', 'make-a-book' ) }
 						hideLabelFromVision
 						placeholder={ __( 'Optional description', 'make-a-book' ) }
 						value={ description }
 						onChange={ setDescription }
 					/>
-					<Button variant="secondary" type="submit" isBusy={ busy } disabled={ busy || ! name.trim() }>
+					<Button
+						__next40pxDefaultSize
+						variant="secondary"
+						type="submit"
+						isBusy={ busy }
+						disabled={ busy || ! name.trim() }
+					>
 						{ __( 'Add section', 'make-a-book' ) }
 					</Button>
 				</form>
@@ -256,16 +310,16 @@ function SectionRow( { section, onSave, onDelete, onMoveUp, onMoveDown } ) {
 
 	if ( ! editing ) {
 		return (
-			<div className="mab-section-row">
-				<div className="mab-section-row__reorder">
+			<div className="mab-row">
+				<div className="mab-row__reorder">
 					<Button icon="arrow-up-alt2" label={ __( 'Move up', 'make-a-book' ) } onClick={ onMoveUp } disabled={ ! onMoveUp } size="small" />
 					<Button icon="arrow-down-alt2" label={ __( 'Move down', 'make-a-book' ) } onClick={ onMoveDown } disabled={ ! onMoveDown } size="small" />
 				</div>
-				<div className="mab-section-row__text">
+				<div className="mab-row__text">
 					<strong>{ section.name }</strong>
-					{ section.description && <p className="description">{ section.description }</p> }
+					{ section.description && <p className="mab-row__meta">{ section.description }</p> }
 				</div>
-				<div className="mab-section-row__actions">
+				<div className="mab-row__actions">
 					<Button variant="tertiary" size="small" onClick={ () => setEditing( true ) }>{ __( 'Edit', 'make-a-book' ) }</Button>
 					<Button variant="tertiary" isDestructive size="small" onClick={ onDelete }>{ __( 'Delete', 'make-a-book' ) }</Button>
 				</div>
@@ -274,11 +328,12 @@ function SectionRow( { section, onSave, onDelete, onMoveUp, onMoveDown } ) {
 	}
 
 	return (
-		<div className="mab-section-row mab-section-row--editing">
-			<TextControl label={ __( 'Name', 'make-a-book' ) } value={ name } onChange={ setName } />
+		<div className="mab-row mab-row--editing">
+			<TextControl __next40pxDefaultSize label={ __( 'Name', 'make-a-book' ) } value={ name } onChange={ setName } />
 			<TextareaControl label={ __( 'Description', 'make-a-book' ) } value={ description } onChange={ setDescription } rows={ 2 } />
-			<div className="mab-section-row__actions">
+			<div className="mab-row__actions">
 				<Button
+					__next40pxDefaultSize
 					variant="primary"
 					size="small"
 					onClick={ () => {
@@ -372,38 +427,56 @@ function ChaptersManager( { bookId, sections, chapters, onChange, onError, editL
 	];
 
 	return (
-		<Card className="mab-chapters-manager">
-			<CardHeader>{ __( 'Chapters', 'make-a-book' ) }</CardHeader>
+		<Card className="mab-panel">
+			<CardHeader>
+				<h3 className="mab-panel__title">{ __( 'Chapters', 'make-a-book' ) }</h3>
+			</CardHeader>
 			<CardBody>
-				{ 0 === chapters.length && <p>{ __( 'No chapters yet. Add the first one below.', 'make-a-book' ) }</p> }
+				{ 0 === chapters.length && (
+					<p className="mab-empty-state mab-empty-state--inline">
+						{ __( 'No chapters yet. Add the first one below.', 'make-a-book' ) }
+					</p>
+				) }
 
-				{ chapters.map( ( chapter, index ) => (
-					<div className="mab-chapter-row" key={ chapter.id }>
-						<div className="mab-chapter-row__reorder">
-							<Button icon="arrow-up-alt2" label={ __( 'Move up', 'make-a-book' ) } size="small" disabled={ 0 === index } onClick={ () => move( index, -1 ) } />
-							<Button icon="arrow-down-alt2" label={ __( 'Move down', 'make-a-book' ) } size="small" disabled={ index === chapters.length - 1 } onClick={ () => move( index, 1 ) } />
-						</div>
-						<div className="mab-chapter-row__text">
-							<a href={ editLink( chapter.id ) } target="_blank" rel="noreferrer">
-								{ chapter.title?.raw || chapter.title?.rendered || __( '(no title)', 'make-a-book' ) }
-							</a>
-							{ 'publish' !== chapter.status && <span className="mab-chapter-row__status">{ chapter.status }</span> }
-						</div>
-						<SelectControl
-							label={ __( 'Section', 'make-a-book' ) }
-							hideLabelFromVision
-							value={ String( chapter.meta?._mab_section_id || '' ) }
-							options={ sectionOptions }
-							onChange={ ( value ) => changeSection( chapter.id, value ? Number( value ) : UNASSIGNED ) }
-						/>
-						<Button variant="tertiary" isDestructive size="small" onClick={ () => removeChapter( chapter ) }>
-							{ __( 'Trash', 'make-a-book' ) }
-						</Button>
+				{ chapters.length > 0 && (
+					<div className="mab-row-list">
+						{ chapters.map( ( chapter, index ) => (
+							<div className="mab-row mab-row--chapter" key={ chapter.id }>
+								<div className="mab-row__reorder">
+									<Button icon="arrow-up-alt2" label={ __( 'Move up', 'make-a-book' ) } size="small" disabled={ 0 === index } onClick={ () => move( index, -1 ) } />
+									<Button icon="arrow-down-alt2" label={ __( 'Move down', 'make-a-book' ) } size="small" disabled={ index === chapters.length - 1 } onClick={ () => move( index, 1 ) } />
+								</div>
+								<div className="mab-row__text">
+									<a href={ editLink( chapter.id ) } target="_blank" rel="noreferrer">
+										{ chapter.title?.raw || chapter.title?.rendered || __( '(no title)', 'make-a-book' ) }
+									</a>
+									{ 'publish' !== chapter.status && (
+										<span className={ `mab-status-pill mab-status-pill--${ chapter.status }` }>{ chapter.status }</span>
+									) }
+								</div>
+								<SelectControl
+									__next40pxDefaultSize
+									className="mab-row__section-select"
+									label={ __( 'Section', 'make-a-book' ) }
+									hideLabelFromVision
+									value={ String( chapter.meta?._mab_section_id || '' ) }
+									options={ sectionOptions }
+									onChange={ ( value ) => changeSection( chapter.id, value ? Number( value ) : UNASSIGNED ) }
+								/>
+								<div className="mab-row__actions">
+									<Button variant="tertiary" isDestructive size="small" onClick={ () => removeChapter( chapter ) }>
+										{ __( 'Trash', 'make-a-book' ) }
+									</Button>
+								</div>
+							</div>
+						) ) }
 					</div>
-				) ) }
+				) }
 
-				<form onSubmit={ addChapter } className="mab-add-chapter">
+				<form onSubmit={ addChapter } className="mab-inline-form mab-inline-form--chapter">
 					<TextControl
+						__next40pxDefaultSize
+						__nextHasNoMarginBottom
 						label={ __( 'New chapter title', 'make-a-book' ) }
 						hideLabelFromVision
 						placeholder={ __( 'New chapter title…', 'make-a-book' ) }
@@ -411,13 +484,20 @@ function ChaptersManager( { bookId, sections, chapters, onChange, onError, editL
 						onChange={ setTitle }
 					/>
 					<SelectControl
+						__next40pxDefaultSize
 						label={ __( 'Section', 'make-a-book' ) }
 						hideLabelFromVision
 						value={ newChapterSection }
 						options={ sectionOptions }
 						onChange={ setNewChapterSection }
 					/>
-					<Button variant="primary" type="submit" isBusy={ busy } disabled={ busy || ! title.trim() }>
+					<Button
+						__next40pxDefaultSize
+						variant="primary"
+						type="submit"
+						isBusy={ busy }
+						disabled={ busy || ! title.trim() }
+					>
 						{ __( '+ Add chapter', 'make-a-book' ) }
 					</Button>
 				</form>

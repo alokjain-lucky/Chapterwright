@@ -3,7 +3,7 @@
  */
 
 import { useState, useEffect, useCallback } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf, _n } from '@wordpress/i18n';
 import { Button, Card, CardBody, CardFooter, TextControl, Spinner, Notice } from '@wordpress/components';
 import { getBooks, createBook } from '../api';
 
@@ -42,60 +42,93 @@ export default function BooksList() {
 
 	return (
 		<div className="mab-books-list">
-			{ error && <Notice status="error" isDismissible={ false }>{ error }</Notice> }
+			{ error && (
+				<Notice status="error" isDismissible={ false } className="mab-notice">
+					{ error }
+				</Notice>
+			) }
 
-			<Card className="mab-add-book">
+			<Card className="mab-panel mab-add-book">
 				<CardBody>
-					<form onSubmit={ handleCreate } className="mab-add-book__form">
+					<form onSubmit={ handleCreate } className="mab-inline-form">
 						<TextControl
+							__next40pxDefaultSize
+							__nextHasNoMarginBottom
 							label={ __( 'New book title', 'make-a-book' ) }
 							hideLabelFromVision
 							placeholder={ __( 'New book title…', 'make-a-book' ) }
 							value={ newTitle }
 							onChange={ setNewTitle }
 						/>
-						<Button variant="primary" type="submit" isBusy={ creating } disabled={ creating || ! newTitle.trim() }>
+						<Button
+							__next40pxDefaultSize
+							variant="primary"
+							type="submit"
+							isBusy={ creating }
+							disabled={ creating || ! newTitle.trim() }
+						>
 							{ __( 'Add Book', 'make-a-book' ) }
 						</Button>
 					</form>
 				</CardBody>
 			</Card>
 
-			{ null === books && <Spinner /> }
+			{ null === books && (
+				<div className="mab-loading">
+					<Spinner />
+				</div>
+			) }
 
 			{ books && 0 === books.length && (
-				<p>{ __( 'No books yet. Add your first one above.', 'make-a-book' ) }</p>
+				<div className="mab-empty-state">
+					<p>{ __( 'No books yet. Add your first one above.', 'make-a-book' ) }</p>
+				</div>
 			) }
 
 			{ books && books.length > 0 && (
-				<div className="mab-book-grid">
-					{ books.map( ( book ) => (
-						<Card key={ book.id } className="mab-book-card">
-							{ book._embedded?.[ 'wp:featuredmedia' ]?.[ 0 ]?.source_url && (
-								<img
-									className="mab-book-card__cover"
-									src={ book._embedded[ 'wp:featuredmedia' ][ 0 ].source_url }
-									alt=""
-								/>
-							) }
-							<CardBody>
-								<h2 className="mab-book-card__title">
-									<a href={ `#/books/${ book.id }` }>
-										{ book.title?.raw || book.title?.rendered || __( '(no title)', 'make-a-book' ) }
-									</a>
-								</h2>
-								{ 'publish' !== book.status && (
-									<span className="mab-book-card__status">{ book.status }</span>
-								) }
-							</CardBody>
-							<CardFooter>
-								<Button variant="secondary" href={ `#/books/${ book.id }` }>
-									{ __( 'Manage', 'make-a-book' ) }
-								</Button>
-							</CardFooter>
-						</Card>
-					) ) }
-				</div>
+				<>
+					<p className="mab-books-list__count">
+						{ sprintf(
+							/* translators: %d: number of books. */
+							_n( '%d book', '%d books', books.length, 'make-a-book' ),
+							books.length
+						) }
+					</p>
+					<div className="mab-book-grid">
+						{ books.map( ( book ) => (
+							<Card key={ book.id } className="mab-panel mab-book-card">
+								<a className="mab-book-card__cover-link" href={ `#/books/${ book.id }` } tabIndex={ -1 } aria-hidden="true">
+									{ book._embedded?.[ 'wp:featuredmedia' ]?.[ 0 ]?.source_url ? (
+										<img
+											className="mab-book-card__cover"
+											src={ book._embedded[ 'wp:featuredmedia' ][ 0 ].source_url }
+											alt=""
+										/>
+									) : (
+										<span className="mab-book-card__cover mab-book-card__cover--placeholder">
+											<span className="dashicons dashicons-book-alt" aria-hidden="true"></span>
+										</span>
+									) }
+								</a>
+								<CardBody>
+									<h2 className="mab-book-card__title">
+										<a href={ `#/books/${ book.id }` }>
+											{ book.title?.raw || book.title?.rendered || __( '(no title)', 'make-a-book' ) }
+										</a>
+									</h2>
+									{ 'publish' !== book.status && (
+										<span className={ `mab-status-pill mab-status-pill--${ book.status }` }>{ book.status }</span>
+									) }
+								</CardBody>
+								<CardFooter>
+									<Button __next40pxDefaultSize variant="secondary" href={ `#/books/${ book.id }` }>
+										{ __( 'Manage', 'make-a-book' ) }
+									</Button>
+								</CardFooter>
+							</Card>
+						) ) }
+					</div>
+				</>
 			) }
 		</div>
 	);

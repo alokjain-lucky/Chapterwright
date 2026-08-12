@@ -374,6 +374,8 @@ npm run start   # rebuilds on every save, for active development
 ### 2.0.1
 
 - Fixed a critical bug in the 2.0.0 admin app: every custom `make-a-book/v1` REST route (sections and chapter reordering) fataled on every request with `is_numeric() expects exactly 1 argument, 3 given`, because WordPress calls a route's `validate_callback` with three arguments and `is_numeric()` is a PHP built-in that doesn't accept extras. Opening a book in the admin app was the most visible symptom. Fixed by wrapping the check in a plain function instead of passing the built-in directly.
+- Fixed the **Settings** page rendering blank: it's registered as a submenu of the "Make a Book" top-level page, but was doing so before that top-level page had actually been registered (a file-load-order accident), so WordPress computed the wrong internal hook name and never called the page's render function. Fixed by giving the top-level menu registration an earlier `admin_menu` priority. This also fixes the sidebar order — **Books & Chapters** now consistently appears above **Settings**.
+- Refreshed the admin app's visual design: a proper page header, consistent panel styling and spacing, status pills for draft/pending/private items, cleaner section/chapter rows, and modern (40px) form control sizing throughout.
 - **Uninstalling the plugin now performs a full clean sweep** instead of retaining content: every Book and Chapter (and their metadata), the `mab_sections` table, and the plugin's settings are all permanently deleted when you remove Make a Book from the Plugins screen. This replaces every earlier version's "retain content" behavior — see "Updating and uninstalling."
 
 ### 2.0.0

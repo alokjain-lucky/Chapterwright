@@ -1,130 +1,336 @@
 /**
  * Admin app styling. Scoped under .mab-app; relies on wp-components' own
  * styles (enqueued as a dependency, see admin/app.php) for buttons, cards,
- * and form controls, so this file only covers layout.
+ * and form controls, so this file focuses on layout, spacing, and the small
+ * amount of custom chrome (header, rows, status pills) wp-components
+ * doesn't provide out of the box.
  */
 
 .mab-app {
-	margin-top: 1rem;
-	max-width: 960px;
+	--mab-app-gap: 20px;
+	--mab-app-radius: 4px;
+	max-width: 980px;
 }
 
-.mab-app__header h1 {
-	font-size: 1.3rem;
-	margin: 0 0 1.5rem;
+/* Header ------------------------------------------------------------- */
+
+.mab-app__header {
+	border-bottom: 1px solid #dcdcde;
+	margin: 0 0 24px;
+	padding-bottom: 16px;
 }
 
-.mab-app__header a {
-	color: inherit;
+.mab-app__title {
+	font-size: 23px;
+	font-weight: 400;
+	line-height: 1.3;
+	margin: 0;
+	padding: 9px 0 4px;
+}
+
+.mab-app__title a {
+	align-items: center;
+	color: #1d2327;
+	display: inline-flex;
+	gap: 8px;
 	text-decoration: none;
+}
+
+.mab-app__title .dashicons {
+	color: #3858e9;
+	height: 24px;
+	width: 24px;
+}
+
+.mab-app__tagline {
+	color: #646970;
+	margin: 4px 0 0;
+}
+
+/* Shared panel chrome -------------------------------------------------- */
+
+.mab-panel {
+	margin-bottom: var(--mab-app-gap);
+}
+
+.mab-panel .components-card__header {
+	background: #f6f7f7;
+}
+
+.mab-panel__title {
+	font-size: 14px;
+	font-weight: 600;
+	margin: 0;
+}
+
+.mab-panel__description {
+	color: #646970;
+	margin: 0 0 16px;
+	max-width: 640px;
+}
+
+.mab-field-row {
+	margin-bottom: 16px;
+	max-width: 480px;
+}
+
+.mab-field-row:last-of-type {
+	margin-bottom: 20px;
+}
+
+.mab-color-input {
+	appearance: none;
+	background: none;
+	border: 1px solid #949494;
+	border-radius: var(--mab-app-radius);
+	cursor: pointer;
+	display: block;
+	height: 36px;
+	padding: 3px;
+	width: 64px;
+}
+
+.mab-notice {
+	margin-bottom: var(--mab-app-gap);
+}
+
+.mab-loading {
+	align-items: center;
+	display: flex;
+	justify-content: center;
+	padding: 48px 0;
+}
+
+.mab-empty-state {
+	color: #646970;
+	padding: 32px 0;
+	text-align: center;
+}
+
+.mab-empty-state--inline {
+	background: #f6f7f7;
+	border-radius: var(--mab-app-radius);
+	padding: 20px;
+	text-align: left;
+}
+
+/* Books list ------------------------------------------------------------ */
+
+.mab-inline-form {
+	align-items: flex-end;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px;
+}
+
+.mab-inline-form .components-base-control {
+	flex: 1 1 240px;
+	margin-bottom: 0;
+}
+
+.mab-books-list__count {
+	color: #646970;
+	font-size: 12px;
+	margin: 0 0 12px;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
 }
 
 .mab-book-grid {
 	display: grid;
-	gap: 1rem;
+	gap: var(--mab-app-gap);
 	grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-	margin-top: 1rem;
+}
+
+.mab-book-card {
+	overflow: hidden;
+}
+
+.mab-book-card__cover-link {
+	display: block;
 }
 
 .mab-book-card__cover {
 	aspect-ratio: 3 / 2;
+	background: #f0f0f1;
 	display: block;
 	object-fit: cover;
 	width: 100%;
 }
 
-.mab-book-card__title {
-	font-size: 1rem;
-	margin: 0 0 0.25rem;
+.mab-book-card__cover--placeholder {
+	align-items: center;
+	display: flex;
+	justify-content: center;
 }
 
-.mab-book-card__status,
-.mab-chapter-row__status {
+.mab-book-card__cover--placeholder .dashicons {
+	color: #c3c4c7;
+	height: 40px;
+	width: 40px;
+}
+
+.mab-book-card__title {
+	font-size: 14px;
+	line-height: 1.4;
+	margin: 0 0 6px;
+}
+
+.mab-book-card__title a {
+	color: #1d2327;
+	text-decoration: none;
+}
+
+.mab-book-card__title a:hover {
+	color: #3858e9;
+}
+
+/* Status pills ----------------------------------------------------------- */
+
+.mab-status-pill {
 	background: #f0f0f1;
 	border-radius: 3px;
 	color: #646970;
-	font-size: 0.75rem;
-	margin-left: 0.5em;
-	padding: 0.1em 0.5em;
+	display: inline-block;
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: 0.02em;
+	line-height: 1.6;
+	margin-left: 8px;
+	padding: 0 6px;
 	text-transform: capitalize;
+	vertical-align: middle;
 }
 
-.mab-add-book__form,
-.mab-add-section,
-.mab-add-chapter {
-	align-items: flex-end;
-	display: flex;
-	flex-wrap: wrap;
-	gap: 0.75rem;
+.mab-status-pill--draft {
+	background: #f0e6d2;
+	color: #8a6d1e;
 }
 
-.mab-add-book__form .components-base-control,
-.mab-add-section .components-base-control,
-.mab-add-chapter .components-base-control {
-	flex: 1 1 200px;
-	margin-bottom: 0;
+.mab-status-pill--pending {
+	background: #f0e6d2;
+	color: #8a6d1e;
+}
+
+.mab-status-pill--private {
+	background: #e5e5e5;
+	color: #50575e;
+}
+
+/* Book detail ------------------------------------------------------------ */
+
+.mab-back-link {
+	color: #646970;
+	display: inline-flex;
+	font-size: 13px;
+	gap: 4px;
+	margin-bottom: 16px;
+	text-decoration: none;
+}
+
+.mab-back-link:hover {
+	color: #3858e9;
 }
 
 .mab-book-detail__title-row {
 	align-items: center;
 	display: flex;
-	gap: 1rem;
+	flex-wrap: wrap;
+	gap: 12px;
 	justify-content: space-between;
-	margin-bottom: 1rem;
+	margin-bottom: 20px;
 }
 
-.mab-book-detail__title-row h2 {
+.mab-book-detail__title {
+	font-size: 20px;
 	margin: 0;
 }
 
-.mab-book-fields,
-.mab-sections-manager,
-.mab-chapters-manager {
-	margin-bottom: 1.5rem;
+/* Row lists (sections and chapters) --------------------------------------- */
+
+.mab-row-list {
+	border-top: 1px solid #e0e0e0;
+	margin-bottom: 20px;
 }
 
-.mab-accent-field {
-	align-items: center;
-	display: flex;
-	gap: 0.6em;
-	margin: 1em 0;
-}
-
-.mab-section-row,
-.mab-chapter-row {
+.mab-row {
 	align-items: center;
 	border-bottom: 1px solid #e0e0e0;
-	display: flex;
-	gap: 0.75rem;
-	padding: 0.6rem 0;
+	display: grid;
+	gap: 16px;
+	grid-template-columns: auto 1fr auto;
+	padding: 12px 4px;
 }
 
-.mab-section-row--editing {
+.mab-row--chapter {
+	grid-template-columns: auto 1fr 190px auto;
+}
+
+.mab-row--editing {
 	align-items: flex-start;
-	flex-direction: column;
+	display: block;
 }
 
-.mab-section-row__reorder,
-.mab-chapter-row__reorder {
+.mab-row--editing .components-base-control {
+	margin-bottom: 12px;
+}
+
+.mab-row__reorder {
 	display: flex;
 	flex-direction: column;
+	gap: 2px;
 }
 
-.mab-section-row__text,
-.mab-chapter-row__text {
-	flex: 1 1 auto;
+.mab-row__text {
+	min-width: 0;
 }
 
-.mab-section-row__text p.description {
-	margin: 0.2em 0 0;
+.mab-row__text a {
+	font-weight: 500;
+	text-decoration: none;
 }
 
-.mab-section-row__actions,
-.mab-chapter-row__actions {
+.mab-row__text a:hover {
+	color: #3858e9;
+}
+
+.mab-row__meta {
+	color: #646970;
+	font-size: 13px;
+	margin: 4px 0 0;
+}
+
+.mab-row__actions {
 	display: flex;
-	gap: 0.4rem;
+	gap: 6px;
+	justify-self: end;
 }
 
-.mab-chapter-row .components-select-control {
-	min-width: 180px;
+.mab-row__section-select {
+	margin-bottom: 0;
+}
+
+.mab-inline-form--section .components-base-control,
+.mab-inline-form--chapter .components-base-control {
+	margin-bottom: 0;
+}
+
+.mab-inline-form--chapter .components-select-control {
+	flex: 0 1 220px;
+}
+
+@media (max-width: 782px) {
+	.mab-row {
+		grid-template-columns: auto 1fr;
+	}
+
+	.mab-row--chapter {
+		grid-template-columns: auto 1fr;
+	}
+
+	.mab-row__actions,
+	.mab-row__section-select {
+		grid-column: 1 / -1;
+		justify-self: start;
+	}
 }

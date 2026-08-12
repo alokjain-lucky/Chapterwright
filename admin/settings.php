@@ -21,6 +21,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+// Default priority (10) is intentional and must stay *after* admin/app.php's
+// mab_add_app_page(), which runs at priority 5 specifically so the
+// top-level "make-a-book" menu it registers exists before this file's
+// add_submenu_page( 'make-a-book', ... ) call below. See the priority
+// comment on that hook in admin/app.php for what breaks if this ordering
+// is lost.
 add_action( 'admin_menu', 'mab_add_settings_page' );
 add_action( 'admin_init', 'mab_register_settings' );
 

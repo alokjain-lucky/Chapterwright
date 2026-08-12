@@ -16,7 +16,7 @@ import { useEntityProp, useEntityRecords } from '@wordpress/core-data';
 import { useSelect } from '@wordpress/data';
 import { useState, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { TextareaControl, SelectControl, TextControl } from '@wordpress/components';
+import { BaseControl, TextareaControl, SelectControl, TextControl } from '@wordpress/components';
 import apiFetch from '@wordpress/api-fetch';
 import './editor-sidebar.css';
 
@@ -34,15 +34,15 @@ function BookPanel() {
 				onChange={ ( value ) => setMeta( { ...meta, _mab_subtitle: value } ) }
 				rows={ 3 }
 			/>
-			<div className="mab-accent-field">
-				<label htmlFor="mab-sidebar-accent">{ __( 'Accent color', 'make-a-book' ) }</label>
+			<BaseControl id="mab-sidebar-accent" label={ __( 'Accent color', 'make-a-book' ) }>
 				<input
 					id="mab-sidebar-accent"
+					className="mab-color-input"
 					type="color"
 					value={ meta._mab_accent || '#f45d48' }
 					onChange={ ( event ) => setMeta( { ...meta, _mab_accent: event.target.value } ) }
 				/>
-			</div>
+			</BaseControl>
 			<p className="description">
 				{ __( 'Manage this book\'s sections and chapter order from the Make a Book admin page.', 'make-a-book' ) }
 			</p>

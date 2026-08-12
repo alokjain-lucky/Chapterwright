@@ -40,9 +40,17 @@ export default function App() {
 	return (
 		<div className="mab-app">
 			<header className="mab-app__header">
-				<h1>
-					<a href="#/books">{ __( 'Make a Book', 'make-a-book' ) }</a>
+				<h1 className="mab-app__title">
+					<a href="#/books">
+						<span className="dashicons dashicons-book-alt" aria-hidden="true"></span>
+						{ __( 'Make a Book', 'make-a-book' ) }
+					</a>
 				</h1>
+				{ 'books' === route.screen && (
+					<p className="mab-app__tagline">
+						{ __( 'Manage every book’s sections and chapters in one place.', 'make-a-book' ) }
+					</p>
+				) }
 			</header>
 			<div className="mab-app__body">
 				{ 'book' === route.screen ? (

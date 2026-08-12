@@ -17,7 +17,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-add_action( 'admin_menu', 'mab_add_app_page' );
+// Priority 5, earlier than admin/settings.php's default-priority
+// mab_add_settings_page(): add_menu_page() below must run first so
+// WordPress's internal $admin_page_hooks['make-a-book'] lookup exists by
+// the time any add_submenu_page( 'make-a-book', ... ) call happens.
+// Getting this order backwards doesn't break menu registration outright,
+// but WordPress computes the *wrong* per-page hook name for anything
+// registered before its own top-level page exists — the Settings link
+// still appeared, but WordPress fired the render callback on a hook name
+// nothing was actually listening on, so the page body rendered blank.
+// This also determines the submenu's visual order (registration order),
+// which is why this fix keeps "Books & Chapters" above "Settings".
+add_action( 'admin_menu', 'mab_add_app_page', 5 );
 add_action( 'admin_enqueue_scripts', 'mab_enqueue_app_assets' );
 add_action( 'enqueue_block_editor_assets', 'mab_enqueue_editor_sidebar_assets' );
 
@@ -29,6 +40,9 @@ add_action( 'enqueue_block_editor_assets', 'mab_enqueue_editor_sidebar_assets' )
  * from the block editor sidebar panel, but no longer appear in the nav —
  * this page, and its Settings submenu, are the only Make a Book entries an
  * author sees in the sidebar.
+ *
+ * Must run before admin/settings.php's mab_add_settings_page() — see the
+ * priority comment above.
  */
 function mab_add_app_page() {
 	add_menu_page(
