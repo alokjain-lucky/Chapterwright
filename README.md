@@ -9,7 +9,7 @@ Publish multiple web-native ebooks in WordPress, with book landing pages, groupe
 | WordPress | 6.4 or newer |
 | PHP | 7.4 or newer |
 | Tested through | WordPress 6.8 |
-| Plugin version | 2.3.0 |
+| Plugin version | 2.3.1 |
 
 Make a Book adds two content types to WordPress: **Books** and **Chapters**. Each book can have its own cover, subtitle, accent color, introduction, and table of contents. Chapters can be grouped into sections — each with its own name and description — and receive automatic previous/next navigation.
 
@@ -402,6 +402,10 @@ Both run automatically on every push and pull request via GitHub Actions (`.gith
 ## Changelog
 
 The three most recent releases are below. See [CHANGELOG.md](CHANGELOG.md) for the full history back to 1.0.0.
+
+### 2.3.1
+
+- Native Books/Chapters screens WordPress still generates automatically — the list-table (`edit.php?post_type=mab_book` / `mab_chapter`) and "Add New" (`post-new.php?post_type=...`) — now redirect to the **Books & Chapters** admin app instead of showing the old scattered interface. Writing a book or chapter's actual content (the Block Editor screen) and the native Trash list (for restoring or permanently deleting) are unaffected — both still work exactly as before.
 
 ### 2.3.0
 

@@ -61,7 +61,7 @@ function mab_add_book_help_tabs( $screen ) {
 				'<p>' . esc_html__( 'The Book Details panel, in the sidebar of the Book editor, controls:', 'make-a-book' ) . '</p>' .
 				'<ul>' .
 				'<li>' . esc_html__( 'Subtitle — a short line shown under the book title on its landing page.', 'make-a-book' ) . '</li>' .
-				'<li>' . esc_html__( 'Accent color — used for links, the "Start reading" button, and other highlights on this book\'s pages.', 'make-a-book' ) . '</li>' .
+				'<li>' . esc_html__( 'Accent color — colors links, hover states, blockquote/callout borders, and the reading-progress bar on this book\'s pages.', 'make-a-book' ) . '</li>' .
 				'</ul>' .
 				'<p>' . esc_html__( 'These same fields are also editable from the Make a Book admin page, alongside this book\'s sections and chapters.', 'make-a-book' ) . '</p>',
 		)

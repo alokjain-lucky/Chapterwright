@@ -3,7 +3,7 @@
  * Plugin Name:       Make a Book
  * Plugin URI:        https://alokjain.dev
  * Description:       Create and publish multiple, beautifully readable ebooks with chapters, sections, and code-friendly formatting.
- * Version:           2.3.0
+ * Version:           2.3.1
  * Requires at least: 6.4
  * Requires PHP:      7.4
  * Author:            Alok Jain
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'MAKE_A_BOOK_VERSION', '2.3.0' );
+define( 'MAKE_A_BOOK_VERSION', '2.3.1' );
 define( 'MAKE_A_BOOK_FILE', __FILE__ );
 define( 'MAKE_A_BOOK_PATH', plugin_dir_path( __FILE__ ) );
 define( 'MAKE_A_BOOK_URL', plugin_dir_url( __FILE__ ) );
@@ -55,6 +55,7 @@ if ( is_admin() ) {
 	require_once MAKE_A_BOOK_PATH . 'admin/app.php';
 	require_once MAKE_A_BOOK_PATH . 'admin/list-table.php';
 	require_once MAKE_A_BOOK_PATH . 'admin/help.php';
+	require_once MAKE_A_BOOK_PATH . 'admin/redirects.php';
 }
 
 // The REST controllers are needed whenever the REST API is being served,
