@@ -33,7 +33,7 @@ function mab_register_chapters_routes() {
 			'args'                => array(
 				'book_id'  => array(
 					'required'          => true,
-					'validate_callback' => 'is_numeric',
+					'validate_callback' => 'mab_rest_validate_numeric_param',
 				),
 				'chapters' => array(
 					'required' => true,

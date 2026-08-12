@@ -19,6 +19,25 @@ if ( ! defined( 'ABSPATH' ) ) {
 add_action( 'rest_api_init', 'mab_register_sections_routes' );
 
 /**
+ * `validate_callback` for a numeric route/body param.
+ *
+ * WordPress calls every `validate_callback` with three arguments —
+ * `( $value, $request, $param )`, see WP_REST_Request::has_valid_params()```
+ * — not just the value. A bare `'is_numeric'` string as the callback
+ * therefore fatals with "is_numeric() expects exactly 1 argument, 3 given"
+ * on PHP 8, because `is_numeric()` is a built-in function and built-ins
+ * enforce their exact declared argument count. A user-defined function does
+ * not have that restriction — PHP silently ignores extra arguments — so
+ * this thin wrapper is the fix, not a difference in what it validates.
+ *
+ * @param mixed $value Parameter value to validate.
+ * @return bool Whether the value is numeric.
+ */
+function mab_rest_validate_numeric_param( $value ) {
+	return is_numeric( $value );
+}
+
+/**
  * Register the make-a-book/v1 section routes.
  */
 function mab_register_sections_routes() {
@@ -33,7 +52,7 @@ function mab_register_sections_routes() {
 				'args'                => array(
 					'book_id' => array(
 						'required'          => true,
-						'validate_callback' => 'is_numeric',
+						'validate_callback' => 'mab_rest_validate_numeric_param',
 					),
 				),
 			),
@@ -44,7 +63,7 @@ function mab_register_sections_routes() {
 				'args'                => array(
 					'book_id'     => array(
 						'required'          => true,
-						'validate_callback' => 'is_numeric',
+						'validate_callback' => 'mab_rest_validate_numeric_param',
 					),
 					'name'        => array(
 						'required' => true,
@@ -69,7 +88,7 @@ function mab_register_sections_routes() {
 			'args'                => array(
 				'book_id' => array(
 					'required'          => true,
-					'validate_callback' => 'is_numeric',
+					'validate_callback' => 'mab_rest_validate_numeric_param',
 				),
 				'order'   => array(
 					'required' => true,
@@ -91,7 +110,7 @@ function mab_register_sections_routes() {
 				'args'                => array(
 					'id'          => array(
 						'required'          => true,
-						'validate_callback' => 'is_numeric',
+						'validate_callback' => 'mab_rest_validate_numeric_param',
 					),
 					'name'        => array( 'type' => 'string' ),
 					'description' => array( 'type' => 'string' ),
@@ -104,7 +123,7 @@ function mab_register_sections_routes() {
 				'args'                => array(
 					'id' => array(
 						'required'          => true,
-						'validate_callback' => 'is_numeric',
+						'validate_callback' => 'mab_rest_validate_numeric_param',
 					),
 				),
 			),

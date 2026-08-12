@@ -3,7 +3,7 @@
  * Plugin Name:       Make a Book
  * Plugin URI:        https://alokjain.dev
  * Description:       Create and publish multiple, beautifully readable ebooks with chapters, sections, and code-friendly formatting.
- * Version:           2.0.0
+ * Version:           2.0.1
  * Requires at least: 6.4
  * Requires PHP:      7.4
  * Author:            Alok Jain
@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'MAKE_A_BOOK_VERSION', '2.0.0' );
+define( 'MAKE_A_BOOK_VERSION', '2.0.1' );
 define( 'MAKE_A_BOOK_FILE', __FILE__ );
 define( 'MAKE_A_BOOK_PATH', plugin_dir_path( __FILE__ ) );
 define( 'MAKE_A_BOOK_URL', plugin_dir_url( __FILE__ ) );

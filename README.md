@@ -9,7 +9,7 @@ Publish multiple web-native ebooks in WordPress, with book landing pages, groupe
 | WordPress | 6.4 or newer |
 | PHP | 7.4 or newer |
 | Tested through | WordPress 6.8 |
-| Plugin version | 2.0.0 |
+| Plugin version | 2.0.1 |
 
 Make a Book adds two content types to WordPress: **Books** and **Chapters**. Each book can have its own cover, subtitle, accent color, introduction, and table of contents. Chapters can be grouped into sections — each with its own name and description — and receive automatic previous/next navigation.
 
@@ -333,7 +333,8 @@ No. Direct changes will be lost during an update. Put CSS in a child theme or su
 
 Back up the site before updating WordPress, a theme, or any plugin. Custom changes should live in a child theme or site-specific plugin so Make a Book updates cannot overwrite them.
 
-Uninstalling Make a Book intentionally retains all user-authored Books, Chapters, and their metadata. This protects published content from accidental deletion. The `mab_sections` database table is the one exception — it holds only organizational metadata (section names/descriptions), not primary content, and is dropped entirely on uninstall; chapters that were assigned to a section simply become unassigned. Remove retained Book/Chapter content manually only after making a backup and confirming it is no longer needed.
+> [!WARNING]
+> Deleting Make a Book from the **Plugins** screen performs a full clean sweep: every Book and Chapter (and their metadata), the `mab_sections` table, and the plugin's saved settings are all permanently deleted. Nothing is kept. This is deliberate — back up the site first if you want to keep any of it. Deactivating the plugin (without deleting it) does **not** touch your data; only actually removing it from the Plugins screen does.
 
 ## Development
 
@@ -369,6 +370,11 @@ npm run start   # rebuilds on every save, for active development
 `admin/app/build/` is gitignored, like every other generated artifact in this repository, but is expected to exist (run `npm run build` first) in any copy of the plugin actually installed in WordPress — the admin app and block-editor sidebar panel silently don't load without it.
 
 ## Changelog
+
+### 2.0.1
+
+- Fixed a critical bug in the 2.0.0 admin app: every custom `make-a-book/v1` REST route (sections and chapter reordering) fataled on every request with `is_numeric() expects exactly 1 argument, 3 given`, because WordPress calls a route's `validate_callback` with three arguments and `is_numeric()` is a PHP built-in that doesn't accept extras. Opening a book in the admin app was the most visible symptom. Fixed by wrapping the check in a plain function instead of passing the built-in directly.
+- **Uninstalling the plugin now performs a full clean sweep** instead of retaining content: every Book and Chapter (and their metadata), the `mab_sections` table, and the plugin's settings are all permanently deleted when you remove Make a Book from the Plugins screen. This replaces every earlier version's "retain content" behavior — see "Updating and uninstalling."
 
 ### 2.0.0
 
