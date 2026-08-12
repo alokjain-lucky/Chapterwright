@@ -166,6 +166,7 @@ function BookFields( { book, onSaved } ) {
 						__nextHasNoMarginBottom
 						id="mab-accent-input"
 						label={ __( 'Accent color', 'make-a-book' ) }
+						help={ __( 'Colors links, hover states, blockquote/callout borders, and the reading-progress bar on this book’s pages.', 'make-a-book' ) }
 					>
 						<input
 							id="mab-accent-input"

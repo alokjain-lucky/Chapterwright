@@ -9,7 +9,7 @@ Publish multiple web-native ebooks in WordPress, with book landing pages, groupe
 | WordPress | 6.4 or newer |
 | PHP | 7.4 or newer |
 | Tested through | WordPress 6.8 |
-| Plugin version | 2.0.2 |
+| Plugin version | 2.0.3 |
 
 Make a Book adds two content types to WordPress: **Books** and **Chapters**. Each book can have its own cover, subtitle, accent color, introduction, and table of contents. Chapters can be grouped into sections — each with its own name and description — and receive automatic previous/next navigation.
 
@@ -373,6 +373,10 @@ npm run start   # rebuilds on every save, for active development
 
 The three most recent releases are below. See [CHANGELOG.md](CHANGELOG.md) for the full history back to 1.0.0.
 
+### 2.0.3
+
+- Added a line of helper text under the **Accent color** field (in both the admin app's Book details panel and the block-editor sidebar) explaining what it actually affects: links, hover states, blockquote/callout borders, and the reading-progress bar on the book's pages.
+
 ### 2.0.2
 
 - Fixed the block-editor sidebar panel ("Book Details" / "Chapter Details") crashing on open, shown as "The 'make-a-book' plugin has encountered an error and cannot be rendered." `useEntityProp()` can return `undefined` for a post's `meta` object on the very first render, before the entity has finished loading, and the panel read `meta._mab_subtitle` (etc.) without guarding against that.
@@ -384,14 +388,6 @@ The three most recent releases are below. See [CHANGELOG.md](CHANGELOG.md) for t
 - Fixed the **Settings** page rendering blank: it's registered as a submenu of the "Make a Book" top-level page, but was doing so before that top-level page had actually been registered (a file-load-order accident), so WordPress computed the wrong internal hook name and never called the page's render function. Fixed by giving the top-level menu registration an earlier `admin_menu` priority. This also fixes the sidebar order — **Books & Chapters** now consistently appears above **Settings**.
 - Refreshed the admin app's visual design: a proper page header, consistent panel styling and spacing, status pills for draft/pending/private items, cleaner section/chapter rows, and modern (40px) form control sizing throughout.
 - **Uninstalling the plugin now performs a full clean sweep** instead of retaining content: every Book and Chapter (and their metadata), the `mab_sections` table, and the plugin's settings are all permanently deleted when you remove Make a Book from the Plugins screen. This replaces every earlier version's "retain content" behavior — see "Updating and uninstalling."
-
-### 2.0.0
-
-- **Breaking (internal data model):** chapter sections are no longer a free-text `_mab_section` meta value. They are now rows in a new `mab_sections` database table (`id`, `book_id`, `name`, `description`, `menu_order`), each with its own describable text shown in the table of contents, and chapters reference one via `_mab_section_id`. Existing sites migrate automatically and losslessly on the first request after updating (see `mab_migrate_sections_from_meta()` in `includes/upgrade.php`): every distinct `_mab_section` value per book becomes a section row, and every chapter that had it is repointed at the new row. The table is dropped on uninstall — see "Updating and uninstalling."
-- Added a new **Make a Book → Books & Chapters** admin app (a `@wordpress/components`-based single-page app) for browsing books and managing a book's sections and chapters — adding, reordering, reassigning, and removing — from one screen instead of several scattered post-type screens.
-- Added a block-editor sidebar panel ("Book Details" / "Chapter Details") that replaces the old `add_meta_box()` panels, so the same fields are still available when writing a chapter directly in the block editor.
-- The Book and Chapter post type list/edit screens no longer appear in the admin menu (`show_in_menu` is now `false`) — the admin app and Settings are the two Make a Book entries in the sidebar. The screens themselves are unchanged and still load normally when linked to directly.
-- Registered a `make-a-book` category and five abilities (list/get/create/delete operations on books, chapters, and sections) with WordPress's Abilities API (6.9+), making the plugin's core operations discoverable and callable by AI agents and automation tools. See [Abilities API](#abilities-api).
 - `_mab_subtitle`, `_mab_accent`, `_mab_book_id`, `_mab_order`, and `_mab_section_id` are now registered for the REST API (`register_post_meta()`), and a small `make-a-book/v1` REST namespace was added for sections and bulk chapter reordering — both power the admin app, and both are usable directly by other code.
 - Removed `admin/meta-boxes.php` and `admin/chapter-order.php` (superseded by the sidebar panel, REST meta fields, and the admin app's client-side order suggestions).
 - Adds a `@wordpress/scripts` build step for `admin/app/src/` only — see "Development." Every other PHP and JS file in the plugin is unchanged in that respect.

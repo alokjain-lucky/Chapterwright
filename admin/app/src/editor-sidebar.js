@@ -40,7 +40,11 @@ function BookPanel() {
 				onChange={ ( value ) => setMeta( { ...meta, _mab_subtitle: value } ) }
 				rows={ 3 }
 			/>
-			<BaseControl id="mab-sidebar-accent" label={ __( 'Accent color', 'make-a-book' ) }>
+			<BaseControl
+				id="mab-sidebar-accent"
+				label={ __( 'Accent color', 'make-a-book' ) }
+				help={ __( 'Colors links, hover states, blockquote/callout borders, and the reading-progress bar on this book’s pages.', 'make-a-book' ) }
+			>
 				<input
 					id="mab-sidebar-accent"
 					className="mab-color-input"

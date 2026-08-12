@@ -2,6 +2,10 @@
 
 All notable changes to Make a Book. See [README.md](README.md#changelog) for the most recent entries — this file is the full history.
 
+### 2.0.3
+
+- Added a line of helper text under the **Accent color** field (in both the admin app's Book details panel and the block-editor sidebar) explaining what it actually affects: links, hover states, blockquote/callout borders, and the reading-progress bar on the book's pages.
+
 ### 2.0.2
 
 - Fixed the block-editor sidebar panel ("Book Details" / "Chapter Details") crashing on open, shown as "The 'make-a-book' plugin has encountered an error and cannot be rendered." `useEntityProp()` can return `undefined` for a post's `meta` object on the very first render, before the entity has finished loading, and the panel read `meta._mab_subtitle` (etc.) without guarding against that.

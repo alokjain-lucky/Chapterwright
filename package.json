@@ -1,6 +1,6 @@
 {
   "name": "make-a-book",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "private": true,
   "description": "Local WordPress test environment and admin-app build for the Make a Book plugin.",
   "scripts": {
