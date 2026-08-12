@@ -15,6 +15,10 @@ tests/fixtures/
 .wp-env/
 wp-content/
 
+# Compiled admin-app JS/CSS (built with `npm run build`; ship the build
+# output in the release zip, but keep the git repo to source only).
+admin/app/build/
+
 # Installed development dependencies.
 node_modules/
 

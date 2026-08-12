@@ -1,0 +1,287 @@
+<?php
+/**
+ * Book sections: a small custom database table, not a taxonomy or post meta.
+ *
+ * A section ("Part I", "Getting Started") is scoped to exactly one book and
+ * needs its own describable text, so it is stored as a row rather than a
+ * post-meta string (which cannot carry a description) or a taxonomy term
+ * (which is shared site-wide and does not naturally scope to one book).
+ *
+ * The table is created on activation and fully dropped on uninstall — see
+ * mab_create_sections_table() in includes/upgrade.php and uninstall.php.
+ * Deleting a section never deletes the chapters assigned to it; they simply
+ * become unassigned and fall back to the default "Chapters" heading.
+ *
+ * @package Make_A_Book
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+/**
+ * Get the sections table name, including the site's table prefix.
+ *
+ * @return string Fully-prefixed table name.
+ */
+function mab_get_sections_table() {
+	global $wpdb;
+	return $wpdb->prefix . 'mab_sections';
+}
+
+/**
+ * Fetch every section belonging to a book, in display order.
+ *
+ * @param int $book_id Book post ID.
+ * @return array<int,array<string,mixed>> Section rows (id, book_id, name, description, menu_order).
+ */
+function mab_get_book_sections( $book_id ) {
+	global $wpdb;
+
+	$table = mab_get_sections_table();
+
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table with no WP API equivalent; not cached because sections are small, book-scoped lists edited rarely and read on every book page.
+	$rows = $wpdb->get_results(
+		$wpdb->prepare(
+			"SELECT id, book_id, name, description, menu_order FROM {$table} WHERE book_id = %d ORDER BY menu_order ASC, id ASC", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name cannot be a placeholder; it is built from a fixed prefix, not user input.
+			$book_id
+		),
+		ARRAY_A
+	);
+
+	return $rows ? $rows : array();
+}
+
+/**
+ * Fetch a single section row.
+ *
+ * @param int $section_id Section ID.
+ * @return array<string,mixed>|null Section row, or null if it does not exist.
+ */
+function mab_get_section( $section_id ) {
+	global $wpdb;
+
+	$table = mab_get_sections_table();
+
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table with no WP API equivalent.
+	$row = $wpdb->get_row(
+		$wpdb->prepare(
+			"SELECT id, book_id, name, description, menu_order FROM {$table} WHERE id = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is fixed, not user input.
+			$section_id
+		),
+		ARRAY_A
+	);
+
+	return $row ? $row : null;
+}
+
+/**
+ * Create a section for a book.
+ *
+ * @param int                  $book_id Book post ID.
+ * @param array<string,mixed>  $args {
+ *     Section fields.
+ *
+ *     @type string $name        Section name. Required.
+ *     @type string $description Optional descriptive text shown under the section heading.
+ *     @type int    $menu_order  Optional explicit order; appended to the end when omitted.
+ * }
+ * @return int|WP_Error New section ID, or WP_Error when the name is missing.
+ */
+function mab_insert_section( $book_id, $args ) {
+	global $wpdb;
+
+	$name = isset( $args['name'] ) ? trim( sanitize_text_field( $args['name'] ) ) : '';
+	if ( '' === $name ) {
+		return new WP_Error( 'mab_section_name_required', __( 'A section needs a name.', 'make-a-book' ) );
+	}
+
+	$description = isset( $args['description'] ) ? sanitize_textarea_field( $args['description'] ) : '';
+
+	if ( isset( $args['menu_order'] ) ) {
+		$menu_order = (int) $args['menu_order'];
+	} else {
+		$existing   = mab_get_book_sections( $book_id );
+		$menu_order = $existing ? ( (int) end( $existing )['menu_order'] + 1 ) : 0;
+	}
+
+	$now = current_time( 'mysql' );
+
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table with no WP API equivalent.
+	$inserted = $wpdb->insert(
+		mab_get_sections_table(),
+		array(
+			'book_id'     => absint( $book_id ),
+			'name'        => $name,
+			'description' => $description,
+			'menu_order'  => $menu_order,
+			'created_at'  => $now,
+			'updated_at'  => $now,
+		),
+		array( '%d', '%s', '%s', '%d', '%s', '%s' )
+	);
+
+	if ( ! $inserted ) {
+		return new WP_Error( 'mab_section_insert_failed', __( 'The section could not be saved.', 'make-a-book' ) );
+	}
+
+	return (int) $wpdb->insert_id;
+}
+
+/**
+ * Update a section's name, description, and/or order.
+ *
+ * @param int                  $section_id Section ID.
+ * @param array<string,mixed>  $args       Any of: name, description, menu_order.
+ * @return bool|WP_Error True on success, WP_Error on failure.
+ */
+function mab_update_section( $section_id, $args ) {
+	global $wpdb;
+
+	if ( ! mab_get_section( $section_id ) ) {
+		return new WP_Error( 'mab_section_not_found', __( 'That section no longer exists.', 'make-a-book' ) );
+	}
+
+	$data   = array();
+	$format = array();
+
+	if ( isset( $args['name'] ) ) {
+		$name = trim( sanitize_text_field( $args['name'] ) );
+		if ( '' === $name ) {
+			return new WP_Error( 'mab_section_name_required', __( 'A section needs a name.', 'make-a-book' ) );
+		}
+		$data['name'] = $name;
+		$format[]     = '%s';
+	}
+
+	if ( isset( $args['description'] ) ) {
+		$data['description'] = sanitize_textarea_field( $args['description'] );
+		$format[]             = '%s';
+	}
+
+	if ( isset( $args['menu_order'] ) ) {
+		$data['menu_order'] = (int) $args['menu_order'];
+		$format[]           = '%d';
+	}
+
+	if ( ! $data ) {
+		return true;
+	}
+
+	$data['updated_at'] = current_time( 'mysql' );
+	$format[]           = '%s';
+
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table with no WP API equivalent.
+	$updated = $wpdb->update(
+		mab_get_sections_table(),
+		$data,
+		array( 'id' => absint( $section_id ) ),
+		$format,
+		array( '%d' )
+	);
+
+	if ( false === $updated ) {
+		return new WP_Error( 'mab_section_update_failed', __( 'The section could not be updated.', 'make-a-book' ) );
+	}
+
+	return true;
+}
+
+/**
+ * Delete a section. Chapters assigned to it are unassigned, not deleted.
+ *
+ * @param int $section_id Section ID.
+ * @return bool|WP_Error True on success, WP_Error if the section does not exist.
+ */
+function mab_delete_section( $section_id ) {
+	global $wpdb;
+
+	$section = mab_get_section( $section_id );
+	if ( ! $section ) {
+		return new WP_Error( 'mab_section_not_found', __( 'That section no longer exists.', 'make-a-book' ) );
+	}
+
+	foreach ( mab_get_chapters_in_section( $section_id ) as $chapter_id ) {
+		delete_post_meta( $chapter_id, '_mab_section_id' );
+	}
+
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table with no WP API equivalent.
+	$wpdb->delete( mab_get_sections_table(), array( 'id' => absint( $section_id ) ), array( '%d' ) );
+
+	return true;
+}
+
+/**
+ * Get every chapter (any status) assigned to a section, for reassignment on delete.
+ *
+ * @param int $section_id Section ID.
+ * @return int[] Chapter post IDs.
+ */
+function mab_get_chapters_in_section( $section_id ) {
+	$chapters = get_posts(
+		array(
+			'post_type'      => MAB_CHAPTER_POST_TYPE,
+			'post_status'    => array( 'publish', 'draft', 'pending', 'private', 'future' ),
+			'posts_per_page' => -1,
+			'fields'         => 'ids',
+			'meta_query'     => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Chapter-to-section relationship is stored as post meta.
+				array(
+					'key'   => '_mab_section_id',
+					'value' => absint( $section_id ),
+				),
+			),
+		)
+	);
+
+	return $chapters ? $chapters : array();
+}
+
+/**
+ * Persist a new order for a book's sections in one call.
+ *
+ * @param int   $book_id     Book post ID.
+ * @param int[] $ordered_ids Section IDs in the desired order. Must all belong to $book_id.
+ * @return bool|WP_Error True on success, WP_Error if a section does not belong to the book.
+ */
+function mab_reorder_sections( $book_id, $ordered_ids ) {
+	$existing = wp_list_pluck( mab_get_book_sections( $book_id ), 'id' );
+
+	foreach ( $ordered_ids as $section_id ) {
+		if ( ! in_array( (int) $section_id, array_map( 'intval', $existing ), true ) ) {
+			return new WP_Error( 'mab_section_mismatch', __( 'One of those sections does not belong to this book.', 'make-a-book' ) );
+		}
+	}
+
+	foreach ( array_values( $ordered_ids ) as $index => $section_id ) {
+		mab_update_section( $section_id, array( 'menu_order' => $index ) );
+	}
+
+	return true;
+}
+
+/**
+ * Delete every section belonging to a book.
+ *
+ * Used when a book is permanently (not trashed) deleted, so it does not
+ * leave orphaned section rows behind. Mirrors how WordPress itself only
+ * cascades post meta on hard delete, not trash.
+ *
+ * @param int $book_id Book post ID.
+ */
+function mab_delete_book_sections( $book_id ) {
+	global $wpdb;
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table with no WP API equivalent.
+	$wpdb->delete( mab_get_sections_table(), array( 'book_id' => absint( $book_id ) ), array( '%d' ) );
+}
+add_action( 'before_delete_post', 'mab_on_book_deleted' );
+
+/**
+ * Clean up a book's sections when the Book post itself is permanently deleted.
+ *
+ * @param int $post_id Post being deleted.
+ */
+function mab_on_book_deleted( $post_id ) {
+	if ( MAB_BOOK_POST_TYPE === get_post_type( $post_id ) ) {
+		mab_delete_book_sections( $post_id );
+	}
+}

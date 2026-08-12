@@ -1,0 +1,130 @@
+/**
+ * Admin app styling. Scoped under .mab-app; relies on wp-components' own
+ * styles (enqueued as a dependency, see admin/app.php) for buttons, cards,
+ * and form controls, so this file only covers layout.
+ */
+
+.mab-app {
+	margin-top: 1rem;
+	max-width: 960px;
+}
+
+.mab-app__header h1 {
+	font-size: 1.3rem;
+	margin: 0 0 1.5rem;
+}
+
+.mab-app__header a {
+	color: inherit;
+	text-decoration: none;
+}
+
+.mab-book-grid {
+	display: grid;
+	gap: 1rem;
+	grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+	margin-top: 1rem;
+}
+
+.mab-book-card__cover {
+	aspect-ratio: 3 / 2;
+	display: block;
+	object-fit: cover;
+	width: 100%;
+}
+
+.mab-book-card__title {
+	font-size: 1rem;
+	margin: 0 0 0.25rem;
+}
+
+.mab-book-card__status,
+.mab-chapter-row__status {
+	background: #f0f0f1;
+	border-radius: 3px;
+	color: #646970;
+	font-size: 0.75rem;
+	margin-left: 0.5em;
+	padding: 0.1em 0.5em;
+	text-transform: capitalize;
+}
+
+.mab-add-book__form,
+.mab-add-section,
+.mab-add-chapter {
+	align-items: flex-end;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.75rem;
+}
+
+.mab-add-book__form .components-base-control,
+.mab-add-section .components-base-control,
+.mab-add-chapter .components-base-control {
+	flex: 1 1 200px;
+	margin-bottom: 0;
+}
+
+.mab-book-detail__title-row {
+	align-items: center;
+	display: flex;
+	gap: 1rem;
+	justify-content: space-between;
+	margin-bottom: 1rem;
+}
+
+.mab-book-detail__title-row h2 {
+	margin: 0;
+}
+
+.mab-book-fields,
+.mab-sections-manager,
+.mab-chapters-manager {
+	margin-bottom: 1.5rem;
+}
+
+.mab-accent-field {
+	align-items: center;
+	display: flex;
+	gap: 0.6em;
+	margin: 1em 0;
+}
+
+.mab-section-row,
+.mab-chapter-row {
+	align-items: center;
+	border-bottom: 1px solid #e0e0e0;
+	display: flex;
+	gap: 0.75rem;
+	padding: 0.6rem 0;
+}
+
+.mab-section-row--editing {
+	align-items: flex-start;
+	flex-direction: column;
+}
+
+.mab-section-row__reorder,
+.mab-chapter-row__reorder {
+	display: flex;
+	flex-direction: column;
+}
+
+.mab-section-row__text,
+.mab-chapter-row__text {
+	flex: 1 1 auto;
+}
+
+.mab-section-row__text p.description {
+	margin: 0.2em 0 0;
+}
+
+.mab-section-row__actions,
+.mab-chapter-row__actions {
+	display: flex;
+	gap: 0.4rem;
+}
+
+.mab-chapter-row .components-select-control {
+	min-width: 180px;
+}

@@ -9,14 +9,17 @@ Publish multiple web-native ebooks in WordPress, with book landing pages, groupe
 | WordPress | 6.4 or newer |
 | PHP | 7.4 or newer |
 | Tested through | WordPress 6.8 |
-| Plugin version | 1.5.1 |
+| Plugin version | 2.0.0 |
 
-Make a Book adds two content types to WordPress: **Books** and **Chapters**. Each book can have its own cover, subtitle, accent color, introduction, and table of contents. Chapters can be grouped into named sections and receive automatic previous/next navigation.
+Make a Book adds two content types to WordPress: **Books** and **Chapters**. Each book can have its own cover, subtitle, accent color, introduction, and table of contents. Chapters can be grouped into sections — each with its own name and description — and receive automatic previous/next navigation.
+
+> [!NOTE]
+> The Abilities API integration (see [Abilities API](#abilities-api)) only registers on WordPress 6.9 and newer, since that API doesn't exist on older versions. Everything else in this plugin works on the minimum WordPress 6.4 listed above.
 
 ## Features
 
 - Publish any number of books.
-- Organize chapters into named sections.
+- Organize chapters into sections, each with its own name and optional description shown in the table of contents.
 - Control chapter order.
 - Display a book library at `/books/` or with a shortcode.
 - Use responsive book and chapter templates with theme-compatible headers and footers.
@@ -27,20 +30,19 @@ Make a Book adds two content types to WordPress: **Books** and **Chapters**. Eac
 - Provide accessible skip links, landmarks, focus indicators, and reduced-motion support.
 - Style code blocks, tables, and reusable note or warning callouts for comfortable technical reading.
 - Add a **Code Snippet** block for formatted, copyable code examples with an optional caption and language label.
-- See every chapter attached to a book, and jump straight to adding the next one, right from the Book editor.
-- Filter the Chapters list by book, and get the next chapter order number suggested automatically.
+- A single **Make a Book** admin page lists every book, and lets you manage a book's sections and chapters — adding, reordering, and reassigning them — in one place, without the classic post-type screens' back-and-forth. See [The admin app](#the-admin-app).
 - Typography inherits the active theme's fonts and heading sizes, so the reader looks like a native part of the site instead of a bundled font stack.
-- Books, Chapters, and Settings are grouped under one **Make a Book** admin menu.
 - A Settings page lets you turn the reader's color-mode toggle on or off, and edit or remove the library page's heading text and each book's table-of-contents heading.
 - Built-in usage instructions in the Book and Chapter screens' native WordPress "Help" tab — no separate documentation page to hunt for.
+- Registers with the WordPress [Abilities API](#abilities-api) (WordPress 6.9+) so AI agents and automation tools can discover and use the plugin's book/chapter/section operations in a standardized, permission-checked way.
 
 ## Installation
 
 1. Download the plugin ZIP.
 2. In WordPress, go to **Plugins → Add New → Upload Plugin**.
 3. Upload the ZIP and activate **Make a Book**.
-4. Go to **Make a Book → Add New** and publish your first book.
-5. Go to **Make a Book → Chapters → Add New**, add the chapter content, assign it to the book, and publish it.
+4. Go to **Make a Book** in the admin sidebar and select **Add Book**.
+5. Open the new book, add a chapter from its detail screen, then follow the **Edit content →** link to write it in the block editor.
 6. Open the book's **View** link, visit `/books/`, or add `[make_a_book]` to a page.
 
 You can also install the plugin manually by copying the `make-a-book` directory to `/wp-content/plugins/` and activating it from the **Plugins** screen.
@@ -48,7 +50,17 @@ You can also install the plugin manually by copying the `make-a-book` directory 
 > [!TIP]
 > If a book URL returns a 404 after activation, go to **Settings → Permalinks** and click **Save Changes** once.
 
-Books, Chapters, and Settings all live under one **Make a Book** entry in the admin sidebar.
+The admin app and Settings both live under one **Make a Book** entry in the admin sidebar.
+
+## The admin app
+
+**Make a Book → Books & Chapters** is a single-page app (built with the same `@wordpress/components` used throughout the block editor, so it looks and feels native) for organizing your library:
+
+- The books list shows every book with its cover and status, and a quick "Add Book" field.
+- Opening a book shows its subtitle and accent color, its sections (add, rename, describe, reorder, delete), and every chapter (add, reassign to a section, reorder, move to Trash).
+- "Edit content, cover & excerpt →" opens the book or chapter in the normal block editor — the app manages structure, not the writing itself.
+
+The classic Book and Chapter list/edit screens still exist (a "Chapter Details" panel in the block editor's own sidebar mirrors the same book/section/order fields), so nothing about how content is written has changed — only where you go to organize the library.
 
 ## Settings
 
@@ -65,39 +77,30 @@ Clearing a text field removes that line from the page entirely rather than falli
 
 Books provide the landing page and table of contents for a publication.
 
-1. Go to **Make a Book → Add New**.
-2. Enter the book title.
-3. Add an excerpt. It appears in the book hero, library cards, and structured data. When omitted, WordPress may generate one from the main content.
-4. Add an optional introduction or front matter in the main editor. It appears between the book hero and table of contents.
-5. In **Book Details**, enter an optional subtitle and choose an accent color.
-6. Set a featured image to use as the book cover.
-7. Choose the author and publish the book.
+1. Go to **Make a Book**, and use **Add Book** to create one with a title.
+2. Open the new book and follow **Edit content, cover & excerpt →** to write the introduction, set a featured image (used as the cover), and add an excerpt in the normal block editor. The excerpt appears in the book hero, library cards, and structured data; when omitted, WordPress may generate one from the main content.
+3. Back on the book's admin-app page, fill in an optional subtitle and choose an accent color.
+4. Choose the author and publish the book from the block editor.
 
 The table of contents is built from all published Chapters assigned to the book. Draft and private chapters are not displayed publicly.
 
 ## Adding and organizing chapters
 
-The fastest way to add a chapter is from the Book itself: open the Book, and in **Book Details** use the **"+ Add chapter to this book"** link. It opens a new Chapter screen with the Book and the next chapter number already filled in.
+Open a book in **Make a Book → Books & Chapters** to see its sections and chapters together. Use **+ Add chapter** to create one (optionally into a section right away) — it opens in the block editor as a draft, ready to write.
 
-1. Go to **Make a Book → Chapters → Add New**.
-2. Use the title for the chapter name and the main editor for the complete chapter content. You can use normal blocks, headings, images, links, lists, tables, code, and shortcodes.
-3. Add an optional excerpt. It appears beneath the chapter title, in the table of contents, and in structured data.
-4. Add an optional featured image. It appears below the chapter header.
-5. In **Chapter Details**, select the parent Book.
-6. Enter an optional **Section name**, such as `Getting Started` or `Part II`.
-7. Enter a non-negative whole number in **Chapter number / order**.
-8. Publish the chapter.
+1. Use the title for the chapter name and the main editor for the complete chapter content. You can use normal blocks, headings, images, links, lists, tables, code, and shortcodes.
+2. Add an optional excerpt. It appears beneath the chapter title, in the table of contents, and in structured data.
+3. Add an optional featured image. It appears below the chapter header.
+4. Publish the chapter.
 
-Chapters with exactly the same section name are grouped together. Chapters without a section appear under the default **Chapters** heading.
+Sections are their own thing, not just a text label: create one from the book's admin-app page with a name (such as `Getting Started` or `Part II`) and an optional description, which appears under the heading in the table of contents. Assign a chapter to a section — or move it between sections — from the same page, or from the "Chapter Details" panel in the chapter's own block-editor sidebar. Chapters left unassigned appear under the default **Chapters** heading.
 
-Chapter order runs from the lowest number to the highest. Publication date breaks ties, but unique order values are recommended. Changing a chapter's order or parent book updates the table of contents and previous/next navigation automatically.
+Chapter order runs from the lowest number to the highest and controls both the table of contents and previous/next navigation; reorder chapters with the up/down controls on the book's admin-app page. Publication date breaks ties if two chapters ever share a number.
 
 > [!IMPORTANT]
 > A chapter must be published and assigned to a Book to participate in that book's table of contents and reading navigation.
 
-If you change the Book selected on a Chapter, the **Chapter number / order** field automatically fills with a suggested next number for that book. Typing your own value always takes priority — the suggestion never overwrites a number you entered yourself.
-
-The **Chapters** admin list can be filtered by Book using the dropdown above the list table, so it's easy to review one book's chapters in order without scanning the whole library.
+Deleting a section never deletes its chapters — they simply become unassigned and fall back to the default **Chapters** heading.
 
 ## The Code Snippet block
 
@@ -257,13 +260,18 @@ When editing templates:
 | Book archive and single base | `/books/` |
 | Chapter base | `/book-chapter/` |
 | Chapter parent-book metadata | `_mab_book_id` |
-| Chapter section metadata | `_mab_section` |
+| Chapter section metadata | `_mab_section_id` (points to a row in the `mab_sections` table) |
 | Chapter order metadata | `_mab_order` |
 | Book subtitle metadata | `_mab_subtitle` |
 | Book accent metadata | `_mab_accent` |
+| Sections table | `{$wpdb->prefix}mab_sections` (`id`, `book_id`, `name`, `description`, `menu_order`) |
 | Library shortcode | `[make_a_book]` |
 
-Books and Chapters support the block editor, revisions, and the WordPress REST API. Books also support author selection. Use standard WordPress APIs when reading or writing metadata, and validate that `_mab_book_id` points to a Book.
+Books and Chapters support the block editor, revisions, and the WordPress REST API — including reading and writing `_mab_subtitle`, `_mab_accent`, `_mab_book_id`, `_mab_order`, and `_mab_section_id` through the standard `/wp/v2/mab_book` and `/wp/v2/mab_chapter` endpoints. Books also support author selection. Sections have their own small REST namespace, `make-a-book/v1` (see `admin/rest/`), since they live in a custom table rather than post meta. Use standard WordPress APIs when reading or writing metadata, and validate that `_mab_book_id` points to a Book and `_mab_section_id` points to a section belonging to that same book.
+
+## Abilities API
+
+As of 2.0.0, the plugin registers a `make-a-book` category and a handful of abilities with WordPress's [Abilities API](https://developer.wordpress.org/apis/abilities-api/) (introduced in WordPress 6.9): `make-a-book/list-books`, `make-a-book/get-book-overview`, `make-a-book/create-section`, `make-a-book/create-chapter`, and `make-a-book/delete-section`. Each one is a thin, permission-checked, schema-validated wrapper around the same functions the admin app and REST controllers already call — see `includes/abilities.php`. This lets AI agents, MCP servers, and other automation discover and use the plugin's core operations without any bespoke integration. Registration is skipped automatically (not an error) on WordPress versions before 6.9, where the Abilities API doesn't exist.
 
 ## Frequently asked questions
 
@@ -282,13 +290,19 @@ Yes. Add `[make_a_book]` to a Shortcode block. Use the optional `limit` attribut
 <details>
 <summary><strong>Why is a chapter missing from the table of contents?</strong></summary>
 
-Confirm that the chapter is published and has the correct Book selected in **Chapter Details**. Only published chapters assigned to that book are listed.
+Confirm that the chapter is published and has the correct Book selected — check the "Chapter Details" panel in the block editor, or the chapter's row on the book's admin-app page. Only published chapters assigned to that book are listed.
 </details>
 
 <details>
 <summary><strong>How do I change chapter order?</strong></summary>
 
-Edit each Chapter and set **Chapter number / order** in the **Chapter Details** panel. Use unique whole numbers for the clearest sequence.
+Use the up/down controls on the book's admin-app page, or set **Chapter number / order** directly in the "Chapter Details" panel in the block editor.
+</details>
+
+<details>
+<summary><strong>What happens to a section's chapters if I delete the section?</strong></summary>
+
+They are not deleted or unpublished. They simply become unassigned and fall back to the default "Chapters" heading in that book's table of contents.
 </details>
 
 <details>
@@ -319,22 +333,24 @@ No. Direct changes will be lost during an update. Put CSS in a child theme or su
 
 Back up the site before updating WordPress, a theme, or any plugin. Custom changes should live in a child theme or site-specific plugin so Make a Book updates cannot overwrite them.
 
-Uninstalling Make a Book intentionally retains all user-authored Books, Chapters, and their metadata. This protects published content from accidental deletion. Remove retained content manually only after making a backup and confirming it is no longer needed.
+Uninstalling Make a Book intentionally retains all user-authored Books, Chapters, and their metadata. This protects published content from accidental deletion. The `mab_sections` database table is the one exception — it holds only organizational metadata (section names/descriptions), not primary content, and is dropped entirely on uninstall; chapters that were assigned to a section simply become unassigned. Remove retained Book/Chapter content manually only after making a backup and confirming it is no longer needed.
 
 ## Development
 
 The plugin is organized by responsibility:
 
 ```text
-admin/       Editor panels, metadata persistence, admin UX, and dashboard columns
-assets/      Scoped visitor-facing and admin-only CSS and JavaScript
-blocks/      The Code Snippet Gutenberg block (make-a-book/code-snippet)
-includes/    Content type registration and the shared chapter/order queries
-public/      Template routing, conditional assets, structured data, and shortcodes
-templates/   Visitor-facing presentation files
+admin/          Admin-only PHP: the app page, list-table columns, Settings, Help tabs
+admin/app/src/  React admin-app and block-editor-sidebar source (built with @wordpress/scripts)
+admin/rest/     Custom REST controllers for sections and bulk chapter reordering
+assets/         Scoped visitor-facing CSS and JavaScript
+blocks/         The Code Snippet Gutenberg block (make-a-book/code-snippet)
+includes/       Content types, meta registration, the sections table, upgrades, Abilities API
+public/         Template routing, conditional assets, structured data, and shortcodes
+templates/      Visitor-facing presentation files
 ```
 
-Every file is function-based: hooks are registered at the top level when the file loads, and every public entry point is a global `mab_*()` function rather than a class method.
+Every PHP file is function-based: hooks are registered at the top level when the file loads, and every public entry point is a global `mab_*()` function rather than a class method. `admin/app/src/` is the one part of the plugin written against a build step (JSX, `@wordpress/components`) rather than plain `window.wp.*` globals — a real admin single-page app is impractical to hand-write the way the small Code Snippet block editor script is, so this is a deliberate, scoped exception, not a change to the rest of the plugin's conventions.
 
 Start the local WordPress environment with:
 
@@ -343,7 +359,27 @@ npm install
 npm run env:start
 ```
 
+Build (or watch) the admin app after changing anything under `admin/app/src/`:
+
+```bash
+npm run build   # one-off production build, output to admin/app/build/
+npm run start   # rebuilds on every save, for active development
+```
+
+`admin/app/build/` is gitignored, like every other generated artifact in this repository, but is expected to exist (run `npm run build` first) in any copy of the plugin actually installed in WordPress — the admin app and block-editor sidebar panel silently don't load without it.
+
 ## Changelog
+
+### 2.0.0
+
+- **Breaking (internal data model):** chapter sections are no longer a free-text `_mab_section` meta value. They are now rows in a new `mab_sections` database table (`id`, `book_id`, `name`, `description`, `menu_order`), each with its own describable text shown in the table of contents, and chapters reference one via `_mab_section_id`. Existing sites migrate automatically and losslessly on the first request after updating (see `mab_migrate_sections_from_meta()` in `includes/upgrade.php`): every distinct `_mab_section` value per book becomes a section row, and every chapter that had it is repointed at the new row. The table is dropped on uninstall — see "Updating and uninstalling."
+- Added a new **Make a Book → Books & Chapters** admin app (a `@wordpress/components`-based single-page app) for browsing books and managing a book's sections and chapters — adding, reordering, reassigning, and removing — from one screen instead of several scattered post-type screens.
+- Added a block-editor sidebar panel ("Book Details" / "Chapter Details") that replaces the old `add_meta_box()` panels, so the same fields are still available when writing a chapter directly in the block editor.
+- The Book and Chapter post type list/edit screens no longer appear in the admin menu (`show_in_menu` is now `false`) — the admin app and Settings are the two Make a Book entries in the sidebar. The screens themselves are unchanged and still load normally when linked to directly.
+- Registered a `make-a-book` category and five abilities (list/get/create/delete operations on books, chapters, and sections) with WordPress's Abilities API (6.9+), making the plugin's core operations discoverable and callable by AI agents and automation tools. See [Abilities API](#abilities-api).
+- `_mab_subtitle`, `_mab_accent`, `_mab_book_id`, `_mab_order`, and `_mab_section_id` are now registered for the REST API (`register_post_meta()`), and a small `make-a-book/v1` REST namespace was added for sections and bulk chapter reordering — both power the admin app, and both are usable directly by other code.
+- Removed `admin/meta-boxes.php` and `admin/chapter-order.php` (superseded by the sidebar panel, REST meta fields, and the admin app's client-side order suggestions).
+- Adds a `@wordpress/scripts` build step for `admin/app/src/` only — see "Development." Every other PHP and JS file in the plugin is unchanged in that respect.
 
 ### 1.5.1
 

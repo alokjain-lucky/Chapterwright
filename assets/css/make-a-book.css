@@ -107,6 +107,7 @@
 .mab-toc-section { display: grid; gap: 2rem; grid-template-columns: minmax(170px, .35fr) 1fr; padding: 2rem 0; }
 .mab-toc-section + .mab-toc-section { border-top: 1px solid var(--mab-line); }
 .mab-toc-section h3 { font-size: 1.35rem; margin: .7rem 0; text-transform: uppercase; }
+.mab-toc-section__description { color: var(--mab-muted); font-size: .9rem; line-height: 1.5; margin: 0 0 .7rem; }
 .mab-toc-section ol { list-style: none; margin: 0; padding: 0; }
 .mab-toc-section li + li { border-top: 1px solid var(--mab-line); }
 .mab-toc-section a { align-items: center; display: grid; gap: 1rem; grid-template-columns: 1fr 2fr 2rem; padding: 1.1rem 0; text-decoration: none; }

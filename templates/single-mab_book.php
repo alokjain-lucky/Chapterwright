@@ -16,13 +16,53 @@ $book_id  = get_the_ID();
 $chapters = mab_get_chapters( $book_id );
 $subtitle = get_post_meta( $book_id, '_mab_subtitle', true );
 $accent   = get_post_meta( $book_id, '_mab_accent', true );
-$sections = array();
+
+// Build the table of contents as an ordered list of section groups, each
+// with its own optional description text (from the mab_sections table —
+// see includes/sections.php), plus a final unlabeled "Chapters" group for
+// any chapter that is not assigned to a section. A section with no
+// currently-visible chapters (e.g. all its chapters are still drafts) is
+// left out of the rendered list entirely rather than shown empty.
+$sections      = array();
+$index_by_id   = array();
+$section_rows  = mab_get_book_sections( $book_id );
+$unassigned    = array();
+
+foreach ( $section_rows as $row ) {
+	$index_by_id[ $row['id'] ] = count( $sections );
+	$sections[]                = array(
+		'name'        => $row['name'],
+		'description' => $row['description'],
+		'chapters'    => array(),
+	);
+}
 
 foreach ( $chapters as $chapter ) {
-	$section = get_post_meta( $chapter->ID, '_mab_section', true );
-	$section = $section ? $section : __( 'Chapters', 'make-a-book' );
-	$sections[ $section ][] = $chapter;
+	$section_id = absint( get_post_meta( $chapter->ID, '_mab_section_id', true ) );
+	if ( $section_id && isset( $index_by_id[ $section_id ] ) ) {
+		$sections[ $index_by_id[ $section_id ] ]['chapters'][] = $chapter;
+	} else {
+		$unassigned[] = $chapter;
+	}
 }
+
+if ( $unassigned ) {
+	$sections[] = array(
+		'name'        => __( 'Chapters', 'make-a-book' ),
+		'description' => '',
+		'chapters'    => $unassigned,
+	);
+}
+
+$sections = array_values(
+	array_filter(
+		$sections,
+		static function ( $section ) {
+			return ! empty( $section['chapters'] );
+		}
+	)
+);
+
 $toc_heading = mab_get_text( 'toc_heading' );
 ?>
 <a class="mab-skip-link" href="#mab-main-content"><?php esc_html_e( 'Skip to book content', 'make-a-book' ); ?></a>
@@ -60,11 +100,16 @@ $toc_heading = mab_get_text( 'toc_heading' );
 			<?php if ( $toc_heading ) : ?><h2 id="mab-toc-title"><?php echo esc_html( $toc_heading ); ?></h2><?php endif; ?>
 		</div>
 		<?php if ( $sections ) : ?>
-			<?php foreach ( $sections as $section_name => $section_chapters ) : ?>
+			<?php foreach ( $sections as $section ) : ?>
 				<div class="mab-toc-section">
-					<h3><?php echo esc_html( $section_name ); ?></h3>
-					<ol start="<?php echo esc_attr( (int) get_post_meta( $section_chapters[0]->ID, '_mab_order', true ) ); ?>">
-						<?php foreach ( $section_chapters as $chapter ) : ?>
+					<div class="mab-toc-section__heading">
+						<h3><?php echo esc_html( $section['name'] ); ?></h3>
+						<?php if ( $section['description'] ) : ?>
+							<p class="mab-toc-section__description"><?php echo esc_html( $section['description'] ); ?></p>
+						<?php endif; ?>
+					</div>
+					<ol start="<?php echo esc_attr( (int) get_post_meta( $section['chapters'][0]->ID, '_mab_order', true ) ); ?>">
+						<?php foreach ( $section['chapters'] as $chapter ) : ?>
 							<li>
 								<a href="<?php echo esc_url( get_permalink( $chapter ) ); ?>">
 									<span><?php echo esc_html( get_the_title( $chapter ) ); ?></span>

@@ -136,11 +136,12 @@ function mab_get_text( $key ) {
 }
 
 /**
- * Add the settings page under the Books menu.
+ * Add the settings page under the top-level "Make a Book" admin menu
+ * (registered in admin/app.php, alongside the Books & Chapters app page).
  */
 function mab_add_settings_page() {
 	add_submenu_page(
-		'edit.php?post_type=' . MAB_BOOK_POST_TYPE,
+		'make-a-book',
 		__( 'Make a Book Settings', 'make-a-book' ),
 		__( 'Settings', 'make-a-book' ),
 		'manage_options',

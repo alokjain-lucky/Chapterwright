@@ -1,15 +1,18 @@
 {
   "name": "make-a-book",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "private": true,
-  "description": "Local WordPress test environment for the Make a Book plugin.",
+  "description": "Local WordPress test environment and admin-app build for the Make a Book plugin.",
   "scripts": {
     "env:start": "wp-env start",
     "env:stop": "wp-env stop",
     "env:clean": "wp-env clean all",
-    "env:seed": "wp-env run cli wp eval-file wp-content/plugins/makeabook/tests/fixtures/seed-books.php"
+    "env:seed": "wp-env run cli wp eval-file wp-content/plugins/makeabook/tests/fixtures/seed-books.php",
+    "build": "wp-scripts build admin/app/src/index.js admin/app/src/editor-sidebar.js --output-path=admin/app/build",
+    "start": "wp-scripts start admin/app/src/index.js admin/app/src/editor-sidebar.js --output-path=admin/app/build"
   },
   "devDependencies": {
-    "@wordpress/env": "^11.5.0"
+    "@wordpress/env": "^11.5.0",
+    "@wordpress/scripts": "^30.0.0"
   }
 }

@@ -49,7 +49,7 @@ function mab_add_book_help_tabs( $screen ) {
 			'title'   => __( 'Overview', 'make-a-book' ),
 			'content' =>
 				'<p>' . esc_html__( 'A Book is the landing page and table of contents for one publication. It brings together a title, an optional cover image, a subtitle, an introduction, and every Chapter assigned to it.', 'make-a-book' ) . '</p>' .
-				'<p>' . esc_html__( 'To publish a book: add a title, write an optional introduction in the main editor, set a featured image to use as the cover, fill in the Book Details panel, and publish. The table of contents fills in automatically as you add and publish chapters for this book — there is nothing extra to configure.', 'make-a-book' ) . '</p>',
+				'<p>' . esc_html__( 'Most day-to-day work — adding chapters, grouping them into sections, and reordering — is faster from the Make a Book admin page (Books & Chapters) than from this screen. Use this screen for the book\'s actual content: title, introduction, cover image, and excerpt.', 'make-a-book' ) . '</p>',
 		)
 	);
 
@@ -63,7 +63,7 @@ function mab_add_book_help_tabs( $screen ) {
 				'<li>' . esc_html__( 'Subtitle — a short line shown under the book title on its landing page.', 'make-a-book' ) . '</li>' .
 				'<li>' . esc_html__( 'Accent color — used for links, the "Start reading" button, and other highlights on this book\'s pages.', 'make-a-book' ) . '</li>' .
 				'</ul>' .
-				'<p>' . esc_html__( 'Once the book has been saved at least once, this panel also lists every chapter already attached to it, in reading order, with a one-click link to add the next chapter — the new chapter opens with this book and the next chapter number already filled in.', 'make-a-book' ) . '</p>',
+				'<p>' . esc_html__( 'These same fields are also editable from the Make a Book admin page, alongside this book\'s sections and chapters.', 'make-a-book' ) . '</p>',
 		)
 	);
 
@@ -91,7 +91,7 @@ function mab_add_chapter_help_tabs( $screen ) {
 			'title'   => __( 'Overview', 'make-a-book' ),
 			'content' =>
 				'<p>' . esc_html__( 'A Chapter is one page of reading content that belongs to a Book. Write the chapter using normal blocks — headings, images, lists, tables, quotes, and code are all supported — the same as any other WordPress post.', 'make-a-book' ) . '</p>' .
-				'<p>' . esc_html__( 'A chapter must be published and assigned to a Book (in the Chapter Details panel) before it appears in that book\'s table of contents or reading navigation.', 'make-a-book' ) . '</p>',
+				'<p>' . esc_html__( 'A chapter must be published and assigned to a Book (in the Chapter Details panel, or from the Make a Book admin page) before it appears in that book\'s table of contents or reading navigation.', 'make-a-book' ) . '</p>',
 		)
 	);
 
@@ -103,10 +103,10 @@ function mab_add_chapter_help_tabs( $screen ) {
 				'<p>' . esc_html__( 'The Chapter Details panel controls how a chapter fits into its book:', 'make-a-book' ) . '</p>' .
 				'<ul>' .
 				'<li>' . esc_html__( 'Book — which book this chapter belongs to. Required.', 'make-a-book' ) . '</li>' .
-				'<li>' . esc_html__( 'Section name — an optional group label, such as "Getting Started" or "Part II". Chapters sharing the same section name are grouped together in the table of contents; chapters left blank appear under a default "Chapters" heading.', 'make-a-book' ) . '</li>' .
-				'<li>' . esc_html__( 'Chapter number / order — controls reading order, lowest to highest. When you change the Book dropdown, this field suggests the next available number for that book automatically — it never overwrites a number you\'ve typed yourself.', 'make-a-book' ) . '</li>' .
+				'<li>' . esc_html__( 'Section — an optional group, such as "Getting Started" or "Part II". Chapters assigned to the same section are grouped together, with the section\'s own text, in the table of contents; chapters left unassigned appear under a default "Chapters" heading.', 'make-a-book' ) . '</li>' .
+				'<li>' . esc_html__( 'Chapter number / order — controls reading order, lowest to highest.', 'make-a-book' ) . '</li>' .
 				'</ul>' .
-				'<p>' . esc_html__( 'The fastest way to add a chapter is usually from the Book editor itself, using its "+ Add chapter to this book" link — it opens a new chapter with the book and next order number already filled in.', 'make-a-book' ) . '</p>',
+				'<p>' . esc_html__( 'Sections themselves — creating them, writing their description text, and reordering them — are managed from the Make a Book admin page (Books & Chapters), not from this screen. That page is also the fastest way to add a new chapter to a book and reorder existing ones: open a book there to see every chapter and section together in one place.', 'make-a-book' ) . '</p>',
 		)
 	);
 
@@ -128,7 +128,8 @@ function mab_add_chapter_help_tabs( $screen ) {
 function mab_set_help_sidebar( $screen ) {
 	$screen->set_help_sidebar(
 		'<p><strong>' . esc_html__( 'For more information', 'make-a-book' ) . '</strong></p>' .
-		'<p><a href="' . esc_url( admin_url( 'edit.php?post_type=' . MAB_BOOK_POST_TYPE . '&page=make-a-book-settings' ) ) . '">' . esc_html__( 'Make a Book Settings', 'make-a-book' ) . '</a></p>' .
+		'<p><a href="' . esc_url( admin_url( 'admin.php?page=make-a-book-settings' ) ) . '">' . esc_html__( 'Make a Book Settings', 'make-a-book' ) . '</a></p>' .
+		'<p><a href="' . esc_url( admin_url( 'admin.php?page=make-a-book' ) ) . '">' . esc_html__( 'Make a Book: Books & Chapters', 'make-a-book' ) . '</a></p>' .
 		'<p><a href="' . esc_url( 'https://github.com/alokjain-lucky/Make-a-Book' ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Plugin documentation on GitHub', 'make-a-book' ) . '</a></p>'
 	);
 }

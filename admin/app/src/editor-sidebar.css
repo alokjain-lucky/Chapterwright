@@ -1,0 +1,10 @@
+/**
+ * Minimal styling for the Book/Chapter Details sidebar panel fields.
+ */
+
+.mab-accent-field {
+	align-items: center;
+	display: flex;
+	gap: 0.6em;
+	margin: 1em 0;
+}
