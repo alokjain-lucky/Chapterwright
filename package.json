@@ -9,7 +9,8 @@
     "env:clean": "wp-env clean all",
     "env:seed": "wp-env run cli wp eval-file wp-content/plugins/makeabook/tests/fixtures/seed-books.php",
     "build": "wp-scripts build admin/app/src/index.js admin/app/src/editor-sidebar.js --output-path=admin/app/build",
-    "start": "wp-scripts start admin/app/src/index.js admin/app/src/editor-sidebar.js --output-path=admin/app/build"
+    "start": "wp-scripts start admin/app/src/index.js admin/app/src/editor-sidebar.js --output-path=admin/app/build",
+    "test:php": "wp-env run tests-cli --env-cwd=wp-content/plugins/makeabook phpunit"
   },
   "devDependencies": {
     "@wordpress/env": "^11.5.0",

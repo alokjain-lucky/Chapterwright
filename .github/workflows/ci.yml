@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  phpcs:
+    name: PHP coding standards
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+          tools: composer
+          coverage: none
+
+      - run: composer install --no-progress --prefer-dist
+
+      - run: composer lint
+
+  build:
+    name: Build admin app
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run build
+
+  phpunit:
+    name: PHP unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      # wp-env spins up WordPress and a dedicated test-database container
+      # (Docker, already available on this runner) and provisions the WP
+      # core PHPUnit test library — see .wp-env.json's testsPort.
+      - run: npx wp-env start
+
+      - run: npm run test:php

@@ -387,6 +387,18 @@ npm run start   # rebuilds on every save, for active development
 
 Every string in the plugin (PHP and the admin app's JavaScript) is wrapped for translation under the `make-a-book` text domain, and `languages/make-a-book.pot` is the template a translator starts from. See `languages/README.md` for the full translator/maintainer workflow, including how to compile a `.po` into the `.mo` and per-script `.json` files WordPress actually loads.
 
+### Coding standards and tests
+
+```bash
+composer install
+composer lint        # WordPress Coding Standards, via phpcs.xml.dist
+
+npm run env:start    # if not already running
+npm run test:php     # PHPUnit, via a dedicated wp-env test database
+```
+
+Both run automatically on every push and pull request via GitHub Actions (`.github/workflows/ci.yml`), alongside `npm run build`. None of `composer.json`, `phpcs.xml.dist`, `phpunit.xml.dist`, `tests/`, or `.github/` ship in the release zip — they're development-only.
+
 ## Changelog
 
 The three most recent releases are below. See [CHANGELOG.md](CHANGELOG.md) for the full history back to 1.0.0.

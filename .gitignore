@@ -21,6 +21,7 @@ admin/app/build/
 
 # Installed development dependencies.
 node_modules/
+vendor/
 
 # Generated packages, reports, caches, and logs.
 make-a-book.zip

@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<ruleset name="Make a Book">
+	<description>Coding standards for the Make a Book plugin.</description>
+
+	<file>.</file>
+
+	<!-- Only check PHP files. -->
+	<arg name="extensions" value="php"/>
+
+	<!-- Show progress and use colors. -->
+	<arg value="ps"/>
+	<arg name="colors"/>
+
+	<!-- Directories and files this ruleset should not touch. -->
+	<exclude-pattern>/node_modules/*</exclude-pattern>
+	<exclude-pattern>/vendor/*</exclude-pattern>
+	<exclude-pattern>/admin/app/build/*</exclude-pattern>
+	<exclude-pattern>/languages/*</exclude-pattern>
+	<exclude-pattern>/tests/fixtures/*</exclude-pattern>
+	<exclude-pattern>*.min.js</exclude-pattern>
+
+	<!-- Minimum supported PHP version, from the plugin header's "Requires PHP". -->
+	<config name="testVersion" value="7.4-"/>
+
+	<!-- Full WordPress-Extra ruleset (coding conventions + a large chunk of
+	     WordPress.org plugin-review-style checks), plus WordPress-Docs for
+	     docblock formatting, plus PHPCompatibilityWP to flag anything that
+	     would not run on the plugin's declared minimum PHP version. -->
+	<rule ref="WordPress-Extra"/>
+	<rule ref="WordPress-Docs"/>
+	<rule ref="PHPCompatibilityWP"/>
+
+	<!-- The plugin's text domain, for WordPress.I18n sniffs (checks every
+	     translation function call uses this exact domain — see the 2.1.0
+	     i18n work and languages/make-a-book.pot). -->
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array">
+				<element value="make-a-book"/>
+			</property>
+		</properties>
+	</rule>
+
+	<!-- mab_* function names are already prefixed consistently; this sniff
+	     mainly guards against a stray unprefixed global function/constant
+	     being introduced by accident. -->
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+		<properties>
+			<property name="prefixes" type="array">
+				<element value="mab_"/>
+				<element value="MAB_"/>
+				<element value="MAKE_A_BOOK_"/>
+				<element value="Make_A_Book"/>
+			</property>
+		</properties>
+	</rule>
+</ruleset>
