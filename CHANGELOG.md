@@ -2,6 +2,10 @@
 
 All notable changes to Make a Book. See [README.md](README.md#changelog) for the most recent entries — this file is the full history.
 
+### 2.2.1
+
+- Fixed the **Books & Chapters** admin menu item disappearing after updating to 2.2.0, leaving only **Settings** visible. Root cause: `mab_maybe_upgrade()` (which calls `mab_add_capabilities_to_roles()`) ran on the `plugins_loaded` hook, but Books/Chapters only register as post types on `init` — which always fires after `plugins_loaded`. `get_post_type_object()` returned `null` at that point, so the capability grant silently did nothing, while `mab_db_version` still advanced to `2.2.0` as if it had succeeded, meaning the block would never run again on that site. Fixed by moving the upgrade hook to `init` priority 20 (after `mab_register_post_types()`'s default priority 10), and adding a `2.2.1` version gate that re-runs the grant once to repair any site that already hit the bug — no manual action needed, it self-heals on the next page load.
+
 ### 2.2.0
 
 - Books and Chapters now register their own `capability_type` (`mab_book`/`mab_books`, `mab_chapter`/`mab_chapters`, both with `map_meta_cap => true`) instead of the generic `post`/`posts` capabilities every custom post type gets by default. `mab_add_capabilities_to_roles()` grants Administrator, Editor, Author, and Contributor exactly the access they already had under the old generic behavior (mirroring WordPress's own default role grants for the `post` type), so this is a no-op for every existing site unless it deliberately creates a new, narrower role. Runs on activation and, for sites updating in place, on the next request via `mab_maybe_upgrade()`. Uninstalling removes every granted capability from every role, including custom ones. See "Capabilities and roles" in README.md.
