@@ -69,6 +69,14 @@
 	max-width: 640px;
 }
 
+.mab-panel--danger {
+	border: 1px solid #f0b7b7;
+}
+
+.mab-panel--danger .components-card__header {
+	background: #fcf0f1;
+}
+
 .mab-field-row {
 	margin-bottom: 16px;
 	max-width: 480px;
@@ -140,6 +148,15 @@
 	display: grid;
 	gap: var(--mab-app-gap);
 	grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+
+.mab-books-list__trash-link {
+	margin-top: var(--mab-app-gap);
+}
+
+.mab-books-list__trash-link a {
+	color: #646970;
+	font-size: 13px;
 }
 
 .mab-book-card {

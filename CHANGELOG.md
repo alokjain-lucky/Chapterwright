@@ -2,6 +2,10 @@
 
 All notable changes to Make a Book. See [README.md](README.md#changelog) for the most recent entries — this file is the full history.
 
+### 2.3.0
+
+- Added the ability to delete a book from the admin app: a "Trash" button on each book card in **Books & Chapters** (`books-list.js`), and a "Danger zone" panel with a "Move book to Trash" action on a book's own detail page (`book-detail.js`). Both call the existing `trashBook()` (`api.js`), which was defined back in 2.0.0 but never actually wired to any button. Trashing a book only moves the `mab_book` post to trash (a plain `DELETE` without `force`) — it does not cascade to the book's sections or chapters, matching how `mab_delete_book_sections()` is documented to only run on permanent delete, not trash. A "View trashed books →" link on the books list opens WordPress's native Trash list for the post type (`edit.php?post_type=mab_book&post_status=trash`), where a book can be restored or permanently deleted — the admin app does not reimplement that screen. Sections and chapters already had delete/trash actions since 2.0.0; this was the one remaining gap.
+
 ### 2.2.1
 
 - Fixed the **Books & Chapters** admin menu item disappearing after updating to 2.2.0, leaving only **Settings** visible. Root cause: `mab_maybe_upgrade()` (which calls `mab_add_capabilities_to_roles()`) ran on the `plugins_loaded` hook, but Books/Chapters only register as post types on `init` — which always fires after `plugins_loaded`. `get_post_type_object()` returned `null` at that point, so the capability grant silently did nothing, while `mab_db_version` still advanced to `2.2.0` as if it had succeeded, meaning the block would never run again on that site. Fixed by moving the upgrade hook to `init` priority 20 (after `mab_register_post_types()`'s default priority 10), and adding a `2.2.1` version gate that re-runs the grant once to repair any site that already hit the bug — no manual action needed, it self-heals on the next page load.

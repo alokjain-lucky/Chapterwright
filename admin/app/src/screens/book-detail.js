@@ -25,6 +25,7 @@ import {
 import {
 	getBook,
 	updateBook,
+	trashBook,
 	getBookChapters,
 	getSections,
 	createSection,
@@ -44,6 +45,7 @@ export default function BookDetail( { bookId } ) {
 	const [ chapters, setChapters ] = useState( [] );
 	const [ error, setError ] = useState( '' );
 	const [ notice, setNotice ] = useState( '' );
+	const [ trashing, setTrashing ] = useState( false );
 
 	const load = useCallback( () => {
 		setError( '' );
@@ -76,6 +78,23 @@ export default function BookDetail( { bookId } ) {
 
 	const adminUrl = window.makeABookApp?.adminUrl || '/wp-admin/';
 	const editLink = ( postId ) => `${ adminUrl }post.php?post=${ postId }&action=edit`;
+
+	const handleTrashBook = () => {
+		const title = book.title?.raw || book.title?.rendered || '';
+		// eslint-disable-next-line no-alert
+		if ( ! window.confirm( sprintf( __( 'Move "%s" to the trash? Its chapters and sections are not affected — restore the book from Trash to bring it back.', 'make-a-book' ), title ) ) ) {
+			return;
+		}
+		setTrashing( true );
+		trashBook( book.id )
+			.then( () => {
+				window.location.hash = '#/books';
+			} )
+			.catch( ( err ) => {
+				setTrashing( false );
+				setError( err.message || __( 'The book could not be trashed.', 'make-a-book' ) );
+			} );
+	};
 
 	return (
 		<div className="mab-book-detail">
@@ -124,6 +143,27 @@ export default function BookDetail( { bookId } ) {
 				onError={ setError }
 				editLink={ editLink }
 			/>
+
+			<Card className="mab-panel mab-panel--danger">
+				<CardHeader>
+					<h3 className="mab-panel__title">{ __( 'Danger zone', 'make-a-book' ) }</h3>
+				</CardHeader>
+				<CardBody>
+					<p className="mab-panel__description">
+						{ __( 'Moves the book to the trash. Its chapters and sections are kept and unaffected — restore the book from Trash to bring it back, or permanently delete it from there.', 'make-a-book' ) }
+					</p>
+					<Button
+						__next40pxDefaultSize
+						variant="secondary"
+						isDestructive
+						isBusy={ trashing }
+						disabled={ trashing }
+						onClick={ handleTrashBook }
+					>
+						{ __( 'Move book to Trash', 'make-a-book' ) }
+					</Button>
+				</CardBody>
+			</Card>
 		</div>
 	);
 }

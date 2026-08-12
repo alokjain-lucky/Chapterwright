@@ -9,7 +9,7 @@ Publish multiple web-native ebooks in WordPress, with book landing pages, groupe
 | WordPress | 6.4 or newer |
 | PHP | 7.4 or newer |
 | Tested through | WordPress 6.8 |
-| Plugin version | 2.2.1 |
+| Plugin version | 2.3.0 |
 
 Make a Book adds two content types to WordPress: **Books** and **Chapters**. Each book can have its own cover, subtitle, accent color, introduction, and table of contents. Chapters can be grouped into sections — each with its own name and description — and receive automatic previous/next navigation.
 
@@ -403,6 +403,10 @@ Both run automatically on every push and pull request via GitHub Actions (`.gith
 
 The three most recent releases are below. See [CHANGELOG.md](CHANGELOG.md) for the full history back to 1.0.0.
 
+### 2.3.0
+
+- Added the ability to delete a book from the admin app: a "Trash" button on each book card in **Books & Chapters**, and a "Danger zone" panel on a book's own page. Trashing a book does not affect its chapters or sections — they're kept, and come back automatically if you restore the book from Trash. A "View trashed books →" link opens WordPress's native Trash list, where a book can be restored or permanently deleted. Sections and chapters already had delete/trash actions; this closes the one remaining gap.
+
 ### 2.2.1
 
 - Fixed the **Books & Chapters** admin menu item disappearing (only **Settings** remained visible). 2.2.0's capability grant ran on the `plugins_loaded` hook, before Books/Chapters register on `init` — so it silently granted nothing, while still marking itself as done. Fixed by moving the grant to run after post types register, plus a one-time re-run so any site that already hit this gets its access back automatically on the next page load; no action needed.
@@ -410,10 +414,6 @@ The three most recent releases are below. See [CHANGELOG.md](CHANGELOG.md) for t
 ### 2.2.0
 
 - Books and Chapters now have their own WordPress capabilities (`edit_mab_book`, `edit_mab_books`, etc.) instead of reusing the generic capabilities every post type gets by default, making it possible to create a role scoped to just this plugin. Existing sites are unaffected: Administrator, Editor, Author, and Contributor are automatically granted exactly the access they already had. See "Capabilities and roles."
-
-### 2.1.0
-
-- Added working translation infrastructure: `load_plugin_textdomain()` now actually loads a `.mo` file if one exists (it never did before, despite every string already being wrapped in `__()`), and `languages/make-a-book.pot` is a ready-to-translate template covering every PHP and admin-app string. See "Translations" below.
 
 ## License
 

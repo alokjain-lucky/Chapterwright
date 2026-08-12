@@ -5,7 +5,7 @@
 import { useState, useEffect, useCallback } from '@wordpress/element';
 import { __, sprintf, _n } from '@wordpress/i18n';
 import { Button, Card, CardBody, CardFooter, TextControl, Spinner, Notice } from '@wordpress/components';
-import { getBooks, createBook } from '../api';
+import { getBooks, createBook, trashBook } from '../api';
 
 export default function BooksList() {
 	const [ books, setBooks ] = useState( null );
@@ -21,6 +21,17 @@ export default function BooksList() {
 	}, [] );
 
 	useEffect( loadBooks, [ loadBooks ] );
+
+	const handleTrash = ( book ) => {
+		const title = book.title?.raw || book.title?.rendered || '';
+		// eslint-disable-next-line no-alert
+		if ( ! window.confirm( sprintf( __( 'Move "%s" to the trash? Its chapters and sections are not affected — restore the book from Trash to bring it back.', 'make-a-book' ), title ) ) ) {
+			return;
+		}
+		trashBook( book.id )
+			.then( loadBooks )
+			.catch( ( err ) => setError( err.message || __( 'The book could not be trashed.', 'make-a-book' ) ) );
+	};
 
 	const handleCreate = ( event ) => {
 		event.preventDefault();
@@ -124,10 +135,19 @@ export default function BooksList() {
 									<Button __next40pxDefaultSize variant="secondary" href={ `#/books/${ book.id }` }>
 										{ __( 'Manage', 'make-a-book' ) }
 									</Button>
+									<Button __next40pxDefaultSize variant="tertiary" isDestructive onClick={ () => handleTrash( book ) }>
+										{ __( 'Trash', 'make-a-book' ) }
+									</Button>
 								</CardFooter>
 							</Card>
 						) ) }
 					</div>
+
+					<p className="mab-books-list__trash-link">
+						<a href={ `${ window.makeABookApp?.adminUrl || '/wp-admin/' }edit.php?post_type=mab_book&post_status=trash` }>
+							{ __( 'View trashed books →', 'make-a-book' ) }
+						</a>
+					</p>
 				</>
 			) }
 		</div>
