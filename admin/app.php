@@ -43,12 +43,20 @@ add_action( 'enqueue_block_editor_assets', 'mab_enqueue_editor_sidebar_assets' )
  *
  * Must run before admin/settings.php's mab_add_settings_page() — see the
  * priority comment above.
+ *
+ * Gated on 'edit_mab_books' rather than the generic 'edit_posts' — as of
+ * 2.2.0, Books/Chapters have their own capability_type (see
+ * mab_register_post_types()), so this now only requires access to this
+ * plugin's own content, not blanket access to every post on the site. Every
+ * default role that could see this menu before 2.2.0 still can —
+ * mab_add_capabilities_to_roles() grants it identically — this only changes
+ * what's *possible* for a newly created, narrowly scoped role.
  */
 function mab_add_app_page() {
 	add_menu_page(
 		__( 'Make a Book', 'make-a-book' ),
 		__( 'Make a Book', 'make-a-book' ),
-		'edit_posts',
+		'edit_mab_books',
 		'make-a-book',
 		'mab_render_app_page',
 		'dashicons-book-alt',
@@ -59,7 +67,7 @@ function mab_add_app_page() {
 		'make-a-book',
 		__( 'Make a Book', 'make-a-book' ),
 		__( 'Books & Chapters', 'make-a-book' ),
-		'edit_posts',
+		'edit_mab_books',
 		'make-a-book',
 		'mab_render_app_page'
 	);

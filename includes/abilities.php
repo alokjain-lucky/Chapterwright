@@ -73,7 +73,9 @@ function mab_register_abilities() {
 			),
 			'execute_callback'    => 'mab_ability_list_books',
 			'permission_callback' => function () {
-				return current_user_can( 'edit_posts' );
+				// 'edit_mab_books' as of 2.2.0 — Books have their own
+				// capability_type now, see mab_register_post_types().
+				return current_user_can( 'edit_mab_books' );
 			},
 			'meta'                => array(
 				'annotations' => array( 'readonly' => true ),
@@ -163,7 +165,10 @@ function mab_register_abilities() {
 			'output_schema'       => array( 'type' => 'object' ),
 			'execute_callback'    => 'mab_ability_create_chapter',
 			'permission_callback' => function ( $input ) {
-				return current_user_can( 'edit_post', (int) $input['book_id'] ) && current_user_can( 'edit_posts' );
+				// Must be able to edit the target book, and to create a new
+				// Chapter at all — 'edit_mab_chapters' as of 2.2.0, replacing
+				// the generic 'edit_posts' (see mab_register_post_types()).
+				return current_user_can( 'edit_post', (int) $input['book_id'] ) && current_user_can( 'edit_mab_chapters' );
 			},
 			'meta'                => array(
 				'annotations' => array(

@@ -9,7 +9,7 @@ Publish multiple web-native ebooks in WordPress, with book landing pages, groupe
 | WordPress | 6.4 or newer |
 | PHP | 7.4 or newer |
 | Tested through | WordPress 6.8 |
-| Plugin version | 2.1.0 |
+| Plugin version | 2.2.0 |
 
 Make a Book adds two content types to WordPress: **Books** and **Chapters**. Each book can have its own cover, subtitle, accent color, introduction, and table of contents. Chapters can be grouped into sections — each with its own name and description — and receive automatic previous/next navigation.
 
@@ -269,6 +269,20 @@ When editing templates:
 
 Books and Chapters support the block editor, revisions, and the WordPress REST API — including reading and writing `_mab_subtitle`, `_mab_accent`, `_mab_book_id`, `_mab_order`, and `_mab_section_id` through the standard `/wp/v2/mab_book` and `/wp/v2/mab_chapter` endpoints. Books also support author selection. Sections have their own small REST namespace, `make-a-book/v1` (see `admin/rest/`), since they live in a custom table rather than post meta. Use standard WordPress APIs when reading or writing metadata, and validate that `_mab_book_id` points to a Book and `_mab_section_id` points to a section belonging to that same book.
 
+## Capabilities and roles
+
+As of 2.2.0, Books and Chapters have their own WordPress capabilities instead of reusing the generic `edit_posts`/`edit_others_posts`/etc. that every post type gets by default: `edit_mab_book`, `edit_mab_books`, `edit_others_mab_books`, `publish_mab_books`, `delete_mab_book`, and so on (Chapters follow the same pattern with `mab_chapter`/`mab_chapters`). On activation, and automatically the first time an existing site loads the plugin after updating, Administrator, Editor, Author, and Contributor all get exactly the capabilities they'd have had anyway under the old generic behavior — this is a no-op for every site unless you deliberately do something with it.
+
+What it enables: a role that can manage Books and Chapters without also being able to edit every other post type on the site. For example, in `wp-admin` via a role-management plugin, or with WP-CLI:
+
+```bash
+wp role create book_editor "Book Editor"
+wp cap add book_editor edit_mab_books edit_others_mab_books publish_mab_books read_private_mab_books
+wp cap add book_editor edit_mab_chapters edit_others_mab_chapters publish_mab_chapters read_private_mab_chapters
+```
+
+Uninstalling the plugin removes every `mab_book`/`mab_chapter` capability from every role, including custom ones — part of the clean sweep described under "Updating and uninstalling."
+
 ## Abilities API
 
 As of 2.0.0, the plugin registers a `make-a-book` category and a handful of abilities with WordPress's [Abilities API](https://developer.wordpress.org/apis/abilities-api/) (introduced in WordPress 6.9): `make-a-book/list-books`, `make-a-book/get-book-overview`, `make-a-book/create-section`, `make-a-book/create-chapter`, and `make-a-book/delete-section`. Each one is a thin, permission-checked, schema-validated wrapper around the same functions the admin app and REST controllers already call — see `includes/abilities.php`. This lets AI agents, MCP servers, and other automation discover and use the plugin's core operations without any bespoke integration. Registration is skipped automatically (not an error) on WordPress versions before 6.9, where the Abilities API doesn't exist.
@@ -334,7 +348,7 @@ No. Direct changes will be lost during an update. Put CSS in a child theme or su
 Back up the site before updating WordPress, a theme, or any plugin. Custom changes should live in a child theme or site-specific plugin so Make a Book updates cannot overwrite them.
 
 > [!WARNING]
-> Deleting Make a Book from the **Plugins** screen performs a full clean sweep: every Book and Chapter (and their metadata), the `mab_sections` table, and the plugin's saved settings are all permanently deleted. Nothing is kept. This is deliberate — back up the site first if you want to keep any of it. Deactivating the plugin (without deleting it) does **not** touch your data; only actually removing it from the Plugins screen does.
+> Deleting Make a Book from the **Plugins** screen performs a full clean sweep: every Book and Chapter (and their metadata), the `mab_sections` table, the Book/Chapter capabilities granted to any role (see "Capabilities and roles"), and the plugin's saved settings are all permanently deleted. Nothing is kept. This is deliberate — back up the site first if you want to keep any of it. Deactivating the plugin (without deleting it) does **not** touch your data; only actually removing it from the Plugins screen does.
 
 ## Development
 
@@ -377,6 +391,10 @@ Every string in the plugin (PHP and the admin app's JavaScript) is wrapped for t
 
 The three most recent releases are below. See [CHANGELOG.md](CHANGELOG.md) for the full history back to 1.0.0.
 
+### 2.2.0
+
+- Books and Chapters now have their own WordPress capabilities (`edit_mab_book`, `edit_mab_books`, etc.) instead of reusing the generic capabilities every post type gets by default, making it possible to create a role scoped to just this plugin. Existing sites are unaffected: Administrator, Editor, Author, and Contributor are automatically granted exactly the access they already had. See "Capabilities and roles."
+
 ### 2.1.0
 
 - Added working translation infrastructure: `load_plugin_textdomain()` now actually loads a `.mo` file if one exists (it never did before, despite every string already being wrapped in `__()`), and `languages/make-a-book.pot` is a ready-to-translate template covering every PHP and admin-app string. See "Translations" below.
@@ -384,15 +402,6 @@ The three most recent releases are below. See [CHANGELOG.md](CHANGELOG.md) for t
 ### 2.0.3
 
 - Added a line of helper text under the **Accent color** field (in both the admin app's Book details panel and the block-editor sidebar) explaining what it actually affects: links, hover states, blockquote/callout borders, and the reading-progress bar on the book's pages.
-
-### 2.0.2
-
-- Fixed the block-editor sidebar panel ("Book Details" / "Chapter Details") crashing on open, shown as "The 'make-a-book' plugin has encountered an error and cannot be rendered." `useEntityProp()` can return `undefined` for a post's `meta` object on the very first render, before the entity has finished loading, and the panel read `meta._mab_subtitle` (etc.) without guarding against that.
-- Renamed the book page's "Edit content, cover & excerpt →" button to the clearer "Open in Block Editor →", with a short explanation of what you'll find there underneath it.
-- **Uninstalling the plugin now performs a full clean sweep** instead of retaining content: every Book and Chapter (and their metadata), the `mab_sections` table, and the plugin's settings are all permanently deleted when you remove Make a Book from the Plugins screen. This replaces every earlier version's "retain content" behavior — see "Updating and uninstalling."
-- `_mab_subtitle`, `_mab_accent`, `_mab_book_id`, `_mab_order`, and `_mab_section_id` are now registered for the REST API (`register_post_meta()`), and a small `make-a-book/v1` REST namespace was added for sections and bulk chapter reordering — both power the admin app, and both are usable directly by other code.
-- Removed `admin/meta-boxes.php` and `admin/chapter-order.php` (superseded by the sidebar panel, REST meta fields, and the admin app's client-side order suggestions).
-- Adds a `@wordpress/scripts` build step for `admin/app/src/` only — see "Development." Every other PHP and JS file in the plugin is unchanged in that respect.
 
 ## License
 

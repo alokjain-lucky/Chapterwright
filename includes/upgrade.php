@@ -63,6 +63,18 @@ function mab_maybe_upgrade() {
 		mab_migrate_sections_from_meta();
 		update_option( 'mab_db_version', '2.0.0' );
 	}
+
+	if ( version_compare( $installed, '2.2.0', '<' ) ) {
+		// Books/Chapters moved off generic 'post' capabilities onto their own
+		// capability_type in 2.2.0 (see mab_register_post_types() in
+		// includes/content-types.php). New installs get this from
+		// mab_activate()'s own call; this covers every site that updates the
+		// plugin's files without deactivating/reactivating it, which is the
+		// common case and would otherwise silently strip existing users'
+		// access to Books and Chapters.
+		mab_add_capabilities_to_roles();
+		update_option( 'mab_db_version', '2.2.0' );
+	}
 }
 
 /**

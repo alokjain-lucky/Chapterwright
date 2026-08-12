@@ -2,6 +2,10 @@
 
 All notable changes to Make a Book. See [README.md](README.md#changelog) for the most recent entries — this file is the full history.
 
+### 2.2.0
+
+- Books and Chapters now register their own `capability_type` (`mab_book`/`mab_books`, `mab_chapter`/`mab_chapters`, both with `map_meta_cap => true`) instead of the generic `post`/`posts` capabilities every custom post type gets by default. `mab_add_capabilities_to_roles()` grants Administrator, Editor, Author, and Contributor exactly the access they already had under the old generic behavior (mirroring WordPress's own default role grants for the `post` type), so this is a no-op for every existing site unless it deliberately creates a new, narrower role. Runs on activation and, for sites updating in place, on the next request via `mab_maybe_upgrade()`. Uninstalling removes every granted capability from every role, including custom ones. See "Capabilities and roles" in README.md.
+
 ### 2.1.0
 
 - Added working translation infrastructure: `load_plugin_textdomain()` now actually loads a `.mo` file if one exists (it never did before, despite every string already being wrapped in `__()`), and `languages/make-a-book.pot` is a ready-to-translate template covering every PHP and admin-app string. See `languages/README.md` for the full translator/maintainer workflow, including generating the per-script `.json` files `wp_set_script_translations()` (already wired up since 2.0.0) needs for the admin app and editor sidebar.

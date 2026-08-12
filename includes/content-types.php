@@ -28,33 +28,98 @@ add_action( 'init', 'mab_register_meta_fields', 20 );
  * default so those screens still exist and work — the admin app and the
  * Gutenberg editor sidebar panel (admin/app/src/editor-sidebar.js) both
  * deep-link straight into post.php for writing a chapter's actual content.
+ *
+ * As of 2.2.0, both types register their own `capability_type` (`mab_book`/
+ * `mab_books`, `mab_chapter`/`mab_chapters`) with `map_meta_cap => true`,
+ * instead of defaulting to generic `post`/`posts` capabilities. This means
+ * "who can touch Books/Chapters" is no longer the same permission as "who
+ * can edit any post on the site" — a site can now create a role scoped to
+ * just this plugin. `mab_add_capabilities_to_roles()` below grants the
+ * default roles exactly the capabilities they already effectively had
+ * under the old generic-post behavior, so this change is a no-op for any
+ * existing site unless it deliberately creates a new role.
  */
 function mab_register_post_types() {
 	register_post_type(
 		MAB_BOOK_POST_TYPE,
 		array(
-			'labels'       => mab_book_labels(),
-			'public'       => true,
-			'has_archive'  => 'books',
-			'rewrite'      => array( 'slug' => 'books' ),
-			'show_in_menu' => false,
-			'show_in_rest' => true,
-			'supports'     => array( 'title', 'editor', 'excerpt', 'thumbnail', 'author', 'revisions' ),
+			'labels'          => mab_book_labels(),
+			'public'          => true,
+			'has_archive'     => 'books',
+			'rewrite'         => array( 'slug' => 'books' ),
+			'show_in_menu'    => false,
+			'show_in_rest'    => true,
+			'supports'        => array( 'title', 'editor', 'excerpt', 'thumbnail', 'author', 'revisions' ),
+			'capability_type' => array( 'mab_book', 'mab_books' ),
+			'map_meta_cap'    => true,
 		)
 	);
 
 	register_post_type(
 		MAB_CHAPTER_POST_TYPE,
 		array(
-			'labels'       => mab_chapter_labels(),
-			'public'       => true,
-			'has_archive'  => false,
-			'rewrite'      => array( 'slug' => 'book-chapter' ),
-			'show_in_menu' => false,
-			'show_in_rest' => true,
-			'supports'     => array( 'title', 'editor', 'excerpt', 'thumbnail', 'revisions' ),
+			'labels'          => mab_chapter_labels(),
+			'public'          => true,
+			'has_archive'     => false,
+			'rewrite'         => array( 'slug' => 'book-chapter' ),
+			'show_in_menu'    => false,
+			'show_in_rest'    => true,
+			'supports'        => array( 'title', 'editor', 'excerpt', 'thumbnail', 'revisions' ),
+			'capability_type' => array( 'mab_chapter', 'mab_chapters' ),
+			'map_meta_cap'    => true,
 		)
 	);
+}
+
+/**
+ * Grant the default WordPress roles the same practical access to Books and
+ * Chapters that they had before 2.2.0's move to a dedicated capability_type.
+ *
+ * WordPress never grants a custom post type's mapped capabilities to any
+ * role automatically — that has always been the theme/plugin's job, done
+ * once (typically on activation). The capability names granted per role
+ * below deliberately mirror exactly what WordPress's own `populate_roles()`
+ * grants each default role for the built-in `post` type (see
+ * wp-admin/includes/schema.php), so switching Books/Chapters onto their own
+ * capability_type does not change what an Administrator, Editor, Author, or
+ * Contributor could already do — it only makes it *possible* to grant a
+ * narrower, dedicated role that skips generic post access entirely.
+ *
+ * Safe to call repeatedly: WP_Role::add_cap() is idempotent.
+ */
+function mab_add_capabilities_to_roles() {
+	// Mirrors what WordPress itself grants each default role for the 'post'
+	// type — see populate_roles() in wp-admin/includes/schema.php. Only the
+	// plural/primitive capabilities are listed here; the singular ones
+	// (edit_mab_book, read_mab_book, delete_mab_book) are meta capabilities
+	// that map_meta_cap resolves per-post from these at request time and are
+	// never granted to a role directly.
+	$role_caps = array(
+		'administrator' => array( 'edit_posts', 'edit_others_posts', 'publish_posts', 'read_private_posts', 'delete_posts', 'delete_private_posts', 'delete_published_posts', 'delete_others_posts', 'edit_private_posts', 'edit_published_posts' ),
+		'editor'        => array( 'edit_posts', 'edit_others_posts', 'publish_posts', 'read_private_posts', 'delete_posts', 'delete_private_posts', 'delete_published_posts', 'delete_others_posts', 'edit_private_posts', 'edit_published_posts' ),
+		'author'        => array( 'edit_posts', 'publish_posts', 'delete_posts', 'delete_published_posts', 'edit_published_posts' ),
+		'contributor'   => array( 'edit_posts', 'delete_posts' ),
+	);
+
+	foreach ( array( MAB_BOOK_POST_TYPE, MAB_CHAPTER_POST_TYPE ) as $post_type ) {
+		$post_type_object = get_post_type_object( $post_type );
+		if ( ! $post_type_object ) {
+			continue;
+		}
+
+		foreach ( $role_caps as $role_name => $generic_caps ) {
+			$role = get_role( $role_name );
+			if ( ! $role ) {
+				continue;
+			}
+
+			foreach ( $generic_caps as $generic_cap ) {
+				if ( isset( $post_type_object->cap->$generic_cap ) ) {
+					$role->add_cap( $post_type_object->cap->$generic_cap );
+				}
+			}
+		}
+	}
 }
 
 /**
