@@ -9,7 +9,7 @@ Publish multiple web-native ebooks in WordPress, with book landing pages, groupe
 | WordPress | 6.4 or newer |
 | PHP | 7.4 or newer |
 | Tested through | WordPress 6.8 |
-| Plugin version | 2.0.1 |
+| Plugin version | 2.0.2 |
 
 Make a Book adds two content types to WordPress: **Books** and **Chapters**. Each book can have its own cover, subtitle, accent color, introduction, and table of contents. Chapters can be grouped into sections — each with its own name and description — and receive automatic previous/next navigation.
 
@@ -58,7 +58,7 @@ The admin app and Settings both live under one **Make a Book** entry in the admi
 
 - The books list shows every book with its cover and status, and a quick "Add Book" field.
 - Opening a book shows its subtitle and accent color, its sections (add, rename, describe, reorder, delete), and every chapter (add, reassign to a section, reorder, move to Trash).
-- "Edit content, cover & excerpt →" opens the book or chapter in the normal block editor — the app manages structure, not the writing itself.
+- "Open in Block Editor →" opens the book or chapter in the normal block editor — the app manages structure, not the writing itself.
 
 The classic Book and Chapter list/edit screens still exist (a "Chapter Details" panel in the block editor's own sidebar mirrors the same book/section/order fields), so nothing about how content is written has changed — only where you go to organize the library.
 
@@ -78,7 +78,7 @@ Clearing a text field removes that line from the page entirely rather than falli
 Books provide the landing page and table of contents for a publication.
 
 1. Go to **Make a Book**, and use **Add Book** to create one with a title.
-2. Open the new book and follow **Edit content, cover & excerpt →** to write the introduction, set a featured image (used as the cover), and add an excerpt in the normal block editor. The excerpt appears in the book hero, library cards, and structured data; when omitted, WordPress may generate one from the main content.
+2. Open the new book and follow **Open in Block Editor →** to write the introduction, set a featured image (used as the cover), and add an excerpt in the normal block editor. The excerpt appears in the book hero, library cards, and structured data; when omitted, WordPress may generate one from the main content.
 3. Back on the book's admin-app page, fill in an optional subtitle and choose an accent color.
 4. Choose the author and publish the book from the block editor.
 
@@ -370,6 +370,11 @@ npm run start   # rebuilds on every save, for active development
 `admin/app/build/` is gitignored, like every other generated artifact in this repository, but is expected to exist (run `npm run build` first) in any copy of the plugin actually installed in WordPress — the admin app and block-editor sidebar panel silently don't load without it.
 
 ## Changelog
+
+### 2.0.2
+
+- Fixed the block-editor sidebar panel ("Book Details" / "Chapter Details") crashing on open, shown as "The 'make-a-book' plugin has encountered an error and cannot be rendered." `useEntityProp()` can return `undefined` for a post's `meta` object on the very first render, before the entity has finished loading, and the panel read `meta._mab_subtitle` (etc.) without guarding against that.
+- Renamed the book page's "Edit content, cover & excerpt →" button to the clearer "Open in Block Editor →", with a short explanation of what you'll find there underneath it.
 
 ### 2.0.1
 

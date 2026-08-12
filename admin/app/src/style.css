@@ -233,7 +233,7 @@
 }
 
 .mab-book-detail__title-row {
-	align-items: center;
+	align-items: flex-start;
 	display: flex;
 	flex-wrap: wrap;
 	gap: 12px;
@@ -244,6 +244,13 @@
 .mab-book-detail__title {
 	font-size: 20px;
 	margin: 0;
+}
+
+.mab-book-detail__hint {
+	color: #646970;
+	font-size: 13px;
+	margin: 4px 0 0;
+	max-width: 480px;
 }
 
 /* Row lists (sections and chapters) --------------------------------------- */

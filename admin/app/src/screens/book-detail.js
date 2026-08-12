@@ -90,9 +90,14 @@ export default function BookDetail( { bookId } ) {
 			) }
 
 			<div className="mab-book-detail__title-row">
-				<h2 className="mab-book-detail__title">{ book.title?.raw || book.title?.rendered }</h2>
+				<div>
+					<h2 className="mab-book-detail__title">{ book.title?.raw || book.title?.rendered }</h2>
+					<p className="mab-book-detail__hint">
+						{ __( 'Write the introduction, set the cover image, and add an excerpt in the Block Editor.', 'make-a-book' ) }
+					</p>
+				</div>
 				<Button __next40pxDefaultSize variant="secondary" href={ editLink( book.id ) } target="_blank">
-					{ __( 'Edit content, cover & excerpt →', 'make-a-book' ) }
+					{ __( 'Open in Block Editor →', 'make-a-book' ) }
 				</Button>
 			</div>
 

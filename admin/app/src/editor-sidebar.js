@@ -24,7 +24,13 @@ const BOOK_POST_TYPE = 'mab_book';
 const CHAPTER_POST_TYPE = 'mab_chapter';
 
 function BookPanel() {
-	const [ meta, setMeta ] = useEntityProp( 'postType', BOOK_POST_TYPE, 'meta' );
+	// useEntityProp() can return `undefined` for `meta` on the very first
+	// render, before the post entity has finished resolving — reading
+	// meta._mab_subtitle below would throw and crash this whole sidebar
+	// (Gutenberg's plugin error boundary is what the user actually sees:
+	// "The 'make-a-book' plugin has encountered an error"). Defaulting to
+	// {} here is required, not just tidy.
+	const [ meta = {}, setMeta ] = useEntityProp( 'postType', BOOK_POST_TYPE, 'meta' );
 
 	return (
 		<PluginDocumentSettingPanel name="mab-book-details" title={ __( 'Book Details', 'make-a-book' ) }>
@@ -51,7 +57,8 @@ function BookPanel() {
 }
 
 function ChapterPanel() {
-	const [ meta, setMeta ] = useEntityProp( 'postType', CHAPTER_POST_TYPE, 'meta' );
+	// See the comment in BookPanel() above — same reason for the default.
+	const [ meta = {}, setMeta ] = useEntityProp( 'postType', CHAPTER_POST_TYPE, 'meta' );
 	const [ sections, setSections ] = useState( [] );
 
 	const { records: books } = useEntityRecords( 'postType', BOOK_POST_TYPE, {
