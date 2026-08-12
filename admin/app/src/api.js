@@ -96,27 +96,26 @@ export function trashBook( bookId ) {
 }
 
 /**
- * Fetch every chapter belonging to one book, in `_mab_order` order.
+ * Fetch every chapter belonging to one book, in `_mab_order` order,
+ * regardless of status (draft, pending, private, future, or published).
  *
- * There is no server-side "chapters for this book" filter on the core
- * endpoint, so this fetches every chapter the user can edit and filters
- * client-side — fine at the scale a book's chapter list actually reaches.
+ * Goes through the make-a-book/v1 namespace rather than the core
+ * `/wp/v2/mab_chapter` collection endpoint — this used to fetch every
+ * chapter the current user could edit (across every book) with `status` as
+ * an array and `context=edit`, then filter client-side by `_mab_book_id`.
+ * That relied on the collection endpoint's own status/context capability
+ * handling behaving as expected for every status in the array on every
+ * request, and a newly created draft chapter could silently fail to come
+ * back — no error, just missing from the list. The server-side route this
+ * calls instead wraps `mab_get_all_chapters_for_admin()`
+ * (includes/queries.php), the same plain `get_posts()` query already
+ * trusted elsewhere in this plugin.
  *
  * @param {number} bookId Book post ID.
- * @return {Promise<Array>} Chapter post objects belonging to this book.
+ * @return {Promise<Array>} Chapter post objects belonging to this book, already ordered.
  */
-export async function getBookChapters( bookId ) {
-	const chapters = await apiFetch( {
-		path: addQueryArgs( '/wp/v2/mab_chapter', {
-			per_page: 100,
-			status: EDITABLE_STATUSES,
-			context: 'edit',
-		} ),
-	} );
-
-	return chapters
-		.filter( ( chapter ) => Number( chapter.meta?._mab_book_id ) === Number( bookId ) )
-		.sort( ( a, b ) => Number( a.meta?._mab_order || 0 ) - Number( b.meta?._mab_order || 0 ) );
+export function getBookChapters( bookId ) {
+	return apiFetch( { path: `/make-a-book/v1/books/${ bookId }/chapters` } );
 }
 
 /**

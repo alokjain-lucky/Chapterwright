@@ -91,7 +91,7 @@ function mab_add_chapter_help_tabs( $screen ) {
 			'title'   => __( 'Overview', 'make-a-book' ),
 			'content' =>
 				'<p>' . esc_html__( 'A Chapter is one page of reading content that belongs to a Book. Write the chapter using normal blocks — headings, images, lists, tables, quotes, and code are all supported — the same as any other WordPress post.', 'make-a-book' ) . '</p>' .
-				'<p>' . esc_html__( 'A chapter must be published and assigned to a Book (in the Chapter Details panel, or from the Make a Book admin page) before it appears in that book\'s table of contents or reading navigation.', 'make-a-book' ) . '</p>',
+				'<p>' . esc_html__( 'A chapter is created already assigned to a Book from the Make a Book admin page, and must be published before it appears in that book\'s table of contents or reading navigation.', 'make-a-book' ) . '</p>',
 		)
 	);
 
@@ -100,13 +100,13 @@ function mab_add_chapter_help_tabs( $screen ) {
 			'id'      => 'mab-chapter-organizing',
 			'title'   => __( 'Organizing Chapters', 'make-a-book' ),
 			'content' =>
-				'<p>' . esc_html__( 'The Chapter Details panel controls how a chapter fits into its book:', 'make-a-book' ) . '</p>' .
+				'<p>' . esc_html__( 'The Chapter Details panel shows how this chapter currently fits into its book — which Book, which Section (if any), and its reading order — for reference, not as editable fields:', 'make-a-book' ) . '</p>' .
 				'<ul>' .
-				'<li>' . esc_html__( 'Book — which book this chapter belongs to. Required.', 'make-a-book' ) . '</li>' .
+				'<li>' . esc_html__( 'Book — which book this chapter belongs to.', 'make-a-book' ) . '</li>' .
 				'<li>' . esc_html__( 'Section — an optional group, such as "Getting Started" or "Part II". Chapters assigned to the same section are grouped together, with the section\'s own text, in the table of contents; chapters left unassigned appear under a default "Chapters" heading.', 'make-a-book' ) . '</li>' .
-				'<li>' . esc_html__( 'Chapter number / order — controls reading order, lowest to highest.', 'make-a-book' ) . '</li>' .
+				'<li>' . esc_html__( 'Order — controls reading order, lowest to highest.', 'make-a-book' ) . '</li>' .
 				'</ul>' .
-				'<p>' . esc_html__( 'Sections themselves — creating them, writing their description text, and reordering them — are managed from the Make a Book admin page (Books & Chapters), not from this screen. That page is also the fastest way to add a new chapter to a book and reorder existing ones: open a book there to see every chapter and section together in one place.', 'make-a-book' ) . '</p>',
+				'<p>' . esc_html__( 'Creating chapters, assigning them to a book and section, and reordering them are all done from the Make a Book admin page (Books & Chapters), not from this screen — open a book there to see every chapter and section together in one place. The Chapter Details panel links straight there.', 'make-a-book' ) . '</p>',
 		)
 	);
 

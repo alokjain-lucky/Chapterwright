@@ -455,11 +455,11 @@ function ChaptersManager( { bookId, sections, chapters, onChange, onError, editL
 			sectionId: newChapterSection ? Number( newChapterSection ) : undefined,
 			siblings: chapters,
 		} )
-			.then( ( chapter ) => {
+			.then( () => {
 				setTitle( '' );
+				setNewChapterSection( '' );
 				setBusy( false );
 				refresh();
-				window.open( editLink( chapter.id ), '_blank' );
 			} )
 			.catch( ( err ) => {
 				setBusy( false );
@@ -493,12 +493,8 @@ function ChaptersManager( { bookId, sections, chapters, onChange, onError, editL
 									<Button icon="arrow-down-alt2" label={ __( 'Move down', 'make-a-book' ) } size="small" disabled={ index === chapters.length - 1 } onClick={ () => move( index, 1 ) } />
 								</div>
 								<div className="mab-row__text">
-									<a href={ editLink( chapter.id ) } target="_blank" rel="noreferrer">
-										{ chapter.title?.raw || chapter.title?.rendered || __( '(no title)', 'make-a-book' ) }
-									</a>
-									{ 'publish' !== chapter.status && (
-										<span className={ `mab-status-pill mab-status-pill--${ chapter.status }` }>{ chapter.status }</span>
-									) }
+									<strong>{ chapter.title?.raw || chapter.title?.rendered || __( '(no title)', 'make-a-book' ) }</strong>
+									<span className={ `mab-status-pill mab-status-pill--${ chapter.status }` }>{ chapter.status }</span>
 								</div>
 								<SelectControl
 									__next40pxDefaultSize
@@ -510,6 +506,9 @@ function ChaptersManager( { bookId, sections, chapters, onChange, onError, editL
 									onChange={ ( value ) => changeSection( chapter.id, value ? Number( value ) : UNASSIGNED ) }
 								/>
 								<div className="mab-row__actions">
+									<Button variant="tertiary" size="small" href={ editLink( chapter.id ) } target="_blank">
+										{ __( 'Edit', 'make-a-book' ) }
+									</Button>
 									<Button variant="tertiary" isDestructive size="small" onClick={ () => removeChapter( chapter ) }>
 										{ __( 'Trash', 'make-a-book' ) }
 									</Button>

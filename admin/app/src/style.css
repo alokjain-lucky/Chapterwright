@@ -234,6 +234,11 @@
 	color: #50575e;
 }
 
+.mab-status-pill--publish {
+	background: #d8ecdc;
+	color: #1e6b30;
+}
+
 /* Book detail ------------------------------------------------------------ */
 
 .mab-back-link {
@@ -307,15 +312,6 @@
 
 .mab-row__text {
 	min-width: 0;
-}
-
-.mab-row__text a {
-	font-weight: 500;
-	text-decoration: none;
-}
-
-.mab-row__text a:hover {
-	color: #3858e9;
 }
 
 .mab-row__meta {

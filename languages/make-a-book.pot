@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Make a Book\n"
 "Report-Msgid-Bugs-To: https://github.com/alokjain-lucky/Make-a-Book/issues\n"
-"POT-Creation-Date: 2026-08-12 09:59+0000\n"
+"POT-Creation-Date: 2026-08-12 10:09+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -25,52 +25,56 @@ msgstr ""
 msgid "Manage every book’s sections and chapters in one place."
 msgstr ""
 
-#: admin/app/src/editor-sidebar.js:36 admin/help.php:59
+#: admin/app/src/editor-sidebar.js:44 admin/help.php:59
 msgid "Book Details"
 msgstr ""
 
-#: admin/app/src/editor-sidebar.js:38 admin/app/src/screens/book-detail.js:198
+#: admin/app/src/editor-sidebar.js:46 admin/app/src/screens/book-detail.js:198
 msgid "Subtitle"
 msgstr ""
 
-#: admin/app/src/editor-sidebar.js:45 admin/app/src/screens/book-detail.js:208
+#: admin/app/src/editor-sidebar.js:53 admin/app/src/screens/book-detail.js:208
 msgid "Accent color"
 msgstr ""
 
-#: admin/app/src/editor-sidebar.js:46 admin/app/src/screens/book-detail.js:209
+#: admin/app/src/editor-sidebar.js:54 admin/app/src/screens/book-detail.js:209
 msgid "Colors links, hover states, blockquote/callout borders, and the reading-progress bar on this book’s pages."
 msgstr ""
 
-#: admin/app/src/editor-sidebar.js:57
+#: admin/app/src/editor-sidebar.js:65
 msgid "Manage this book's sections and chapter order from the Make a Book admin page."
 msgstr ""
 
-#: admin/app/src/editor-sidebar.js:88
-msgid "Select a book"
-msgstr ""
-
-#: admin/app/src/editor-sidebar.js:93
-msgid "No section"
-msgstr ""
-
-#: admin/app/src/editor-sidebar.js:98
+#: admin/app/src/editor-sidebar.js:108
 msgid "Chapter Details"
 msgstr ""
 
-#: admin/app/src/editor-sidebar.js:100 admin/list-table.php:24 includes/content-types.php:234
-msgid "Book"
+#: admin/app/src/editor-sidebar.js:112
+msgid "Book:"
 msgstr ""
 
-#: admin/app/src/editor-sidebar.js:108 admin/app/src/screens/book-detail.js:506 admin/app/src/screens/book-detail.js:534
-msgid "Section"
+#: admin/app/src/editor-sidebar.js:113
+msgid "…"
 msgstr ""
 
-#: admin/app/src/editor-sidebar.js:115
-msgid "Chapter number / order"
+#: admin/app/src/editor-sidebar.js:116
+msgid "Section:"
 msgstr ""
 
-#: admin/app/src/editor-sidebar.js:122
-msgid "Add and reorder chapters more easily from the Make a Book admin page."
+#: admin/app/src/editor-sidebar.js:117
+msgid "None"
+msgstr ""
+
+#: admin/app/src/editor-sidebar.js:120
+msgid "Order:"
+msgstr ""
+
+#: admin/app/src/editor-sidebar.js:125
+msgid "Change book, section, or order →"
+msgstr ""
+
+#: admin/app/src/editor-sidebar.js:131
+msgid "This chapter isn't assigned to a book yet. Add it to a book from the Make a Book admin page."
 msgstr ""
 
 #: admin/app/src/screens/book-detail.js:58
@@ -165,7 +169,7 @@ msgstr ""
 msgid "Move down"
 msgstr ""
 
-#: admin/app/src/screens/book-detail.js:369
+#: admin/app/src/screens/book-detail.js:369 admin/app/src/screens/book-detail.js:510
 msgid "Edit"
 msgstr ""
 
@@ -205,23 +209,27 @@ msgstr ""
 msgid "No chapters yet. Add the first one below."
 msgstr ""
 
-#: admin/app/src/screens/book-detail.js:497 admin/app/src/screens/books-list.js:127
+#: admin/app/src/screens/book-detail.js:496 admin/app/src/screens/books-list.js:127
 msgid "(no title)"
 msgstr ""
 
-#: admin/app/src/screens/book-detail.js:514 admin/app/src/screens/books-list.js:139
+#: admin/app/src/screens/book-detail.js:502 admin/app/src/screens/book-detail.js:533
+msgid "Section"
+msgstr ""
+
+#: admin/app/src/screens/book-detail.js:513 admin/app/src/screens/books-list.js:139
 msgid "Trash"
 msgstr ""
 
-#: admin/app/src/screens/book-detail.js:526
+#: admin/app/src/screens/book-detail.js:525
 msgid "New chapter title"
 msgstr ""
 
-#: admin/app/src/screens/book-detail.js:528
+#: admin/app/src/screens/book-detail.js:527
 msgid "New chapter title…"
 msgstr ""
 
-#: admin/app/src/screens/book-detail.js:547
+#: admin/app/src/screens/book-detail.js:546
 msgid "+ Add chapter"
 msgstr ""
 
@@ -308,7 +316,7 @@ msgid "A Chapter is one page of reading content that belongs to a Book. Write th
 msgstr ""
 
 #: admin/help.php:94
-msgid "A chapter must be published and assigned to a Book (in the Chapter Details panel, or from the Make a Book admin page) before it appears in that book's table of contents or reading navigation."
+msgid "A chapter is created already assigned to a Book from the Make a Book admin page, and must be published before it appears in that book's table of contents or reading navigation."
 msgstr ""
 
 #: admin/help.php:101
@@ -316,11 +324,11 @@ msgid "Organizing Chapters"
 msgstr ""
 
 #: admin/help.php:103
-msgid "The Chapter Details panel controls how a chapter fits into its book:"
+msgid "The Chapter Details panel shows how this chapter currently fits into its book — which Book, which Section (if any), and its reading order — for reference, not as editable fields:"
 msgstr ""
 
 #: admin/help.php:105
-msgid "Book — which book this chapter belongs to. Required."
+msgid "Book — which book this chapter belongs to."
 msgstr ""
 
 #: admin/help.php:106
@@ -328,11 +336,11 @@ msgid "Section — an optional group, such as \"Getting Started\" or \"Part II\"
 msgstr ""
 
 #: admin/help.php:107
-msgid "Chapter number / order — controls reading order, lowest to highest."
+msgid "Order — controls reading order, lowest to highest."
 msgstr ""
 
 #: admin/help.php:109
-msgid "Sections themselves — creating them, writing their description text, and reordering them — are managed from the Make a Book admin page (Books & Chapters), not from this screen. That page is also the fastest way to add a new chapter to a book and reorder existing ones: open a book there to see every chapter and section together in one place."
+msgid "Creating chapters, assigning them to a book and section, and reordering them are all done from the Make a Book admin page (Books & Chapters), not from this screen — open a book there to see every chapter and section together in one place. The Chapter Details panel links straight there."
 msgstr ""
 
 #: admin/help.php:116
@@ -359,6 +367,10 @@ msgstr ""
 msgid "Plugin documentation on GitHub"
 msgstr ""
 
+#: admin/list-table.php:24 includes/content-types.php:234
+msgid "Book"
+msgstr ""
+
 #: admin/list-table.php:25
 msgid "Order"
 msgstr ""
@@ -367,19 +379,19 @@ msgstr ""
 msgid "Filter chapters by book"
 msgstr ""
 
-#: admin/rest/chapters.php:69
+#: admin/rest/chapters.php:140
 msgid "One of those chapters does not exist."
 msgstr ""
 
-#: admin/rest/chapters.php:73
+#: admin/rest/chapters.php:144
 msgid "One of those chapters does not belong to this book."
 msgstr ""
 
-#: admin/rest/chapters.php:77
+#: admin/rest/chapters.php:148
 msgid "You are not allowed to reorder one of those chapters."
 msgstr ""
 
-#: admin/rest/chapters.php:83 includes/sections.php:251
+#: admin/rest/chapters.php:154 includes/sections.php:251
 msgid "One of those sections does not belong to this book."
 msgstr ""
 
