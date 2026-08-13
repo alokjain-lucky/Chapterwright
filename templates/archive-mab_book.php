@@ -18,13 +18,29 @@ $archive_heading    = mab_get_text( 'archive_heading' );
 $archive_subheading = mab_get_text( 'archive_subheading' );
 $has_header_text    = $archive_eyebrow || $archive_heading || $archive_subheading;
 ?>
-<main class="mab-page mab-archive">
+<a class="mab-skip-link" href="#mab-archive-content"><?php esc_html_e( 'Skip to book library', 'make-a-book' ); ?></a>
+<main id="mab-archive-content" class="mab-page mab-archive" tabindex="-1">
 	<?php if ( $has_header_text ) : ?>
 		<header class="mab-archive__header">
 			<?php if ( $archive_eyebrow ) : ?><p class="mab-eyebrow"><?php echo esc_html( $archive_eyebrow ); ?></p><?php endif; ?>
 			<?php if ( $archive_heading ) : ?><h1><?php echo esc_html( $archive_heading ); ?></h1><?php endif; ?>
 			<?php if ( $archive_subheading ) : ?><p><?php echo esc_html( $archive_subheading ); ?></p><?php endif; ?>
 		</header>
+	<?php endif; ?>
+	<?php if ( ! $archive_heading ) : ?>
+		<?php
+		/*
+		 * Clearing the "Heading" field in Settings is documented (see
+		 * README.md's Settings section) as the intended way to drop that
+		 * VISIBLE line — but that leaves the page with no <h1> at all,
+		 * which is a real gap for anyone navigating by heading (screen
+		 * readers, and some browser extensions/keyboard users rely on
+		 * exactly one clear top-level heading per page). A visually-hidden
+		 * heading preserves the "no visible line" outcome the setting
+		 * promises while still giving assistive tech something to land on.
+		 */
+		?>
+		<h1 class="mab-sr-only"><?php echo esc_html( post_type_archive_title( '', false ) ); ?></h1>
 	<?php endif; ?>
 	<?php include MAKE_A_BOOK_PATH . 'templates/book-grid.php'; ?>
 	<?php mab_render_credit( 'archive' ); ?>

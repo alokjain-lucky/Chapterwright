@@ -55,7 +55,20 @@ $current_chapter_id = isset( $current_chapter_id ) ? (int) $current_chapter_id :
 						<?php endif; ?>
 							<span class="mab-toc-row">
 								<span><?php echo esc_html( get_the_title( $chapter ) ); ?></span>
-								<b aria-hidden="true"><?php echo $is_draft ? esc_html__( 'Draft', 'make-a-book' ) : esc_html( get_post_meta( $chapter->ID, '_mab_order', true ) ); ?></b>
+								<?php
+								/*
+								 * aria-hidden only for the order number — it's purely
+								 * decorative/redundant with the chapter's position in
+								 * this <ol> (already conveyed to assistive tech via list
+								 * semantics). "Draft" is the opposite: it's the ONLY
+								 * signal that this row isn't a working link, so hiding
+								 * it here (as this element used to do unconditionally)
+								 * silently dropped that information for screen reader
+								 * users, who'd hear a normal-sounding chapter title with
+								 * no indication it wasn't actually available yet.
+								 */
+								?>
+								<b<?php echo $is_draft ? '' : ' aria-hidden="true"'; ?>><?php echo $is_draft ? esc_html__( 'Draft', 'make-a-book' ) : esc_html( get_post_meta( $chapter->ID, '_mab_order', true ) ); ?></b>
 							</span>
 							<?php if ( $show_toc_excerpt && ! $is_draft && get_the_excerpt( $chapter ) ) : ?>
 								<small><?php echo esc_html( get_the_excerpt( $chapter ) ); ?></small>

@@ -92,6 +92,23 @@
 
 .mab-skip-link { background: var(--mab-ink); color: var(--mab-surface); left: 1rem; padding: .75rem 1rem; position: fixed; top: 1rem; transform: translateY(-200%); z-index: 99999; }
 .mab-skip-link:focus { transform: translateY(0); }
+
+/* Standard visually-hidden-but-still-announced pattern (clip to 1px instead
+   of display:none/visibility:hidden, which assistive tech also ignores) —
+   used where a heading or label needs to exist for screen-reader heading
+   navigation without adding visible text (e.g. templates/archive-mab_book.php's
+   fallback <h1> when the site owner has cleared the visible heading text). */
+.mab-sr-only {
+	clip: rect(0, 0, 0, 0);
+	border: 0;
+	height: 1px;
+	margin: -1px;
+	overflow: hidden;
+	padding: 0;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
 .mab-page :focus-visible { outline: 3px solid var(--mab-accent, #f45d48); outline-offset: 4px; }
 .mab-display-controls { align-items: center; display: flex; gap: 1rem; justify-content: space-between; }
 .mab-back-link { align-items: center; color: var(--mab-muted); display: inline-flex; font-size: .8rem; font-weight: 700; gap: .4rem; text-decoration: none; }
@@ -117,6 +134,10 @@
 }
 .mab-page a { color: inherit; }
 .mab-eyebrow { color: var(--mab-muted); font-size: .72rem; font-weight: 750; letter-spacing: .16em; margin: 0 0 1rem; text-transform: uppercase; }
+/* Reading time sits next to the chapter number in the same eyebrow line —
+   lighter weight than "Chapter N" so it reads as secondary metadata rather
+   than competing with it, same muted color either way. */
+.mab-eyebrow__meta { font-weight: 400; letter-spacing: .08em; }
 
 .mab-book-hero { align-items: center; display: grid; gap: clamp(2rem, 6vw, 5rem); grid-template-columns: minmax(0, 1.15fr) minmax(240px, .85fr); padding-block: 1.5rem 3rem; }
 .mab-book-hero h1 { margin: 0; }
@@ -335,6 +356,17 @@
 .mab-archive__header h1 { margin: 0 0 1rem; }
 .mab-archive__header p:not(.mab-eyebrow) { font-size: 1.1rem; line-height: 1.55; }
 .mab-book-grid { display: grid; gap: clamp(2rem, 5vw, 5rem); grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
+/* auto-fit's whole point is collapsing empty tracks so existing cards can
+   grow into the space they'd otherwise leave — exactly what's wanted with
+   enough books to fill a row, but with only one or two books on a wide
+   screen it left a single grid column (and therefore the card, and its
+   aspect-ratio cover image inside it) stretching to fill the ENTIRE row
+   width, growing a portrait-ratio cover to an oversized, almost full-bleed
+   image. Capping the card's own max-width puts a ceiling on that growth —
+   sized to roughly match how wide a card naturally ends up once there ARE
+   enough books to form multiple columns — while leaving auto-fit's
+   collapsing behavior alone for the normal multi-book case. */
+.mab-book-card { max-width: 420px; }
 .mab-book-card__cover { align-items: center; aspect-ratio: 4/5; background: var(--mab-accent); box-shadow: .8rem .8rem 0 var(--mab-ink); display: flex; justify-content: center; overflow: hidden; position: relative; text-decoration: none; }
 .mab-book-card__cover img { height: 100%; object-fit: cover; transition: transform .35s ease; width: 100%; }
 .mab-book-card__cover:hover img { transform: scale(1.025); }
@@ -364,6 +396,26 @@
 	.mab-reader__next .is-next { text-align: left; }
 	.mab-toc-jump { bottom: 1.25rem; font-size: 1.1rem; height: 2.85rem; right: 1.25rem; width: 2.85rem; }
 	.mab-toc-jump svg { height: 1.2rem; width: 1.2rem; }
+
+	/* The bar is a flex row with space-between everywhere else — fine for a
+	   short book title, but a long one (this plugin puts no length limit on
+	   book titles) wraps to two lines and collides with "X of Y" sitting at
+	   the same baseline on the right. Stack them instead: title first (its
+	   own line, however many lines it needs), then the "X of Y" counter and
+	   the color-mode toggle on their own row underneath. */
+	.mab-reader__bar { align-items: flex-start; flex-direction: column; gap: .6rem; }
+
+	/* .mab-page's own mobile padding two lines up (padding: 1.25rem, a
+	   shorthand that resets every side including top) replaces the desktop
+	   rule's fixed 80px top padding — sized for the site header at DESKTOP
+	   proportions — with a much smaller, purely decorative 1.25rem. Below
+	   782px the theme's own header can wrap onto two rows (title, then the
+	   nav/mode-toggle actions — see .site-header's flex-wrap in the theme's
+	   bento.css), so 1.25rem alone leaves almost no air between the header
+	   and the first "Chapter N" row. Give the reader view specifically more
+	   room; the book/archive pages don't have this same cramped-against-a-
+	   two-row-header problem at their own top padding. */
+	.mab-reader { padding-top: 3rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {

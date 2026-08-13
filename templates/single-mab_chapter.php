@@ -15,19 +15,11 @@ the_post();
 $chapter_id = get_the_ID();
 $book_id    = absint( get_post_meta( $chapter_id, '_mab_book_id', true ) );
 $chapters   = $book_id ? mab_get_chapters( $book_id ) : array();
-$current    = false;
-$previous   = null;
-$next       = null;
 $accent     = $book_id ? get_post_meta( $book_id, '_mab_accent', true ) : '';
-
-foreach ( $chapters as $index => $chapter ) {
-	if ( $chapter->ID === $chapter_id ) {
-		$current  = $index;
-		$previous = $index > 0 ? $chapters[ $index - 1 ] : null;
-		$next     = isset( $chapters[ $index + 1 ] ) ? $chapters[ $index + 1 ] : null;
-		break;
-	}
-}
+$neighbors  = mab_locate_chapter( $chapter_id, $chapters );
+$current    = $neighbors['index'];
+$previous   = $neighbors['previous'];
+$next       = $neighbors['next'];
 
 // For the table-of-contents drawer (below). See mab_build_toc_sections(),
 // includes/queries.php — the exact same grouping the book page itself uses,
@@ -58,8 +50,22 @@ $book_progress = ( false !== $current && count( $chapters ) > 0 )
 	: 0;
 ?>
 <a class="mab-skip-link" href="#mab-chapter-content"><?php esc_html_e( 'Skip to chapter content', 'make-a-book' ); ?></a>
-<div class="mab-reading-progress" aria-hidden="true"><span data-mab-reading-progress></span></div>
 <main id="mab-chapter-content" class="mab-page mab-reader" style="--mab-accent:<?php echo esc_attr( $accent ? $accent : '#f45d48' ); ?>;--mab-progress:<?php echo esc_attr( $book_progress ); ?>%;" tabindex="-1">
+	<?php
+	/*
+	 * Lives inside <main>, not as a sibling before it, specifically so it
+	 * inherits the --mab-accent custom property set on <main>'s own inline
+	 * style just above — position: fixed means moving it here changes
+	 * nothing about where it renders (still pinned to the very top of the
+	 * viewport via inset: 0 0 auto), only what CSS variables it can see.
+	 * Previously it sat before <main> in the markup, so --mab-accent was
+	 * undefined at its scope and .mab-reading-progress span's
+	 * `var(--mab-accent, #f45d48)` silently fell through to the hardcoded
+	 * fallback color on every single book, regardless of that book's own
+	 * accent setting.
+	 */
+	?>
+	<div class="mab-reading-progress" aria-hidden="true"><span data-mab-reading-progress></span></div>
 	<nav class="mab-reader__bar" aria-label="<?php esc_attr_e( 'Book navigation', 'make-a-book' ); ?>">
 		<?php if ( $book_id ) : ?>
 			<a class="mab-reader__book" href="<?php echo esc_url( get_permalink( $book_id ) ); ?>"><span aria-hidden="true">←</span> <?php echo esc_html( get_the_title( $book_id ) ); ?></a>
@@ -73,7 +79,22 @@ $book_progress = ( false !== $current && count( $chapters ) > 0 )
 	</nav>
 	<article class="mab-chapter">
 		<header class="mab-chapter__header">
-			<p class="mab-eyebrow"><?php echo esc_html( sprintf( __( 'Chapter %s', 'make-a-book' ), get_post_meta( $chapter_id, '_mab_order', true ) ) ); ?></p>
+			<p class="mab-eyebrow">
+				<?php echo esc_html( sprintf( __( 'Chapter %s', 'make-a-book' ), get_post_meta( $chapter_id, '_mab_order', true ) ) ); ?>
+				<span class="mab-eyebrow__meta" aria-hidden="true">·</span>
+				<span class="mab-eyebrow__meta">
+					<?php
+					$reading_minutes = mab_reading_time( $chapter_id );
+					echo esc_html(
+						sprintf(
+							/* translators: %d: estimated reading time in minutes. */
+							_n( '%d min read', '%d min read', $reading_minutes, 'make-a-book' ),
+							$reading_minutes
+						)
+					);
+					?>
+				</span>
+			</p>
 			<h1><?php the_title(); ?></h1>
 			<?php if ( has_excerpt() ) : ?><p class="mab-chapter__deck"><?php echo esc_html( get_the_excerpt() ); ?></p><?php endif; ?>
 		</header>

@@ -113,6 +113,39 @@ function mab_build_toc_sections( $book_id, $chapters ) {
 }
 
 /**
+ * Locate a chapter's position and immediate neighbors within an already-
+ * fetched, already-ordered list of chapters.
+ *
+ * Shared by templates/single-mab_chapter.php (previous/next navigation, the
+ * "X of Y" counter, and the book-completion progress bar all need to know
+ * where the current chapter sits) and mab_print_chapter_prefetch_links()
+ * (public/prefetch.php), which needs the same neighbors to hint the browser
+ * to fetch them ahead of a click. Pulled out specifically so those two call
+ * sites can't drift into finding "the next chapter" two different ways.
+ *
+ * @param int      $chapter_id Chapter post ID to locate.
+ * @param WP_Post[] $chapters  Chapters already fetched via mab_get_chapters( $book_id ), in reading order.
+ * @return array{index:int|false, previous:WP_Post|null, next:WP_Post|null} 'index' is false when $chapter_id isn't in $chapters (e.g. an orphaned or unpublished chapter).
+ */
+function mab_locate_chapter( $chapter_id, $chapters ) {
+	foreach ( $chapters as $index => $chapter ) {
+		if ( $chapter->ID === $chapter_id ) {
+			return array(
+				'index'    => $index,
+				'previous' => $index > 0 ? $chapters[ $index - 1 ] : null,
+				'next'     => isset( $chapters[ $index + 1 ] ) ? $chapters[ $index + 1 ] : null,
+			);
+		}
+	}
+
+	return array(
+		'index'    => false,
+		'previous' => null,
+		'next'     => null,
+	);
+}
+
+/**
  * Fetch chapters assigned to a book regardless of status, for admin screens.
  *
  * Used by the Book Details meta box so authors can see draft and pending

@@ -31,7 +31,60 @@
 		{ label: __( 'Plain text', 'make-a-book' ), value: 'text' }
 	];
 
+	/**
+	 * Reduces a block attribute that may be a plain string, a RichTextData
+	 * instance (core/paragraph and core/code's `content` attribute, depending
+	 * on WordPress version), or null/undefined, down to plain text — decoding
+	 * HTML entities and stripping any inline formatting tags along the way,
+	 * since a code block has no use for bold/italic/link markup. `<br>` is
+	 * converted to a real newline first so a paragraph written with
+	 * shift+enter line breaks doesn't collapse into one line.
+	 *
+	 * @param {*} value Attribute value to convert.
+	 * @return {string} Plain-text content.
+	 */
+	function toPlainText( value ) {
+		var html = ( null === value || 'undefined' === typeof value )
+			? ''
+			: ( 'function' === typeof value.toString ? value.toString() : String( value ) );
+		html = html.replace( /<br\s*\/?>/gi, '\n' );
+		var tmp = document.createElement( 'div' );
+		tmp.innerHTML = html;
+		return tmp.textContent || tmp.innerText || '';
+	}
+
 	blocks.registerBlockType( 'make-a-book/code-snippet', {
+		transforms: {
+			from: [
+				{
+					// The core Code block has no language metadata of its own —
+					// default to "Plain text" rather than guessing, the same as
+					// assets/js/code-highlight.js's guessLanguage() does for
+					// untagged code elsewhere in this plugin.
+					type: 'block',
+					blocks: [ 'core/code' ],
+					transform: function ( attributes ) {
+						return blocks.createBlock( 'make-a-book/code-snippet', {
+							code: toPlainText( attributes.content ),
+							language: 'text'
+						} );
+					}
+				},
+				{
+					// Lets an author who wrote (or pasted) code directly into a
+					// normal paragraph convert it after the fact, without having
+					// to retype it into a fresh Code Snippet block.
+					type: 'block',
+					blocks: [ 'core/paragraph' ],
+					transform: function ( attributes ) {
+						return blocks.createBlock( 'make-a-book/code-snippet', {
+							code: toPlainText( attributes.content ),
+							language: 'text'
+						} );
+					}
+				}
+			]
+		},
 		edit: function ( props ) {
 			var attributes = props.attributes;
 			var setAttributes = props.setAttributes;

@@ -9,7 +9,7 @@ Publish multiple web-native ebooks in WordPress, with book landing pages, groupe
 | WordPress | 6.4 or newer |
 | PHP | 7.4 or newer |
 | Tested through | WordPress 6.8 |
-| Plugin version | 2.3.2 |
+| Plugin version | 2.5.0 |
 
 Make a Book adds two content types to WordPress: **Books** and **Chapters**. Each book can have its own cover, subtitle, accent color, introduction, and table of contents. Chapters can be grouped into sections — each with its own name and description — and receive automatic previous/next navigation.
 
@@ -173,17 +173,9 @@ Example child-theme CSS:
 .mab-chapter__content {
     font-family: "Iowan Old Style", Georgia, serif;
 }
-
-.mab-book-hero {
-    border-radius: 0;
-}
-
-[data-mab-mode="dark"] .mab-chapter__content a {
-    color: #93c5fd;
-}
 ```
 
-Your theme may require more specific selectors for headings, links, figures, or content blocks. When overriding the defaults, preserve visible focus indicators, adequate color contrast, responsive layouts, and reduced-motion behavior. The reader intentionally uses a text column of approximately 680–720px for comfortable long-form reading.
+When overriding the defaults, preserve visible focus indicators, adequate color contrast, responsive layouts, and reduced-motion behavior. The reader intentionally uses a text column of approximately 680–720px for comfortable long-form reading.
 
 ## Template customization
 
@@ -205,12 +197,6 @@ Editing bundled templates directly is not update-safe. Copy the template into a 
 For example, copy templates to `your-child-theme/make-a-book/`, then add this to the child theme's `functions.php` or a site-specific plugin:
 
 ```php
-/**
- * Load child-theme templates for Make a Book views.
- *
- * @param string $template Selected WordPress template path.
- * @return string Filtered template path.
- */
 function mysite_make_a_book_templates( $template ) {
     $directory = get_stylesheet_directory() . '/make-a-book/';
 
@@ -229,27 +215,9 @@ function mysite_make_a_book_templates( $template ) {
 add_filter( 'template_include', 'mysite_make_a_book_templates', 99 );
 ```
 
-The plugin does not automatically discover template copies in a theme, so this filter is required.
+The plugin does not automatically discover template copies in a theme, so this filter is required. The bundled single and archive templates include the document-start and document-end partials — a copied template can keep using those or switch to the child theme's normal header and footer, as long as the final page ends up with only one of each.
 
-The bundled single and archive templates include the document-start and document-end partials. A copied template can continue using those plugin partials or use the child theme's normal header and footer. Ensure the final page contains only one document header and footer.
-
-### Customizing the book grid
-
-`book-grid.php` is included directly by the archive and shortcode templates and does not have a separate lookup filter.
-
-- To change the archive grid, copy and adapt `archive-mab_book.php` and the grid it includes.
-- To build a custom library elsewhere, query published `mab_book` posts from a child theme or site-specific plugin.
-
-### Template safety checklist
-
-When editing templates:
-
-- Escape attributes with `esc_attr()`.
-- Escape URLs with `esc_url()`.
-- Escape plain text with `esc_html()` at output time.
-- Render editor content through `the_content()` so blocks, shortcodes, and content filters continue to work.
-- Retain landmarks, navigation labels, skip links, visible focus, and keyboard behavior.
-- Keep customizations outside the plugin directory so updates remain safe.
+`book-grid.php` is included directly by the archive and shortcode templates and has no separate lookup filter — copy and adapt `archive-mab_book.php` (and the grid it includes) to change the archive layout, or query published `mab_book` posts directly for a custom library elsewhere.
 
 ## Content and URL reference
 
@@ -266,6 +234,8 @@ When editing templates:
 | Book accent metadata | `_mab_accent` |
 | Sections table | `{$wpdb->prefix}mab_sections` (`id`, `book_id`, `name`, `description`, `menu_order`) |
 | Library shortcode | `[make_a_book]` |
+
+The `/books/` and `/book-chapter/` bases are part of the stable public URL contract and aren't configurable through plugin settings.
 
 Books and Chapters support the block editor, revisions, and the WordPress REST API — including reading and writing `_mab_subtitle`, `_mab_accent`, `_mab_book_id`, `_mab_order`, and `_mab_section_id` through the standard `/wp/v2/mab_book` and `/wp/v2/mab_chapter` endpoints. Books also support author selection. Sections have their own small REST namespace, `make-a-book/v1` (see `admin/rest/`), since they live in a custom table rather than post meta. Use standard WordPress APIs when reading or writing metadata, and validate that `_mab_book_id` points to a Book and `_mab_section_id` points to a section belonging to that same book.
 
@@ -286,62 +256,6 @@ Uninstalling the plugin removes every `mab_book`/`mab_chapter` capability from e
 ## Abilities API
 
 As of 2.0.0, the plugin registers a `make-a-book` category and a handful of abilities with WordPress's [Abilities API](https://developer.wordpress.org/apis/abilities-api/) (introduced in WordPress 6.9): `make-a-book/list-books`, `make-a-book/get-book-overview`, `make-a-book/create-section`, `make-a-book/create-chapter`, and `make-a-book/delete-section`. Each one is a thin, permission-checked, schema-validated wrapper around the same functions the admin app and REST controllers already call — see `includes/abilities.php`. This lets AI agents, MCP servers, and other automation discover and use the plugin's core operations without any bespoke integration. Registration is skipped automatically (not an error) on WordPress versions before 6.9, where the Abilities API doesn't exist.
-
-## Frequently asked questions
-
-<details>
-<summary><strong>Can I publish more than one book?</strong></summary>
-
-Yes. Each chapter is assigned to a specific book, and the library supports any number of published books.
-</details>
-
-<details>
-<summary><strong>Can I show books on an existing page?</strong></summary>
-
-Yes. Add `[make_a_book]` to a Shortcode block. Use the optional `limit` attribute to control how many books appear.
-</details>
-
-<details>
-<summary><strong>Why is a chapter missing from the table of contents?</strong></summary>
-
-Confirm that the chapter is published and has the correct Book selected — check the "Chapter Details" panel in the block editor, or the chapter's row on the book's admin-app page. Only published chapters assigned to that book are listed.
-</details>
-
-<details>
-<summary><strong>How do I change chapter order?</strong></summary>
-
-Use the up/down controls on the book's admin-app page, or set **Chapter number / order** directly in the "Chapter Details" panel in the block editor.
-</details>
-
-<details>
-<summary><strong>What happens to a section's chapters if I delete the section?</strong></summary>
-
-They are not deleted or unpublished. They simply become unassigned and fall back to the default "Chapters" heading in that book's table of contents.
-</details>
-
-<details>
-<summary><strong>Can one chapter belong to more than one book?</strong></summary>
-
-No. A Chapter has one parent Book. Duplicate or adapt the chapter if separate books require independently ordered versions.
-</details>
-
-<details>
-<summary><strong>Can I change the URL bases?</strong></summary>
-
-The `/books/` and `/book-chapter/` bases are not configurable through plugin settings. They are part of the stable public URL contract. Changing them requires custom development plus redirects for existing links.
-</details>
-
-<details>
-<summary><strong>Will my theme's header and footer appear?</strong></summary>
-
-Yes. Bundled views support classic and block themes and render the active theme's header and footer. Highly customized themes may require a child-theme template override.
-</details>
-
-<details>
-<summary><strong>Is it safe to edit plugin templates or CSS directly?</strong></summary>
-
-No. Direct changes will be lost during an update. Put CSS in a child theme or supported custom-CSS area, and override routed templates using the documented `template_include` filter.
-</details>
 
 ## Updating and uninstalling
 
@@ -403,6 +317,17 @@ Both run automatically on every push and pull request via GitHub Actions (`.gith
 
 The three most recent releases are below. See [CHANGELOG.md](CHANGELOG.md) for the full history back to 1.0.0.
 
+### 2.5.0
+
+- Chapters now show an estimated reading time next to the chapter number.
+- The Code Snippet block can now be created by transforming an existing Code block or paragraph into it, via the block toolbar's "Transform to" option.
+- Fixed the mobile menu not opening on book, chapter, and library pages.
+- Fixed several mobile layout issues: the book title and chapter counter no longer collide, and there's more breathing room below the site header.
+- Fixed the reading-progress bar at the top of the page always using a default color instead of the book's own accent color.
+- Chapters now preload the previous/next chapter in the background for faster navigation between them.
+- Accessibility improvements: the library page now has a skip link and a heading for screen readers, and the table of contents properly announces draft chapters instead of silently hiding that information.
+- Fixed the book cover image on the library page growing oversized when there's only one or two books.
+
 ### 2.4.0
 
 - Fixed a bug where book and chapter details (accent color, subtitle, book/section assignment, and more) could silently fail to save. This is now fixed for good — any books or chapters affected before the fix will save correctly going forward.
@@ -417,10 +342,6 @@ The three most recent releases are below. See [CHANGELOG.md](CHANGELOG.md) for t
 - Fixed newly created chapters sometimes not appearing in a book's chapter list. The admin app used to fetch every chapter the user could edit and filter it client-side for this book; it now calls a dedicated endpoint that queries this book's chapters directly, the same trusted query used elsewhere in the plugin.
 - Chapter rows in **Books & Chapters** now match section rows: an always-visible status pill (draft, published, etc.), and explicit **Edit** / **Trash** buttons instead of the title itself being the only way in. Adding a chapter no longer opens the Block Editor in a new tab automatically — it's added to the list like a section is, and you open it to write when you're ready.
 - The block-editor sidebar's Chapter Details panel now shows the chapter's book, section, and order as read-only information with a link back to the admin app, instead of a second, editable copy of the same fields — reassigning those is book-wide work the admin app already does well, and an editable copy here looked like an empty "make a selection" control even when everything was already set correctly.
-
-### 2.3.1
-
-- Native Books/Chapters screens WordPress still generates automatically — the list-table (`edit.php?post_type=mab_book` / `mab_chapter`) and "Add New" (`post-new.php?post_type=...`) — now redirect to the **Books & Chapters** admin app instead of showing the old scattered interface. Writing a book or chapter's actual content (the Block Editor screen) and the native Trash list (for restoring or permanently deleting) are unaffected — both still work exactly as before.
 
 ## License
 
