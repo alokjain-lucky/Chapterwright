@@ -52,7 +52,10 @@ $current_chapter_id  = 0; // Nothing is "current" on the book's own page — see
 			<div class="mab-book-hero__description"><?php the_excerpt(); ?></div>
 			<?php // Coming-soon books never show "Start reading", even if a draft-preview chapter or two already exists — the flag means "not open yet," not "no chapters." ?>
 			<?php if ( $chapters && ! $coming_soon ) : ?>
-				<a class="mab-button" href="<?php echo esc_url( get_permalink( $chapters[0] ) ); ?>"><?php esc_html_e( 'Start reading', 'make-a-book' ); ?> <span aria-hidden="true">→</span></a>
+				<div class="mab-book-hero__actions">
+					<a class="mab-button mab-button--outline" href="#mab-toc"><?php esc_html_e( 'Table of contents', 'make-a-book' ); ?> <span aria-hidden="true">↓</span></a>
+					<a class="mab-button" href="<?php echo esc_url( get_permalink( $chapters[0] ) ); ?>"><?php esc_html_e( 'Start reading', 'make-a-book' ); ?> <span aria-hidden="true">→</span></a>
+				</div>
 			<?php endif; ?>
 		</div>
 		<?php if ( has_post_thumbnail() ) : ?>
@@ -64,7 +67,7 @@ $current_chapter_id  = 0; // Nothing is "current" on the book's own page — see
 		<section class="mab-book-intro"><?php the_content(); ?></section>
 	<?php endif; ?>
 
-	<section class="mab-toc" aria-labelledby="mab-toc-eyebrow<?php echo $toc_heading ? ' mab-toc-title' : ''; ?>">
+	<section class="mab-toc" id="mab-toc" aria-labelledby="mab-toc-eyebrow<?php echo $toc_heading ? ' mab-toc-title' : ''; ?>">
 		<div class="mab-toc__heading">
 			<p class="mab-eyebrow" id="mab-toc-eyebrow"><?php esc_html_e( 'Table of contents', 'make-a-book' ); ?></p>
 			<?php if ( $toc_heading ) : ?><h2 id="mab-toc-title"><?php echo esc_html( $toc_heading ); ?></h2><?php endif; ?>

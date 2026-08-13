@@ -54,7 +54,8 @@ $current_chapter_id = isset( $current_chapter_id ) ? (int) $current_chapter_id :
 							<a class="mab-toc-row-link" href="<?php echo esc_url( get_permalink( $chapter ) ); ?>" <?php echo $chapter->ID === $current_chapter_id ? 'aria-current="page"' : ''; ?>>
 						<?php endif; ?>
 							<span class="mab-toc-row">
-								<span><?php echo esc_html( get_the_title( $chapter ) ); ?></span>
+								<span class="mab-toc-row__title"><?php echo esc_html( get_the_title( $chapter ) ); ?></span>
+								<span class="mab-toc-row__leader" aria-hidden="true"></span>
 								<?php
 								/*
 								 * aria-hidden only for the order number — it's purely

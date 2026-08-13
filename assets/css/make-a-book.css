@@ -144,8 +144,16 @@
 .mab-book-hero__subtitle { font-family: inherit; font-size: clamp(1.25rem, 1.8vw, 1.6rem); line-height: 1.4; margin: 1.25rem 0 1rem; max-width: 29ch; text-wrap: balance; }
 .mab-book-hero__description { color: var(--mab-muted); font-size: 1.05rem; line-height: 1.6; max-width: 48ch; }
 .mab-book-hero__cover img { box-shadow: 1.4rem 1.4rem 0 var(--mab-accent); display: block; height: auto; transform: rotate(1.5deg); width: 100%; }
+.mab-book-hero__actions { align-items: center; display: flex; flex-wrap: wrap; gap: 1rem; }
 .mab-button { background: var(--mab-ink); border-radius: 999px; color: #fff !important; display: inline-flex; font-size: .85rem; font-weight: 700; gap: 1.5rem; margin-top: 1.5rem; padding: .9rem 1.4rem; text-decoration: none; transition: transform .2s ease; }
 .mab-button:hover { transform: translateY(-3px); }
+/* Secondary action (jump to the table of contents, below "Start reading" in
+   visual weight) — same shape/spacing as .mab-button, border-and-text
+   instead of filled, using --mab-ink/--mab-line the way .mab-mode-toggle
+   already does, so it stays readable in both color modes without its own
+   dark-mode override. */
+.mab-button--outline { background: transparent; border: 2px solid var(--mab-line); color: var(--mab-ink) !important; padding: calc(.9rem - 2px) calc(1.4rem - 2px); }
+.mab-button--outline:hover { border-color: var(--mab-ink); }
 .mab-book-intro { border-block: 1px solid var(--mab-line); font-family: inherit; font-size: 1.1rem; line-height: 1.6; margin: 0 auto 3rem; max-width: 920px; padding: 2rem 0; }
 
 .mab-toc { background: var(--mab-paper); border-radius: 2rem; padding: clamp(1.5rem, 4vw, 3rem); }
@@ -156,18 +164,52 @@
 .mab-toc-section h3 { font-size: 1.25rem; margin: .5rem 0; text-transform: uppercase; }
 .mab-toc-section__description { color: var(--mab-muted); font-size: .88rem; line-height: 1.45; margin: 0 0 .5rem; }
 .mab-toc-section ol { list-style: none; margin: 0; padding: 0; }
-.mab-toc-section li + li { border-top: 1px solid var(--mab-line); }
+/* No rule between rows on purpose — chapters within a section are grouped by
+   spacing alone (each row's own padding below), not a divider line. The
+   section-to-section border above is the only separator left, so it reads
+   as the one meaningful boundary instead of competing with per-chapter
+   lines. */
 /* .mab-toc-row-link covers both the normal <a> row and the unlinked <span>
    draft row (templates/partials/toc-list.php) so both pick up the same
    layout without duplicating it per element type. */
 .mab-toc-row-link { display: flex; flex-direction: column; gap: .4rem; padding: 1.1rem 0; text-decoration: none; }
 .mab-toc-row-link:not(.mab-toc-row-link--draft):hover .mab-toc-row span { color: var(--mab-accent); }
+.mab-toc-row-link:not(.mab-toc-row-link--draft):hover .mab-toc-row__leader { --mab-toc-leader-color: var(--mab-accent); }
 /* Faded and inert on purpose — reads as "coming, not clickable" rather than
    a broken/dead link. cursor: default (not not-allowed) since this isn't an
    error state, just not open yet. */
 .mab-toc-row-link--draft { cursor: default; opacity: .48; }
 .mab-toc-row-link--draft b { font-style: italic; text-transform: none; }
-.mab-toc-row { align-items: baseline; display: flex; gap: 1rem; justify-content: space-between; }
+.mab-toc-row { align-items: baseline; display: flex; gap: .6rem; }
+.mab-toc-row__title { flex-shrink: 0; }
+/* Dot leader connecting chapter title to its number, like a printed book's
+   table of contents — fills whatever space is left on the line instead of a
+   fixed width, so it still works with short and long chapter titles alike.
+   align-self/margin-bottom (rather than relying on the row's own
+   align-items: baseline, which an empty element has nothing to compute a
+   baseline from) pull the empty line up off the row's true bottom edge to
+   roughly where the surrounding text's baseline actually sits.
+
+   A real border-bottom: dotted renders each dot right up against the next
+   one (spacing is tied to the 1px border-width, not something border-spacing
+   controls) — too tight to read as a printed leader. A repeating
+   radial-gradient painted as a background lets the dot size and the gap
+   between dots be set independently instead. The color is a custom property
+   (rather than the gradient reading --mab-line directly) purely so the hover
+   rule below can swap just that value without redeclaring the whole
+   gradient. */
+.mab-toc-row__leader {
+	--mab-toc-leader-color: var(--mab-line);
+	align-self: flex-end;
+	background-image: radial-gradient(circle, var(--mab-toc-leader-color) 1px, transparent 1.2px);
+	background-position: bottom left;
+	background-repeat: repeat-x;
+	background-size: 6px 3px;
+	flex: 1 1 auto;
+	height: 3px;
+	margin-bottom: .3em;
+	min-width: 1.5rem;
+}
 .mab-toc-section small { color: var(--mab-muted); line-height: 1.4; }
 .mab-toc-section b { flex-shrink: 0; font-size: .8rem; font-variant-numeric: tabular-nums; }
 
