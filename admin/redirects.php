@@ -50,8 +50,64 @@ function mab_redirect_post_type_list_screen() {
 		return;
 	}
 
-	wp_safe_redirect( admin_url( 'admin.php?page=make-a-book' ) );
+	wp_safe_redirect( mab_redirect_target_for_list_screen() );
 	exit;
+}
+
+/**
+ * Work out where mab_redirect_post_type_list_screen() should send the user:
+ * the specific book they were just working on, when that can be determined,
+ * or the general books list otherwise.
+ *
+ * The only realistic way to land on edit.php for these post types at all
+ * (nothing in the plugin links here) is WordPress's own post-action
+ * redirect after something happens on post.php or the Trash list — trashing
+ * a chapter, restoring one, permanently deleting one, and so on all end with
+ * a redirect to edit.php?post_type=...&ids={id} (see wp_redirect_post_location()
+ * in WordPress core). That `ids` value is the thread back to "which book was
+ * this about," so following it beats always dropping the user on the
+ * general list regardless of what they were just doing.
+ *
+ * @return string Admin URL to redirect to.
+ */
+function mab_redirect_target_for_list_screen() {
+	$books_list_url = admin_url( 'admin.php?page=make-a-book' );
+
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only redirect decision.
+	$post_type = isset( $_GET['post_type'] ) ? sanitize_key( wp_unslash( $_GET['post_type'] ) ) : 'post';
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only redirect decision. Comma-separated on bulk actions; only the first is used.
+	$ids = isset( $_GET['ids'] ) ? sanitize_text_field( wp_unslash( $_GET['ids'] ) ) : '';
+
+	$first_id = $ids ? absint( strtok( $ids, ',' ) ) : 0;
+	if ( ! $first_id ) {
+		return $books_list_url;
+	}
+
+	if ( MAB_BOOK_POST_TYPE === $post_type ) {
+		// The book itself was just acted on. If it was trashed or
+		// permanently deleted, its own detail page in the app has nothing to
+		// show — fall back to the list. Otherwise (most commonly: restored
+		// from Trash), send the user straight back to it.
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only redirect decision.
+		if ( isset( $_GET['trashed'] ) || isset( $_GET['deleted'] ) ) {
+			return $books_list_url;
+		}
+
+		return $books_list_url . '#/books/' . $first_id;
+	}
+
+	if ( MAB_CHAPTER_POST_TYPE === $post_type ) {
+		// A chapter's own post meta survives trashing (only a permanent
+		// delete removes it, and that path keeps post_status=trash in the
+		// query — exempted before this function is ever called), so this
+		// works for the trash/restore cases that actually reach here.
+		$book_id = absint( get_post_meta( $first_id, '_mab_book_id', true ) );
+		if ( $book_id ) {
+			return $books_list_url . '#/books/' . $book_id;
+		}
+	}
+
+	return $books_list_url;
 }
 
 /**

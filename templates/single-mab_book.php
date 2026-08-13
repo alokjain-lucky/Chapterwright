@@ -12,58 +12,24 @@ if ( ! defined( 'ABSPATH' ) ) {
 require MAKE_A_BOOK_PATH . 'templates/partials/document-start.php';
 the_post();
 
-$book_id  = get_the_ID();
-$chapters = mab_get_chapters( $book_id );
-$subtitle = get_post_meta( $book_id, '_mab_subtitle', true );
-$accent   = get_post_meta( $book_id, '_mab_accent', true );
+$book_id     = get_the_ID();
+$chapters    = mab_get_chapters( $book_id );
+$subtitle    = get_post_meta( $book_id, '_mab_subtitle', true );
+$accent      = get_post_meta( $book_id, '_mab_accent', true );
+$coming_soon = (bool) get_post_meta( $book_id, '_mab_coming_soon', true );
 
-// Build the table of contents as an ordered list of section groups, each
-// with its own optional description text (from the mab_sections table —
-// see includes/sections.php), plus a final unlabeled "Chapters" group for
-// any chapter that is not assigned to a section. A section with no
-// currently-visible chapters (e.g. all its chapters are still drafts) is
-// left out of the rendered list entirely rather than shown empty.
-$sections      = array();
-$index_by_id   = array();
-$section_rows  = mab_get_book_sections( $book_id );
-$unassigned    = array();
+// The TOC shows draft chapters too (unlinked, faded — see
+// templates/partials/toc-list.php) when the site owner turns that on in
+// Settings; $chapters above stays published-only since it also drives the
+// "Start reading" link just below, which must never point at a draft.
+$toc_chapters = mab_show_draft_chapters() ? mab_get_chapters( $book_id, array( 'publish', 'draft' ) ) : $chapters;
 
-foreach ( $section_rows as $row ) {
-	$index_by_id[ $row['id'] ] = count( $sections );
-	$sections[]                = array(
-		'name'        => $row['name'],
-		'description' => $row['description'],
-		'chapters'    => array(),
-	);
-}
-
-foreach ( $chapters as $chapter ) {
-	$section_id = absint( get_post_meta( $chapter->ID, '_mab_section_id', true ) );
-	if ( $section_id && isset( $index_by_id[ $section_id ] ) ) {
-		$sections[ $index_by_id[ $section_id ] ]['chapters'][] = $chapter;
-	} else {
-		$unassigned[] = $chapter;
-	}
-}
-
-if ( $unassigned ) {
-	$sections[] = array(
-		'name'        => __( 'Chapters', 'make-a-book' ),
-		'description' => '',
-		'chapters'    => $unassigned,
-	);
-}
-
-$sections = array_values(
-	array_filter(
-		$sections,
-		static function ( $section ) {
-			return ! empty( $section['chapters'] );
-		}
-	)
-);
-
-$toc_heading = mab_get_text( 'toc_heading' );
+// See mab_build_toc_sections(), includes/queries.php, for what this
+// actually builds and why it's shared with the chapter-page TOC drawer.
+$sections            = mab_build_toc_sections( $book_id, $toc_chapters );
+$toc_heading         = mab_get_text( 'toc_heading' );
+$show_toc_excerpt    = mab_show_toc_excerpt();
+$current_chapter_id  = 0; // Nothing is "current" on the book's own page — see templates/partials/toc-list.php.
 ?>
 <a class="mab-skip-link" href="#mab-main-content"><?php esc_html_e( 'Skip to book content', 'make-a-book' ); ?></a>
 <main id="mab-main-content" class="mab-page mab-book" style="--mab-accent:<?php echo esc_attr( $accent ? $accent : '#f45d48' ); ?>" tabindex="-1">
@@ -76,12 +42,16 @@ $toc_heading = mab_get_text( 'toc_heading' );
 	<section class="mab-book-hero">
 		<div class="mab-book-hero__copy">
 			<p class="mab-eyebrow"><?php esc_html_e( 'A book by', 'make-a-book' ); ?> <?php the_author(); ?></p>
+			<?php if ( $coming_soon ) : ?>
+				<p class="mab-badge mab-badge--coming-soon"><?php esc_html_e( 'Coming soon', 'make-a-book' ); ?></p>
+			<?php endif; ?>
 			<h1><?php the_title(); ?></h1>
 			<?php if ( $subtitle ) : ?>
 				<p class="mab-book-hero__subtitle"><?php echo esc_html( $subtitle ); ?></p>
 			<?php endif; ?>
 			<div class="mab-book-hero__description"><?php the_excerpt(); ?></div>
-			<?php if ( $chapters ) : ?>
+			<?php // Coming-soon books never show "Start reading", even if a draft-preview chapter or two already exists — the flag means "not open yet," not "no chapters." ?>
+			<?php if ( $chapters && ! $coming_soon ) : ?>
 				<a class="mab-button" href="<?php echo esc_url( get_permalink( $chapters[0] ) ); ?>"><?php esc_html_e( 'Start reading', 'make-a-book' ); ?> <span aria-hidden="true">→</span></a>
 			<?php endif; ?>
 		</div>
@@ -99,31 +69,7 @@ $toc_heading = mab_get_text( 'toc_heading' );
 			<p class="mab-eyebrow" id="mab-toc-eyebrow"><?php esc_html_e( 'Table of contents', 'make-a-book' ); ?></p>
 			<?php if ( $toc_heading ) : ?><h2 id="mab-toc-title"><?php echo esc_html( $toc_heading ); ?></h2><?php endif; ?>
 		</div>
-		<?php if ( $sections ) : ?>
-			<?php foreach ( $sections as $section ) : ?>
-				<div class="mab-toc-section">
-					<div class="mab-toc-section__heading">
-						<h3><?php echo esc_html( $section['name'] ); ?></h3>
-						<?php if ( $section['description'] ) : ?>
-							<p class="mab-toc-section__description"><?php echo esc_html( $section['description'] ); ?></p>
-						<?php endif; ?>
-					</div>
-					<ol start="<?php echo esc_attr( (int) get_post_meta( $section['chapters'][0]->ID, '_mab_order', true ) ); ?>">
-						<?php foreach ( $section['chapters'] as $chapter ) : ?>
-							<li>
-								<a href="<?php echo esc_url( get_permalink( $chapter ) ); ?>">
-									<span><?php echo esc_html( get_the_title( $chapter ) ); ?></span>
-									<small><?php echo esc_html( get_the_excerpt( $chapter ) ); ?></small>
-									<b aria-hidden="true"><?php echo esc_html( get_post_meta( $chapter->ID, '_mab_order', true ) ); ?></b>
-								</a>
-							</li>
-						<?php endforeach; ?>
-					</ol>
-				</div>
-			<?php endforeach; ?>
-		<?php else : ?>
-			<p><?php esc_html_e( 'Chapters are coming soon.', 'make-a-book' ); ?></p>
-		<?php endif; ?>
+		<?php require MAKE_A_BOOK_PATH . 'templates/partials/toc-list.php'; ?>
 	</section>
 	<?php mab_render_credit(); ?>
 </main>

@@ -403,6 +403,15 @@ Both run automatically on every push and pull request via GitHub Actions (`.gith
 
 The three most recent releases are below. See [CHANGELOG.md](CHANGELOG.md) for the full history back to 1.0.0.
 
+### 2.4.0
+
+- Fixed a bug where book and chapter details (accent color, subtitle, book/section assignment, and more) could silently fail to save. This is now fixed for good — any books or chapters affected before the fix will save correctly going forward.
+- Code blocks now have real syntax highlighting, and chapters have a floating button that jumps to the table of contents, which now opens as a slide-in drawer instead of navigating away.
+- Refined the reading typography throughout — tighter, more readable body text, headings, and lists on both chapter pages and book/archive pages.
+- Added a "Coming soon" flag for books that aren't ready to read yet, and an optional setting to show draft chapter titles (grayed out, not clickable) in the table of contents.
+- Added a progress bar showing how far a reader is through the whole book, alongside the existing per-chapter reading progress bar.
+- Fixed a few visual bugs: invisible "Coming soon" badges, an invisible table-of-contents icon in light mode, and unreadable code text in light mode on the site's theme.
+
 ### 2.3.2
 
 - Fixed newly created chapters sometimes not appearing in a book's chapter list. The admin app used to fetch every chapter the user could edit and filter it client-side for this book; it now calls a dedicated endpoint that queries this book's chapters directly, the same trusted query used elsewhere in the plugin.
@@ -412,10 +421,6 @@ The three most recent releases are below. See [CHANGELOG.md](CHANGELOG.md) for t
 ### 2.3.1
 
 - Native Books/Chapters screens WordPress still generates automatically — the list-table (`edit.php?post_type=mab_book` / `mab_chapter`) and "Add New" (`post-new.php?post_type=...`) — now redirect to the **Books & Chapters** admin app instead of showing the old scattered interface. Writing a book or chapter's actual content (the Block Editor screen) and the native Trash list (for restoring or permanently deleting) are unaffected — both still work exactly as before.
-
-### 2.3.0
-
-- Added the ability to delete a book from the admin app: a "Trash" button on each book card in **Books & Chapters**, and a "Danger zone" panel on a book's own page. Trashing a book does not affect its chapters or sections — they're kept, and come back automatically if you restore the book from Trash. A "View trashed books →" link opens WordPress's native Trash list, where a book can be restored or permanently deleted. Sections and chapters already had delete/trash actions; this closes the one remaining gap.
 
 ## License
 

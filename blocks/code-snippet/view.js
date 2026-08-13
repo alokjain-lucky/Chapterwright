@@ -24,13 +24,16 @@
 
 		var text = code.textContent || '';
 		var copiedLabel = button.getAttribute( 'data-mab-copied-label' ) || 'Copied!';
-		var defaultLabel = button.getAttribute( 'data-mab-copy-label' ) || button.textContent;
+		var defaultLabel = button.getAttribute( 'data-mab-copy-label' ) || 'Copy code';
 
+		// Icon-only button: the visible state change is a swapped icon (via
+		// the .is-copied class, see style.css), with the accessible name
+		// carried by aria-label rather than by textContent.
 		function showCopied() {
-			button.textContent = copiedLabel;
+			button.setAttribute( 'aria-label', copiedLabel );
 			button.classList.add( 'is-copied' );
 			window.setTimeout( function () {
-				button.textContent = defaultLabel;
+				button.setAttribute( 'aria-label', defaultLabel );
 				button.classList.remove( 'is-copied' );
 			}, 2000 );
 		}

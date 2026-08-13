@@ -16,6 +16,7 @@ import {
 	Card,
 	CardHeader,
 	CardBody,
+	CheckboxControl,
 	TextControl,
 	TextareaControl,
 	Spinner,
@@ -174,11 +175,22 @@ export default function BookDetail( { bookId } ) {
 function BookFields( { book, onSaved } ) {
 	const [ subtitle, setSubtitle ] = useState( book.meta?._mab_subtitle || '' );
 	const [ accent, setAccent ] = useState( book.meta?._mab_accent || '#f45d48' );
+	const [ comingSoon, setComingSoon ] = useState( !! book.meta?._mab_coming_soon );
 	const [ saving, setSaving ] = useState( false );
 
 	const save = () => {
 		setSaving( true );
-		updateBook( book.id, { meta: { _mab_subtitle: subtitle, _mab_accent: accent } } )
+		const data = { meta: { _mab_subtitle: subtitle, _mab_accent: accent, _mab_coming_soon: comingSoon } };
+		// Checking "Coming soon" is meant to work as one self-contained action
+		// from this screen — publish the book (if it isn't already) in the
+		// same request, since an unpublished draft would not appear in the
+		// library at all and the flag would have no visible effect. Unchecking
+		// it never un-publishes the book back to draft — that would hide a
+		// book an author may have already been sharing a link to.
+		if ( comingSoon && 'publish' !== book.status ) {
+			data.status = 'publish';
+		}
+		updateBook( book.id, data )
 			.then( ( updated ) => {
 				setSaving( false );
 				onSaved( updated );
@@ -216,6 +228,19 @@ function BookFields( { book, onSaved } ) {
 							onChange={ ( event ) => setAccent( event.target.value ) }
 						/>
 					</BaseControl>
+				</div>
+				<div className="mab-field-row">
+					<CheckboxControl
+						__nextHasNoMarginBottom
+						label={ __( 'Coming soon', 'make-a-book' ) }
+						checked={ comingSoon }
+						onChange={ setComingSoon }
+						help={
+							'publish' === book.status
+								? __( 'Shows a "Coming soon" badge on the library and book page instead of a reading link — for announcing a book before its chapters are ready.', 'make-a-book' )
+								: __( 'Shows a "Coming soon" badge instead of a reading link, and publishes the book so it actually appears in your library.', 'make-a-book' )
+						}
+					/>
 				</div>
 				<Button
 					__next40pxDefaultSize

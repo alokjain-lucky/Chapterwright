@@ -36,9 +36,13 @@ $wrapper_attributes = get_block_wrapper_attributes( array( 'class' => 'mab-code'
 		<button
 			class="mab-code__copy"
 			type="button"
-			data-mab-copy-label="<?php esc_attr_e( 'Copy', 'make-a-book' ); ?>"
+			data-mab-copy-label="<?php esc_attr_e( 'Copy code', 'make-a-book' ); ?>"
 			data-mab-copied-label="<?php esc_attr_e( 'Copied!', 'make-a-book' ); ?>"
-		><?php esc_html_e( 'Copy', 'make-a-book' ); ?></button>
+			aria-label="<?php esc_attr_e( 'Copy code', 'make-a-book' ); ?>"
+		>
+			<svg class="mab-code__copy-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"></rect><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"></path></svg>
+			<svg class="mab-code__copied-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+		</button>
 		<pre data-mab-language="<?php echo esc_attr( $language ); ?>"><code><?php echo esc_html( $code ); ?></code></pre>
 	</div>
 </figure>

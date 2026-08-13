@@ -123,12 +123,24 @@ export function getBookChapters( bookId ) {
  * section), with the next chapter order pre-computed from the chapters
  * already passed in.
  *
+ * Meta can be sent in this same create request — no need to split it into a
+ * separate update call. (An earlier version of this function did split it,
+ * on the theory that `create_item()` couldn't resolve capabilities for a
+ * brand-new post in time; that theory was wrong. The real cause was that
+ * neither `mab_book` nor `mab_chapter` declared `'custom-fields'` support,
+ * so `WP_REST_Posts_Controller::get_item_schema()` never added a `meta`
+ * property to either post type's REST schema in the first place — every
+ * `meta` value sent to either endpoint, in a create or an update, was
+ * silently ignored with no error. Fixed in `mab_register_post_types()`,
+ * includes/content-types.php; see that function's docblock and the
+ * "Unreleased" entry in AGENTS.md for how this was actually root-caused.)
+ *
  * @param {Object} args
  * @param {number} args.bookId       Parent book ID.
  * @param {string} args.title        Chapter title.
  * @param {number} [args.sectionId]  Section ID, if any.
  * @param {Array}  args.siblings     Chapters already fetched for this book (via getBookChapters), used to compute the next order number.
- * @return {Promise<Object>} The new chapter post object.
+ * @return {Promise<Object>} The new chapter post object, with meta set.
  */
 export function createChapter( { bookId, title, sectionId, siblings } ) {
 	const nextOrder =

@@ -130,6 +130,11 @@ export default function BooksList() {
 									{ 'publish' !== book.status && (
 										<span className={ `mab-status-pill mab-status-pill--${ book.status }` }>{ book.status }</span>
 									) }
+									{ book.meta?._mab_coming_soon && (
+										<span className="mab-status-pill mab-status-pill--coming-soon">
+											{ __( 'Coming soon', 'make-a-book' ) }
+										</span>
+									) }
 								</CardBody>
 								<CardFooter>
 									<Button __next40pxDefaultSize variant="secondary" href={ `#/books/${ book.id }` }>

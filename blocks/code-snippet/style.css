@@ -40,18 +40,20 @@
 }
 
 .mab-code__copy {
+	align-items: center;
 	background: rgba(255, 255, 255, 0.08);
 	border: 1px solid rgba(255, 255, 255, 0.18);
 	border-radius: 999px;
 	color: var(--mab-code-ink, #f5f2ea);
 	cursor: pointer;
-	font-family: inherit;
-	font-size: 0.7rem;
-	font-weight: 700;
-	padding: 0.35rem 0.8rem;
+	display: flex;
+	height: 2.1rem;
+	justify-content: center;
+	padding: 0;
 	position: absolute;
 	right: 0.9rem;
 	top: 0.8rem;
+	width: 2.1rem;
 }
 
 .mab-code__copy:hover,
@@ -64,6 +66,21 @@
 	border-color: transparent;
 	color: #fff;
 }
+
+/* Icon-only button: swap which of the two icons is visible instead of
+   changing any text, so the "Copied!" confirmation reads via aria-label
+   (see view.js) for screen readers rather than visible copy. */
+.mab-code__copy-icon,
+.mab-code__copied-icon {
+	height: 1.05rem;
+	width: 1.05rem;
+}
+
+.mab-code__copy-icon { display: block; }
+.mab-code__copied-icon { display: none; }
+
+.mab-code__copy.is-copied .mab-code__copy-icon { display: none; }
+.mab-code__copy.is-copied .mab-code__copied-icon { display: block; }
 
 .mab-code pre {
 	font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;

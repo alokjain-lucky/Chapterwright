@@ -36,4 +36,27 @@ function mab_enqueue_public_assets() {
 			'modeDark'  => __( 'Use dark color mode', 'make-a-book' ),
 		)
 	);
+
+	// The code-snippet block's own frame chrome (language label, copy
+	// button) is normally only enqueued on pages that use that block — but
+	// assets/js/code-highlight.js synthesizes the same markup around any
+	// bare code block, on every book/chapter page, so the styles for it
+	// need to be available everywhere too, not just where the block is used.
+	wp_enqueue_style( 'make-a-book-code', MAKE_A_BOOK_URL . 'blocks/code-snippet/style.css', array( 'make-a-book' ), MAKE_A_BOOK_VERSION );
+	wp_enqueue_script( 'make-a-book-code-highlight', MAKE_A_BOOK_URL . 'assets/js/code-highlight.js', array(), MAKE_A_BOOK_VERSION, true );
+	wp_localize_script(
+		'make-a-book-code-highlight',
+		'makeABookCode',
+		array(
+			'copyLabel'   => __( 'Copy code', 'make-a-book' ),
+			'copiedLabel' => __( 'Copied!', 'make-a-book' ),
+		)
+	);
+
+	// The table-of-contents drawer only exists on the chapter template
+	// (templates/single-mab_chapter.php) — no reason to load its script on
+	// the book page, archive, or shortcode-embedded pages.
+	if ( is_singular( MAB_CHAPTER_POST_TYPE ) ) {
+		wp_enqueue_script( 'make-a-book-toc-drawer', MAKE_A_BOOK_URL . 'assets/js/toc-drawer.js', array(), MAKE_A_BOOK_VERSION, true );
+	}
 }

@@ -239,6 +239,12 @@
 	color: #1e6b30;
 }
 
+.mab-status-pill--coming-soon {
+	background: #e0d9f7;
+	color: #4b2ea3;
+	text-transform: none;
+}
+
 /* Book detail ------------------------------------------------------------ */
 
 .mab-back-link {

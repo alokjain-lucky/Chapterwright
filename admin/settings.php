@@ -42,6 +42,9 @@ function mab_default_settings() {
 	return array(
 		'show_mode_toggle'   => '1',
 		'show_credit'        => '1',
+		'show_toc_excerpt'   => '1',
+		'show_toc_button'    => '1',
+		'show_draft_chapters' => '0',
 		'archive_eyebrow'    => __( 'The library', 'make-a-book' ),
 		'archive_heading'    => __( 'Books worth opening', 'make-a-book' ),
 		'archive_subheading' => __( 'Read one chapter at a time, right here on the web.', 'make-a-book' ),
@@ -80,6 +83,9 @@ function mab_sanitize_settings( $input ) {
 	return array(
 		'show_mode_toggle'   => empty( $input['show_mode_toggle'] ) ? '0' : '1',
 		'show_credit'        => empty( $input['show_credit'] ) ? '0' : '1',
+		'show_toc_excerpt'   => empty( $input['show_toc_excerpt'] ) ? '0' : '1',
+		'show_toc_button'    => empty( $input['show_toc_button'] ) ? '0' : '1',
+		'show_draft_chapters' => empty( $input['show_draft_chapters'] ) ? '0' : '1',
 		'archive_eyebrow'    => isset( $input['archive_eyebrow'] ) ? sanitize_text_field( wp_unslash( $input['archive_eyebrow'] ) ) : $defaults['archive_eyebrow'],
 		'archive_heading'    => isset( $input['archive_heading'] ) ? sanitize_text_field( wp_unslash( $input['archive_heading'] ) ) : $defaults['archive_heading'],
 		'archive_subheading' => isset( $input['archive_subheading'] ) ? sanitize_text_field( wp_unslash( $input['archive_subheading'] ) ) : $defaults['archive_subheading'],
@@ -122,6 +128,45 @@ function mab_show_mode_toggle() {
 function mab_show_credit() {
 	$settings = mab_get_settings();
 	return '1' === $settings['show_credit'];
+}
+
+/**
+ * Whether each chapter's excerpt is shown below its title in the table of
+ * contents on a book's page. On by default; a site owner can turn it off in
+ * Settings for a more compact, title-and-number-only list.
+ *
+ * @return bool
+ */
+function mab_show_toc_excerpt() {
+	$settings = mab_get_settings();
+	return '1' === $settings['show_toc_excerpt'];
+}
+
+/**
+ * Whether a floating "back to table of contents" button is shown at the
+ * bottom-right of chapter pages, linking to the book's table of contents.
+ * On by default; a site owner can turn it off in Settings.
+ *
+ * @return bool
+ */
+function mab_show_toc_button() {
+	$settings = mab_get_settings();
+	return '1' === $settings['show_toc_button'];
+}
+
+/**
+ * Whether draft chapters should appear in the table of contents (book page
+ * and chapter-page drawer) alongside published ones — unlinked and visually
+ * faded, per templates/partials/toc-list.php, so a reader can see a chapter
+ * is coming without being able to open it. Off by default: showing draft
+ * titles publicly is an editorial choice a site owner should opt into, not
+ * something that changes just because an author started drafting a chapter.
+ *
+ * @return bool
+ */
+function mab_show_draft_chapters() {
+	$settings = mab_get_settings();
+	return '1' === $settings['show_draft_chapters'];
 }
 
 /**
@@ -192,6 +237,39 @@ function mab_render_settings_page() {
 							<input type="checkbox" name="mab_settings[show_credit]" value="1" <?php checked( '1', $settings['show_credit'] ); ?> />
 							<?php esc_html_e( 'Show "This book is created with Make a Book" at the bottom of book, chapter, and library pages', 'make-a-book' ); ?>
 						</label>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Table of contents excerpts', 'make-a-book' ); ?></th>
+					<td>
+						<label>
+							<input type="checkbox" name="mab_settings[show_toc_excerpt]" value="1" <?php checked( '1', $settings['show_toc_excerpt'] ); ?> />
+							<?php esc_html_e( 'Show each chapter\'s excerpt below its title in the table of contents', 'make-a-book' ); ?>
+						</label>
+						<p class="description">
+							<?php esc_html_e( 'Turn this off for a shorter, title-and-number-only chapter list.', 'make-a-book' ); ?>
+						</p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Floating table of contents button', 'make-a-book' ); ?></th>
+					<td>
+						<label>
+							<input type="checkbox" name="mab_settings[show_toc_button]" value="1" <?php checked( '1', $settings['show_toc_button'] ); ?> />
+							<?php esc_html_e( 'Show a floating button on chapter pages that opens the book\'s table of contents in a side panel', 'make-a-book' ); ?>
+						</label>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Draft chapters in the table of contents', 'make-a-book' ); ?></th>
+					<td>
+						<label>
+							<input type="checkbox" name="mab_settings[show_draft_chapters]" value="1" <?php checked( '1', $settings['show_draft_chapters'] ); ?> />
+							<?php esc_html_e( 'List chapters still in draft alongside published ones, faded and without a link', 'make-a-book' ); ?>
+						</label>
+						<p class="description">
+							<?php esc_html_e( 'Gives readers a preview of what\'s coming without letting them open an unfinished chapter. Off by default.', 'make-a-book' ); ?>
+						</p>
 					</td>
 				</tr>
 			</table>

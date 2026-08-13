@@ -10,19 +10,31 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Fetch all published chapters assigned to a book in reading order.
+ * Fetch chapters assigned to a book in reading order.
  *
  * Chapters first sort by the numeric `_mab_order` value. Publication date is
  * a stable fallback when two chapters share the same order value.
  *
- * @param int $book_id Book post ID.
- * @return WP_Post[] Ordered published chapter posts.
+ * @param int      $book_id  Book post ID.
+ * @param string[] $statuses Post statuses to include. Defaults to only
+ *                            'publish' — every existing call site (reading
+ *                            navigation, pagination counts) wants real,
+ *                            readable chapters only. Pass
+ *                            `array( 'publish', 'draft' )` specifically for
+ *                            building the *visual* table of contents when
+ *                            `mab_show_draft_chapters()` is on (see
+ *                            templates/single-mab_book.php and
+ *                            templates/single-mab_chapter.php) — draft
+ *                            chapters returned that way are rendered
+ *                            unlinked in templates/partials/toc-list.php,
+ *                            never used for prev/next navigation.
+ * @return WP_Post[] Ordered chapter posts.
  */
-function mab_get_chapters( $book_id ) {
+function mab_get_chapters( $book_id, $statuses = array( 'publish' ) ) {
 	return get_posts(
 		array(
 			'post_type'      => MAB_CHAPTER_POST_TYPE,
-			'post_status'    => 'publish',
+			'post_status'    => $statuses,
 			'posts_per_page' => -1,
 			'meta_key'       => '_mab_order', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Required for editor-defined chapter order.
 			'orderby'        => array(
@@ -36,6 +48,66 @@ function mab_get_chapters( $book_id ) {
 					'compare' => '=',
 				),
 			),
+		)
+	);
+}
+
+/**
+ * Build the table-of-contents section list for a book: each of its
+ * mab_sections rows (in order, from mab_get_book_sections()) with the
+ * chapters assigned to it, plus a final unlabeled "Chapters" group for any
+ * chapter not assigned to a section. A section left with no
+ * currently-visible chapters (e.g. all its chapters are still drafts) is
+ * dropped from the result entirely rather than rendered empty.
+ *
+ * Shared by every place that needs this exact grouping so they can't drift
+ * out of sync with each other: the book page's own table of contents
+ * (templates/single-mab_book.php) and the chapter page's table-of-contents
+ * drawer (templates/single-mab_chapter.php) both build `$sections` this way
+ * and then both render it through the same templates/partials/toc-list.php.
+ *
+ * @param int      $book_id  Book post ID.
+ * @param WP_Post[] $chapters Chapters already fetched via mab_get_chapters( $book_id ).
+ * @return array<int,array{name:string,description:string,chapters:WP_Post[]}>
+ */
+function mab_build_toc_sections( $book_id, $chapters ) {
+	$sections     = array();
+	$index_by_id  = array();
+	$section_rows = mab_get_book_sections( $book_id );
+	$unassigned   = array();
+
+	foreach ( $section_rows as $row ) {
+		$index_by_id[ $row['id'] ] = count( $sections );
+		$sections[]                = array(
+			'name'        => $row['name'],
+			'description' => $row['description'],
+			'chapters'    => array(),
+		);
+	}
+
+	foreach ( $chapters as $chapter ) {
+		$section_id = absint( get_post_meta( $chapter->ID, '_mab_section_id', true ) );
+		if ( $section_id && isset( $index_by_id[ $section_id ] ) ) {
+			$sections[ $index_by_id[ $section_id ] ]['chapters'][] = $chapter;
+		} else {
+			$unassigned[] = $chapter;
+		}
+	}
+
+	if ( $unassigned ) {
+		$sections[] = array(
+			'name'        => __( 'Chapters', 'make-a-book' ),
+			'description' => '',
+			'chapters'    => $unassigned,
+		);
+	}
+
+	return array_values(
+		array_filter(
+			$sections,
+			static function ( $section ) {
+				return ! empty( $section['chapters'] );
+			}
 		)
 	);
 }

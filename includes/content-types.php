@@ -29,6 +29,20 @@ add_action( 'init', 'mab_register_meta_fields', 20 );
  * Gutenberg editor sidebar panel (admin/app/src/editor-sidebar.js) both
  * deep-link straight into post.php for writing a chapter's actual content.
  *
+ * `'custom-fields'` is in both `supports` arrays for a reason that is easy
+ * to miss and expensive to debug without it: `WP_REST_Posts_Controller::
+ * get_item_schema()` only adds a `meta` property to a post type's REST
+ * schema when `post_type_supports( $post_type, 'custom-fields' )` is true.
+ * Without it, `register_post_meta()` still runs and the field is genuinely
+ * registered (`get_registered_meta_keys()` reports it correctly), but the
+ * REST controller never exposes or accepts it — every create/update
+ * request carrying `meta` in the body is silently accepted and silently
+ * ignored: no error, no rejected write, meta auth_callback never even
+ * invoked, because the request never reaches that code path at all. See the
+ * "Unreleased" AGENTS.md entry for how this was actually root-caused (five
+ * rounds of live debug.log instrumentation) — don't remove this support
+ * flag without re-reading that first.
+ *
  * As of 2.2.0, both types register their own `capability_type` (`mab_book`/
  * `mab_books`, `mab_chapter`/`mab_chapters`) with `map_meta_cap => true`,
  * instead of defaulting to generic `post`/`posts` capabilities. This means
@@ -49,7 +63,7 @@ function mab_register_post_types() {
 			'rewrite'         => array( 'slug' => 'books' ),
 			'show_in_menu'    => false,
 			'show_in_rest'    => true,
-			'supports'        => array( 'title', 'editor', 'excerpt', 'thumbnail', 'author', 'revisions' ),
+			'supports'        => array( 'title', 'editor', 'excerpt', 'thumbnail', 'author', 'revisions', 'custom-fields' ),
 			'capability_type' => array( 'mab_book', 'mab_books' ),
 			'map_meta_cap'    => true,
 		)
@@ -64,7 +78,7 @@ function mab_register_post_types() {
 			'rewrite'         => array( 'slug' => 'book-chapter' ),
 			'show_in_menu'    => false,
 			'show_in_rest'    => true,
-			'supports'        => array( 'title', 'editor', 'excerpt', 'thumbnail', 'revisions' ),
+			'supports'        => array( 'title', 'editor', 'excerpt', 'thumbnail', 'revisions', 'custom-fields' ),
 			'capability_type' => array( 'mab_chapter', 'mab_chapters' ),
 			'map_meta_cap'    => true,
 		)
@@ -155,6 +169,26 @@ function mab_register_meta_fields() {
 			'single'        => true,
 			'show_in_rest'  => true,
 			'sanitize_callback' => 'mab_sanitize_accent_color',
+			'auth_callback' => 'mab_meta_auth_callback',
+		)
+	);
+
+	// Marks a published book that has no (or not enough) chapters yet as an
+	// intentional announcement rather than an unfinished/broken-looking page:
+	// the library card and the book's own hero swap their reading CTA for a
+	// "Coming soon" badge instead. Independent of post status on purpose —
+	// see admin/app/src/screens/book-detail.js, which sets this flag *and*
+	// publishes the book together as one action, since an unpublished draft
+	// would not appear in the library at all regardless of this flag.
+	register_post_meta(
+		MAB_BOOK_POST_TYPE,
+		'_mab_coming_soon',
+		array(
+			'type'          => 'boolean',
+			'single'        => true,
+			'show_in_rest'  => true,
+			'default'       => false,
+			'sanitize_callback' => 'rest_sanitize_boolean',
 			'auth_callback' => 'mab_meta_auth_callback',
 		)
 	);
