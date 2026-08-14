@@ -8,7 +8,7 @@ Publish multiple web-native ebooks in WordPress, with book landing pages, groupe
 | --- | --- |
 | WordPress | 6.4 or newer |
 | PHP | 7.4 or newer |
-| Tested through | WordPress 6.8 |
+| Tested through | WordPress 7.0 |
 | Plugin version | 2.5.0 |
 
 Make a Book adds two content types to WordPress: **Books** and **Chapters**. Each book can have its own cover, subtitle, accent color, introduction, and table of contents. Chapters can be grouped into sections — each with its own name and description — and receive automatic previous/next navigation.
