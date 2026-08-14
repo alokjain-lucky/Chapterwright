@@ -35,6 +35,7 @@ function mab_register_ability_category() {
 		return;
 	}
 
+	// phpcs:ignore PluginCheck.CodeAnalysis.WP.WPVersion, WordPress.WP.WordPressVersion -- Guarded above by function_exists( 'wp_register_ability_category' ); never reached on WordPress < 6.9, where this plugin's minimum-supported version stops needing it.
 	wp_register_ability_category(
 		'make-a-book',
 		array(
@@ -52,6 +53,7 @@ function mab_register_abilities() {
 		return;
 	}
 
+	// phpcs:ignore PluginCheck.CodeAnalysis.WP.WPVersion, WordPress.WP.WordPressVersion -- Guarded above by function_exists( 'wp_register_ability' ); never reached on WordPress < 6.9.
 	wp_register_ability(
 		'make-a-book/list-books',
 		array(
@@ -84,6 +86,7 @@ function mab_register_abilities() {
 		)
 	);
 
+	// phpcs:ignore PluginCheck.CodeAnalysis.WP.WPVersion, WordPress.WP.WordPressVersion -- Guarded above by function_exists( 'wp_register_ability' ); never reached on WordPress < 6.9.
 	wp_register_ability(
 		'make-a-book/get-book-overview',
 		array(
@@ -112,6 +115,7 @@ function mab_register_abilities() {
 		)
 	);
 
+	// phpcs:ignore PluginCheck.CodeAnalysis.WP.WPVersion, WordPress.WP.WordPressVersion -- Guarded above by function_exists( 'wp_register_ability' ); never reached on WordPress < 6.9.
 	wp_register_ability(
 		'make-a-book/create-section',
 		array(
@@ -143,6 +147,7 @@ function mab_register_abilities() {
 		)
 	);
 
+	// phpcs:ignore PluginCheck.CodeAnalysis.WP.WPVersion, WordPress.WP.WordPressVersion -- Guarded above by function_exists( 'wp_register_ability' ); never reached on WordPress < 6.9.
 	wp_register_ability(
 		'make-a-book/create-chapter',
 		array(
@@ -181,6 +186,7 @@ function mab_register_abilities() {
 		)
 	);
 
+	// phpcs:ignore PluginCheck.CodeAnalysis.WP.WPVersion, WordPress.WP.WordPressVersion -- Guarded above by function_exists( 'wp_register_ability' ); never reached on WordPress < 6.9.
 	wp_register_ability(
 		'make-a-book/delete-section',
 		array(

@@ -117,6 +117,7 @@ function mab_maybe_upgrade() {
 function mab_migrate_sections_from_meta() {
 	global $wpdb;
 
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-time, idempotent upgrade migration (see docblock above); no WP API joins postmeta across two meta keys like this, and there is nothing worth caching about a query that runs at most once per site.
 	$chapters_with_section = $wpdb->get_results(
 		$wpdb->prepare(
 			"SELECT pm_section.post_id AS chapter_id, pm_section.meta_value AS section_name, pm_book.meta_value AS book_id

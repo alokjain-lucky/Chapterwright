@@ -7,16 +7,28 @@ starting point for a translator.
 
 ## For a translator
 
+Once the plugin is live on WordPress.org, translate it at
+[translate.wordpress.org](https://translate.wordpress.org/) — WordPress.org
+builds and serves the `.mo`/`.json` files to every site running the plugin
+automatically, based on each site's locale. No manual file placement needed;
+this is why the plugin doesn't call `load_plugin_textdomain()` itself.
+
+For a site running the plugin from a source other than the WordPress.org
+directory (for example, straight from a GitHub release), that automatic
+loading does not apply. In that case:
+
 1. Copy `make-a-book.pot` to `make-a-book-{locale}.po` (for example
    `make-a-book-fr_FR.po`).
 2. Fill in each `msgstr ""` with the translated string, using a PO editor
    (e.g. [Poedit](https://poedit.net/)) or by hand.
 3. Compile it to `make-a-book-{locale}.mo` (Poedit does this automatically
    on save; via WP-CLI: `wp i18n make-mo make-a-book-{locale}.po`).
-4. Place both the `.po` and `.mo` file in this `languages/` directory.
-   `load_plugin_textdomain()` (see `mab_load_textdomain()` in
-   `make-a-book.php`) picks up the `.mo` file automatically based on the
-   site's locale.
+4. Place both the `.po` and `.mo` file in this `languages/` directory, and
+   add back a `load_plugin_textdomain( 'make-a-book', false,
+   dirname( plugin_basename( __FILE__ ) ) . '/languages' )` call hooked on
+   `init` — WordPress.org's Plugin Check flags this call as unnecessary for
+   an org-hosted plugin, which is why it isn't in the shipped code, but it's
+   still the correct mechanism for a non-org install.
 
 ## Admin app / editor sidebar strings (JavaScript)
 

@@ -73,29 +73,8 @@ require_once MAKE_A_BOOK_PATH . 'public/credit.php';
 require_once MAKE_A_BOOK_PATH . 'public/prefetch.php';
 require_once MAKE_A_BOOK_PATH . 'blocks/code-snippet/code-snippet.php';
 
-add_action( 'init', 'mab_load_textdomain' );
 register_activation_hook( __FILE__, 'mab_activate' );
 register_deactivation_hook( __FILE__, 'mab_deactivate' );
-
-/**
- * Load translated strings for PHP-rendered output from languages/.
- *
- * `wp_set_script_translations()` (see admin/app.php) already handles the
- * admin app and editor sidebar's JavaScript strings — this call is what
- * makes every PHP-side `__()`/`_e()` call in the plugin (templates, admin
- * screens, REST error messages) translatable too. Without it, a translator
- * can supply a .po/.mo file in languages/ and it will simply never load;
- * WordPress does not do this automatically for plugins that are not hosted
- * on WordPress.org.
- *
- * A starting .pot file for translators lives at languages/make-a-book.pot.
- * See "Translations" in README.md for how to turn it into a usable .mo/.json
- * set (the `wp i18n` WP-CLI commands, which require a WP-CLI environment
- * this plugin does not bundle).
- */
-function mab_load_textdomain() {
-	load_plugin_textdomain( 'make-a-book', false, dirname( plugin_basename( MAKE_A_BOOK_FILE ) ) . '/languages' );
-}
 
 /**
  * Register content types, create the sections table, and flush rewrite

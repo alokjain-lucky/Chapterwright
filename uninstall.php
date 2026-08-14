@@ -79,8 +79,10 @@ function mab_uninstall_drop_sections_table() {
 	global $wpdb;
 
 	$mab_sections_table = $wpdb->prefix . 'mab_sections';
-	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange -- Deliberate, one-time schema cleanup on uninstall; no WP API drops a custom table.
-	$wpdb->query( "DROP TABLE IF EXISTS {$mab_sections_table}" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is a fixed prefix, not user input.
+	// A single consolidated ignore (rather than splitting across a preceding
+	// standalone comment and a trailing one) — Plugin Check's own scan was
+	// observed to only honor one phpcs:ignore annotation per line.
+	$wpdb->query( "DROP TABLE IF EXISTS {$mab_sections_table}" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Deliberate, one-time schema cleanup on uninstall; table name is a fixed prefix, not user input; no WP API drops a custom table.
 }
 
 /**

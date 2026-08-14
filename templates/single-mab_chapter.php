@@ -71,6 +71,7 @@ $book_progress = ( false !== $current && count( $chapters ) > 0 )
 			<a class="mab-reader__book" href="<?php echo esc_url( get_permalink( $book_id ) ); ?>"><span aria-hidden="true">←</span> <?php echo esc_html( get_the_title( $book_id ) ); ?></a>
 		<?php endif; ?>
 		<?php if ( false !== $current && count( $chapters ) > 0 ) : ?>
+			<?php /* translators: 1: current chapter number, 2: total number of chapters. */ ?>
 			<span><?php echo esc_html( sprintf( __( '%1$d of %2$d', 'make-a-book' ), $current + 1, count( $chapters ) ) ); ?></span>
 		<?php endif; ?>
 		<?php if ( mab_show_mode_toggle() ) : ?>
@@ -80,6 +81,7 @@ $book_progress = ( false !== $current && count( $chapters ) > 0 )
 	<article class="mab-chapter">
 		<header class="mab-chapter__header">
 			<p class="mab-eyebrow">
+				<?php /* translators: %s: Chapter number. */ ?>
 				<?php echo esc_html( sprintf( __( 'Chapter %s', 'make-a-book' ), get_post_meta( $chapter_id, '_mab_order', true ) ) ); ?>
 				<span class="mab-eyebrow__meta" aria-hidden="true">·</span>
 				<span class="mab-eyebrow__meta">

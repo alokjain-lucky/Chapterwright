@@ -18,6 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				$coming_soon = (bool) get_post_meta( get_the_ID(), '_mab_coming_soon', true );
 				?>
 				<article class="mab-book-card<?php echo $coming_soon ? ' mab-book-card--coming-soon' : ''; ?>" style="--mab-accent:<?php echo esc_attr( $accent ? $accent : '#f45d48' ); ?>">
+					<?php /* translators: %s: Book title. */ ?>
 					<a class="mab-book-card__cover" href="<?php the_permalink(); ?>" aria-label="<?php echo esc_attr( sprintf( __( 'Read %s', 'make-a-book' ), get_the_title() ) ); ?>">
 						<?php if ( has_post_thumbnail() ) : ?>
 							<?php the_post_thumbnail( 'large' ); ?>
