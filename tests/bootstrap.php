@@ -19,6 +19,15 @@ if ( ! $_tests_dir ) {
 	$_tests_dir = '/tmp/wordpress-tests-lib';
 }
 
+// The WP core test suite requires the PHPUnit Polyfills library (shims
+// PHPUnit API differences across versions) to be locatable before its own
+// bootstrap runs — see yoast/phpunit-polyfills in composer.json, installed
+// via `composer install` (see .github/workflows/ci.yml's "PHP unit tests"
+// job and README.md's local setup instructions).
+if ( ! getenv( 'WP_TESTS_PHPUNIT_POLYFILLS_PATH' ) ) {
+	putenv( 'WP_TESTS_PHPUNIT_POLYFILLS_PATH=' . dirname( __DIR__ ) . '/vendor/yoast/phpunit-polyfills' );
+}
+
 require_once $_tests_dir . '/includes/functions.php';
 
 /**

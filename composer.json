@@ -1,12 +1,13 @@
 {
     "name": "alokjain/make-a-book",
-    "description": "Dev-only dependencies for coding-standards checks. Not required to run the plugin.",
+    "description": "Dev-only dependencies for coding-standards checks and PHPUnit tests. Not required to run the plugin.",
     "type": "wordpress-plugin",
     "license": "GPL-2.0-or-later",
     "require-dev": {
         "wp-coding-standards/wpcs": "^3.0",
         "phpcompatibility/phpcompatibility-wp": "^2.1",
-        "dealerdirect/phpcodesniffer-composer-installer": "^1.0"
+        "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+        "yoast/phpunit-polyfills": "^1.1"
     },
     "config": {
         "allow-plugins": {

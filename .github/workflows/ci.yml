@@ -61,7 +61,20 @@ jobs:
           cache: npm
           cache-dependency-path: make-a-book/package-lock.json
 
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+          tools: composer
+          coverage: none
+
       - run: npm ci
+        working-directory: make-a-book
+
+      # The WP core test bootstrap (called from tests/bootstrap.php) requires
+      # the PHPUnit Polyfills library — see yoast/phpunit-polyfills in
+      # composer.json — to be installed and locatable, or it aborts before
+      # any test runs.
+      - run: composer install --no-progress --prefer-dist
         working-directory: make-a-book
 
       # wp-env spins up WordPress and a dedicated test-database container
