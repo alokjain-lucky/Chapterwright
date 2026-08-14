@@ -23,9 +23,13 @@ if ( ! $_tests_dir ) {
 // PHPUnit API differences across versions) to be locatable before its own
 // bootstrap runs — see yoast/phpunit-polyfills in composer.json, installed
 // via `composer install` (see .github/workflows/ci.yml's "PHP unit tests"
-// job and README.md's local setup instructions).
-if ( ! getenv( 'WP_TESTS_PHPUNIT_POLYFILLS_PATH' ) ) {
-	putenv( 'WP_TESTS_PHPUNIT_POLYFILLS_PATH=' . dirname( __DIR__ ) . '/vendor/yoast/phpunit-polyfills' );
+// job and README.md's local setup instructions). Defining the constant
+// directly (rather than putenv(), which WPCS flags as a discouraged
+// runtime-configuration function) works because WP core's own bootstrap
+// only ever tries to set it from getenv(), which we're not using — so
+// there's nothing for it to conflict with.
+if ( ! defined( 'WP_TESTS_PHPUNIT_POLYFILLS_PATH' ) ) {
+	define( 'WP_TESTS_PHPUNIT_POLYFILLS_PATH', dirname( __DIR__ ) . '/vendor/yoast/phpunit-polyfills' );
 }
 
 require_once $_tests_dir . '/includes/functions.php';
