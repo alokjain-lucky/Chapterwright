@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name:       Make a Book
- * Plugin URI:        https://alokjain.dev
+ * Plugin URI:        https://github.com/alokjain-lucky/Make-a-Book
  * Description:       Create and publish multiple, beautifully readable ebooks with chapters, sections, and code-friendly formatting.
  * Version:           2.5.0
  * Requires at least: 6.4
