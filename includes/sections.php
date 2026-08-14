@@ -49,7 +49,25 @@ function mab_get_book_sections( $book_id ) {
 		ARRAY_A
 	);
 
-	return $rows ? $rows : array();
+	return $rows ? array_map( 'mab_cast_section_row', $rows ) : array();
+}
+
+/**
+ * Cast a section row's numeric columns to int.
+ *
+ * $wpdb returns every column as a string regardless of the database
+ * column's actual type, which trips up strict comparisons (e.g.
+ * wp_list_pluck() + assertSame()) against the ints mab_insert_section()
+ * returns and mab_update_section() accepts.
+ *
+ * @param array<string,mixed> $row Raw section row from the database.
+ * @return array<string,mixed> The same row with id, book_id, and menu_order cast to int.
+ */
+function mab_cast_section_row( $row ) {
+	$row['id']         = (int) $row['id'];
+	$row['book_id']    = (int) $row['book_id'];
+	$row['menu_order'] = (int) $row['menu_order'];
+	return $row;
 }
 
 /**
@@ -72,7 +90,7 @@ function mab_get_section( $section_id ) {
 		ARRAY_A
 	);
 
-	return $row ? $row : null;
+	return $row ? mab_cast_section_row( $row ) : null;
 }
 
 /**
