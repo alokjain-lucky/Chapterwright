@@ -22,9 +22,15 @@ $has_header_text    = $archive_eyebrow || $archive_heading || $archive_subheadin
 <main id="mab-archive-content" class="mab-page mab-archive" tabindex="-1">
 	<?php if ( $has_header_text ) : ?>
 		<header class="mab-archive__header">
-			<?php if ( $archive_eyebrow ) : ?><p class="mab-eyebrow"><?php echo esc_html( $archive_eyebrow ); ?></p><?php endif; ?>
-			<?php if ( $archive_heading ) : ?><h1><?php echo esc_html( $archive_heading ); ?></h1><?php endif; ?>
-			<?php if ( $archive_subheading ) : ?><p><?php echo esc_html( $archive_subheading ); ?></p><?php endif; ?>
+			<?php if ( $archive_eyebrow ) { ?>
+				<p class="mab-eyebrow"><?php echo esc_html( $archive_eyebrow ); ?></p>
+			<?php } ?>
+			<?php if ( $archive_heading ) { ?>
+				<h1><?php echo esc_html( $archive_heading ); ?></h1>
+			<?php } ?>
+			<?php if ( $archive_subheading ) { ?>
+				<p><?php echo esc_html( $archive_subheading ); ?></p>
+			<?php } ?>
 		</header>
 	<?php endif; ?>
 	<?php if ( ! $archive_heading ) : ?>
@@ -42,7 +48,7 @@ $has_header_text    = $archive_eyebrow || $archive_heading || $archive_subheadin
 		?>
 		<h1 class="mab-sr-only"><?php echo esc_html( post_type_archive_title( '', false ) ); ?></h1>
 	<?php endif; ?>
-	<?php include MAKE_A_BOOK_PATH . 'templates/book-grid.php'; ?>
+	<?php require MAKE_A_BOOK_PATH . 'templates/book-grid.php'; ?>
 	<?php mab_render_credit( 'archive' ); ?>
 </main>
 <?php require MAKE_A_BOOK_PATH . 'templates/partials/document-end.php'; ?>

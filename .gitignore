@@ -1,5 +1,6 @@
 # AI assistant instructions and workspace state.
 AGENTS.md
+TODO.md
 .agents/
 .codex/
 .claude/

@@ -66,7 +66,7 @@ function mab_get_chapters( $book_id, $statuses = array( 'publish' ) ) {
  * drawer (templates/single-mab_chapter.php) both build `$sections` this way
  * and then both render it through the same templates/partials/toc-list.php.
  *
- * @param int      $book_id  Book post ID.
+ * @param int       $book_id  Book post ID.
  * @param WP_Post[] $chapters Chapters already fetched via mab_get_chapters( $book_id ).
  * @return array<int,array{name:string,description:string,chapters:WP_Post[]}>
  */
@@ -123,7 +123,7 @@ function mab_build_toc_sections( $book_id, $chapters ) {
  * to fetch them ahead of a click. Pulled out specifically so those two call
  * sites can't drift into finding "the next chapter" two different ways.
  *
- * @param int      $chapter_id Chapter post ID to locate.
+ * @param int       $chapter_id Chapter post ID to locate.
  * @param WP_Post[] $chapters  Chapters already fetched via mab_get_chapters( $book_id ), in reading order.
  * @return array{index:int|false, previous:WP_Post|null, next:WP_Post|null} 'index' is false when $chapter_id isn't in $chapters (e.g. an orphaned or unpublished chapter).
  */

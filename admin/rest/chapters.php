@@ -140,7 +140,7 @@ function mab_rest_reorder_chapters( $request ) {
 			return new WP_Error( 'mab_rest_chapter_not_found', __( 'One of those chapters does not exist.', 'make-a-book' ), array( 'status' => 404 ) );
 		}
 
-		if ( $book_id !== absint( get_post_meta( $chapter_id, '_mab_book_id', true ) ) ) {
+		if ( absint( get_post_meta( $chapter_id, '_mab_book_id', true ) ) !== $book_id ) {
 			return new WP_Error( 'mab_rest_chapter_mismatch', __( 'One of those chapters does not belong to this book.', 'make-a-book' ), array( 'status' => 400 ) );
 		}
 

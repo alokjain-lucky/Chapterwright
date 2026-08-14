@@ -66,10 +66,10 @@ function mab_register_abilities() {
 				'items' => array(
 					'type'       => 'object',
 					'properties' => array(
-						'id'             => array( 'type' => 'integer' ),
-						'title'          => array( 'type' => 'string' ),
-						'status'         => array( 'type' => 'string' ),
-						'chapter_count'  => array( 'type' => 'integer' ),
+						'id'            => array( 'type' => 'integer' ),
+						'title'         => array( 'type' => 'string' ),
+						'status'        => array( 'type' => 'string' ),
+						'chapter_count' => array( 'type' => 'integer' ),
 					),
 				),
 			),
@@ -80,7 +80,7 @@ function mab_register_abilities() {
 				return current_user_can( 'edit_mab_books' );
 			},
 			'meta'                => array(
-				'annotations' => array( 'readonly' => true ),
+				'annotations'  => array( 'readonly' => true ),
 				'show_in_rest' => true,
 			),
 		)
@@ -109,7 +109,7 @@ function mab_register_abilities() {
 				return current_user_can( 'edit_post', (int) $input['book_id'] );
 			},
 			'meta'                => array(
-				'annotations' => array( 'readonly' => true ),
+				'annotations'  => array( 'readonly' => true ),
 				'show_in_rest' => true,
 			),
 		)
@@ -137,7 +137,7 @@ function mab_register_abilities() {
 				return current_user_can( 'edit_post', (int) $input['book_id'] );
 			},
 			'meta'                => array(
-				'annotations' => array(
+				'annotations'  => array(
 					'readonly'    => false,
 					'destructive' => false,
 					'idempotent'  => false,
@@ -176,7 +176,7 @@ function mab_register_abilities() {
 				return current_user_can( 'edit_post', (int) $input['book_id'] ) && current_user_can( 'edit_mab_chapters' );
 			},
 			'meta'                => array(
-				'annotations' => array(
+				'annotations'  => array(
 					'readonly'    => false,
 					'destructive' => false,
 					'idempotent'  => false,
@@ -207,7 +207,7 @@ function mab_register_abilities() {
 				return $section && current_user_can( 'edit_post', $section['book_id'] );
 			},
 			'meta'                => array(
-				'annotations' => array(
+				'annotations'  => array(
 					'readonly'    => false,
 					'destructive' => true,
 					'idempotent'  => true,

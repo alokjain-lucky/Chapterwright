@@ -12,7 +12,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 <div class="mab-library">
 	<?php if ( $query->have_posts() ) : ?>
 		<div class="mab-book-grid">
-			<?php while ( $query->have_posts() ) : $query->the_post(); ?>
+			<?php
+			while ( $query->have_posts() ) :
+				$query->the_post();
+				?>
 				<?php
 				$accent      = get_post_meta( get_the_ID(), '_mab_accent', true );
 				$coming_soon = (bool) get_post_meta( get_the_ID(), '_mab_coming_soon', true );

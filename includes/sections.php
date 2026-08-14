@@ -78,8 +78,8 @@ function mab_get_section( $section_id ) {
 /**
  * Create a section for a book.
  *
- * @param int                  $book_id Book post ID.
- * @param array<string,mixed>  $args {
+ * @param int                 $book_id Book post ID.
+ * @param array<string,mixed> $args {
  *     Section fields.
  *
  *     @type string $name        Section name. Required.
@@ -131,8 +131,8 @@ function mab_insert_section( $book_id, $args ) {
 /**
  * Update a section's name, description, and/or order.
  *
- * @param int                  $section_id Section ID.
- * @param array<string,mixed>  $args       Any of: name, description, menu_order.
+ * @param int                 $section_id Section ID.
+ * @param array<string,mixed> $args       Any of: name, description, menu_order.
  * @return bool|WP_Error True on success, WP_Error on failure.
  */
 function mab_update_section( $section_id, $args ) {
@@ -156,7 +156,7 @@ function mab_update_section( $section_id, $args ) {
 
 	if ( isset( $args['description'] ) ) {
 		$data['description'] = sanitize_textarea_field( $args['description'] );
-		$format[]             = '%s';
+		$format[]            = '%s';
 	}
 
 	if ( isset( $args['menu_order'] ) ) {

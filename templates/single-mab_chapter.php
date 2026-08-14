@@ -30,13 +30,13 @@ $next       = $neighbors['next'];
 // turns that on; $chapters above stays published-only since it also drives
 // prev/next navigation and the "X of Y" counter, which must never count or
 // link to an unpublished chapter.
-$show_drawer_toc     = $book_id && mab_show_toc_button();
-$toc_chapters         = ( $show_drawer_toc && mab_show_draft_chapters() )
+$show_drawer_toc    = $book_id && mab_show_toc_button();
+$toc_chapters       = ( $show_drawer_toc && mab_show_draft_chapters() )
 	? mab_get_chapters( $book_id, array( 'publish', 'draft' ) )
 	: $chapters;
-$sections            = $show_drawer_toc ? mab_build_toc_sections( $book_id, $toc_chapters ) : array();
-$show_toc_excerpt    = mab_show_toc_excerpt();
-$current_chapter_id  = $chapter_id;
+$sections           = $show_drawer_toc ? mab_build_toc_sections( $book_id, $toc_chapters ) : array();
+$show_toc_excerpt   = mab_show_toc_excerpt();
+$current_chapter_id = $chapter_id;
 
 // How far into the *book* this chapter sits, inclusive of itself (chapter 2
 // of 2 is "100% through" — not this single chapter's own scroll position,
@@ -98,14 +98,26 @@ $book_progress = ( false !== $current && count( $chapters ) > 0 )
 				</span>
 			</p>
 			<h1><?php the_title(); ?></h1>
-			<?php if ( has_excerpt() ) : ?><p class="mab-chapter__deck"><?php echo esc_html( get_the_excerpt() ); ?></p><?php endif; ?>
+			<?php if ( has_excerpt() ) { ?>
+				<p class="mab-chapter__deck"><?php echo esc_html( get_the_excerpt() ); ?></p>
+			<?php } ?>
 		</header>
-		<?php if ( has_post_thumbnail() ) : ?><figure class="mab-chapter__image"><?php the_post_thumbnail( 'full' ); ?></figure><?php endif; ?>
+		<?php if ( has_post_thumbnail() ) { ?>
+			<figure class="mab-chapter__image"><?php the_post_thumbnail( 'full' ); ?></figure>
+		<?php } ?>
 		<div class="mab-chapter__content"><?php the_content(); ?></div>
 	</article>
 	<nav class="mab-reader__next" aria-label="<?php esc_attr_e( 'Chapter pagination', 'make-a-book' ); ?>">
-		<?php if ( $previous ) : ?><a href="<?php echo esc_url( get_permalink( $previous ) ); ?>"><small><?php esc_html_e( 'Previous', 'make-a-book' ); ?></small><span>← <?php echo esc_html( get_the_title( $previous ) ); ?></span></a><?php else : ?><span></span><?php endif; ?>
-		<?php if ( $next ) : ?><a class="is-next" href="<?php echo esc_url( get_permalink( $next ) ); ?>"><small><?php esc_html_e( 'Next', 'make-a-book' ); ?></small><span><?php echo esc_html( get_the_title( $next ) ); ?> →</span></a><?php elseif ( $book_id ) : ?><a class="is-next" href="<?php echo esc_url( get_permalink( $book_id ) ); ?>"><small><?php esc_html_e( 'Finished', 'make-a-book' ); ?></small><span><?php esc_html_e( 'Back to contents', 'make-a-book' ); ?> →</span></a><?php endif; ?>
+		<?php if ( $previous ) { ?>
+			<a href="<?php echo esc_url( get_permalink( $previous ) ); ?>"><small><?php esc_html_e( 'Previous', 'make-a-book' ); ?></small><span>← <?php echo esc_html( get_the_title( $previous ) ); ?></span></a>
+		<?php } else { ?>
+			<span></span>
+		<?php } ?>
+		<?php if ( $next ) { ?>
+			<a class="is-next" href="<?php echo esc_url( get_permalink( $next ) ); ?>"><small><?php esc_html_e( 'Next', 'make-a-book' ); ?></small><span><?php echo esc_html( get_the_title( $next ) ); ?> →</span></a>
+		<?php } elseif ( $book_id ) { ?>
+			<a class="is-next" href="<?php echo esc_url( get_permalink( $book_id ) ); ?>"><small><?php esc_html_e( 'Finished', 'make-a-book' ); ?></small><span><?php esc_html_e( 'Back to contents', 'make-a-book' ); ?> →</span></a>
+		<?php } ?>
 	</nav>
 	<?php mab_render_credit(); ?>
 	<?php if ( $show_drawer_toc ) : ?>

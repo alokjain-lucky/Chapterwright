@@ -153,11 +153,11 @@ function mab_register_meta_fields() {
 		MAB_BOOK_POST_TYPE,
 		'_mab_subtitle',
 		array(
-			'type'          => 'string',
-			'single'        => true,
-			'show_in_rest'  => true,
+			'type'              => 'string',
+			'single'            => true,
+			'show_in_rest'      => true,
 			'sanitize_callback' => 'sanitize_textarea_field',
-			'auth_callback' => 'mab_meta_auth_callback',
+			'auth_callback'     => 'mab_meta_auth_callback',
 		)
 	);
 
@@ -165,11 +165,11 @@ function mab_register_meta_fields() {
 		MAB_BOOK_POST_TYPE,
 		'_mab_accent',
 		array(
-			'type'          => 'string',
-			'single'        => true,
-			'show_in_rest'  => true,
+			'type'              => 'string',
+			'single'            => true,
+			'show_in_rest'      => true,
 			'sanitize_callback' => 'mab_sanitize_accent_color',
-			'auth_callback' => 'mab_meta_auth_callback',
+			'auth_callback'     => 'mab_meta_auth_callback',
 		)
 	);
 
@@ -184,12 +184,12 @@ function mab_register_meta_fields() {
 		MAB_BOOK_POST_TYPE,
 		'_mab_coming_soon',
 		array(
-			'type'          => 'boolean',
-			'single'        => true,
-			'show_in_rest'  => true,
-			'default'       => false,
+			'type'              => 'boolean',
+			'single'            => true,
+			'show_in_rest'      => true,
+			'default'           => false,
 			'sanitize_callback' => 'rest_sanitize_boolean',
-			'auth_callback' => 'mab_meta_auth_callback',
+			'auth_callback'     => 'mab_meta_auth_callback',
 		)
 	);
 
@@ -197,11 +197,11 @@ function mab_register_meta_fields() {
 		MAB_CHAPTER_POST_TYPE,
 		'_mab_book_id',
 		array(
-			'type'          => 'integer',
-			'single'        => true,
-			'show_in_rest'  => true,
+			'type'              => 'integer',
+			'single'            => true,
+			'show_in_rest'      => true,
 			'sanitize_callback' => 'absint',
-			'auth_callback' => 'mab_meta_auth_callback',
+			'auth_callback'     => 'mab_meta_auth_callback',
 		)
 	);
 
@@ -209,11 +209,11 @@ function mab_register_meta_fields() {
 		MAB_CHAPTER_POST_TYPE,
 		'_mab_order',
 		array(
-			'type'          => 'integer',
-			'single'        => true,
-			'show_in_rest'  => true,
+			'type'              => 'integer',
+			'single'            => true,
+			'show_in_rest'      => true,
 			'sanitize_callback' => 'absint',
-			'auth_callback' => 'mab_meta_auth_callback',
+			'auth_callback'     => 'mab_meta_auth_callback',
 		)
 	);
 
@@ -221,11 +221,11 @@ function mab_register_meta_fields() {
 		MAB_CHAPTER_POST_TYPE,
 		'_mab_section_id',
 		array(
-			'type'          => 'integer',
-			'single'        => true,
-			'show_in_rest'  => true,
+			'type'              => 'integer',
+			'single'            => true,
+			'show_in_rest'      => true,
 			'sanitize_callback' => 'absint',
-			'auth_callback' => 'mab_meta_auth_callback',
+			'auth_callback'     => 'mab_meta_auth_callback',
 		)
 	);
 }
