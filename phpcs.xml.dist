@@ -66,14 +66,19 @@
 	</rule>
 
 	<!-- edit_hsrtech_books and edit_hsrtech_chapters are real custom capabilities
-	     registered by hsrtech_add_capabilities_to_roles() (includes/abilities.php)
+	     registered by hsrtech_add_capabilities_to_roles() (includes/content-types.php)
 	     and granted to default roles on activation — not typos of core
-	     capabilities. -->
+	     capabilities. edit_others_hsrtech_books is one of the same capability
+	     type's auto-derived plural capabilities (map_meta_cap => true), used
+	     in includes/abilities.php to scope the list-books ability to the
+	     caller's own books unless they hold it — never granted directly, but
+	     still a real, checkable capability string, not a typo. -->
 	<rule ref="WordPress.WP.Capabilities">
 		<properties>
 			<property name="custom_capabilities" type="array">
 				<element value="edit_hsrtech_books"/>
 				<element value="edit_hsrtech_chapters"/>
+				<element value="edit_others_hsrtech_books"/>
 			</property>
 		</properties>
 	</rule>
