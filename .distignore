@@ -17,6 +17,7 @@
 .distignore
 .wp-env.json
 .npmrc
+.wordpress-org
 node_modules
 vendor
 tests
