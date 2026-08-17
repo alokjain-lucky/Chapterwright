@@ -35,7 +35,13 @@
 		/** Apply a mode to the document and update every visible control. */
 		function applyMode( mode ) {
 			const validMode = modes.includes( mode ) ? mode : 'auto';
-			document.documentElement.dataset.mabMode = validMode;
+			// Must match the attribute the CSS actually selects on
+			// (:root[data-hsrtech-mode="dark"] / ="light", chapterwright.css) —
+			// this used to write data-mab-mode, a leftover from before the
+			// plugin's hsrtech_ rename, which the CSS never matched, so every
+			// click silently no-opped and the page only ever reflected
+			// prefers-color-scheme.
+			document.documentElement.dataset.hsrtechMode = validMode;
 
 			buttons.forEach( function ( button ) {
 				const label = button.querySelector( '[data-hsrtech-mode-label]' );

@@ -40,7 +40,7 @@ add_action( 'admin_init', 'hsrtech_register_settings' );
  */
 function hsrtech_default_settings() {
 	return array(
-		'show_mode_toggle'    => '1',
+		'show_mode_toggle'    => '0',
 		'show_credit'         => '0',
 		'show_toc_excerpt'    => '1',
 		'show_toc_button'     => '1',
@@ -106,9 +106,12 @@ function hsrtech_get_settings() {
 
 /**
  * Whether the reader's own color-mode toggle button should be rendered on
- * book and chapter pages. Off by default only if a site owner explicitly
- * disables it — the theme's own header toggle (if any) is a separate,
- * unrelated control and isn't affected either way.
+ * book and chapter pages. Off by default, on only if a site owner
+ * explicitly enables it in settings — most themes already have their own
+ * site-wide color-mode control (this site's header does), and showing a
+ * second, separate one on top of it by default reads as redundant/confusing
+ * rather than helpful. The theme's own toggle (if any) is unaffected either
+ * way, since the two are unrelated controls.
  *
  * @return bool
  */
