@@ -10,17 +10,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 ?>
 <div class="hsrtech-library">
-	<?php if ( $query->have_posts() ) : ?>
+	<?php if ( $hsrtech_query->have_posts() ) : ?>
 		<div class="hsrtech-book-grid">
 			<?php
-			while ( $query->have_posts() ) :
-				$query->the_post();
+			while ( $hsrtech_query->have_posts() ) :
+				$hsrtech_query->the_post();
 				?>
 				<?php
-				$accent      = get_post_meta( get_the_ID(), '_hsrtech_accent', true );
-				$coming_soon = (bool) get_post_meta( get_the_ID(), '_hsrtech_coming_soon', true );
+				$hsrtech_accent      = get_post_meta( get_the_ID(), '_hsrtech_accent', true );
+				$hsrtech_coming_soon = (bool) get_post_meta( get_the_ID(), '_hsrtech_coming_soon', true );
 				?>
-				<article class="hsrtech-book-card<?php echo $coming_soon ? ' hsrtech-book-card--coming-soon' : ''; ?>" style="--hsrtech-accent:<?php echo esc_attr( $accent ? $accent : '#f45d48' ); ?>">
+				<article class="hsrtech-book-card<?php echo $hsrtech_coming_soon ? ' hsrtech-book-card--coming-soon' : ''; ?>" style="--hsrtech-accent:<?php echo esc_attr( $hsrtech_accent ? $hsrtech_accent : '#f45d48' ); ?>">
 					<?php /* translators: %s: Book title. */ ?>
 					<a class="hsrtech-book-card__cover" href="<?php the_permalink(); ?>" aria-label="<?php echo esc_attr( sprintf( __( 'Read %s', 'chapterwright' ), get_the_title() ) ); ?>">
 						<?php if ( has_post_thumbnail() ) : ?>
@@ -28,7 +28,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<?php else : ?>
 							<span class="hsrtech-book-card__cover-label"><?php the_title(); ?></span>
 						<?php endif; ?>
-						<?php if ( $coming_soon ) : ?>
+						<?php if ( $hsrtech_coming_soon ) : ?>
 							<span class="hsrtech-badge hsrtech-badge--coming-soon hsrtech-book-card__badge"><?php esc_html_e( 'Coming soon', 'chapterwright' ); ?></span>
 						<?php endif; ?>
 					</a>
@@ -37,7 +37,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<h2><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h2>
 						<?php the_excerpt(); ?>
 						<a class="hsrtech-text-link" href="<?php the_permalink(); ?>">
-							<?php $coming_soon ? esc_html_e( 'Learn more', 'chapterwright' ) : esc_html_e( 'Explore the book', 'chapterwright' ); ?>
+							<?php $hsrtech_coming_soon ? esc_html_e( 'Learn more', 'chapterwright' ) : esc_html_e( 'Explore the book', 'chapterwright' ); ?>
 							<span aria-hidden="true">→</span>
 						</a>
 					</div>

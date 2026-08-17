@@ -14,47 +14,47 @@
  *
  * @package Chapterwright
  *
- * @var array<int,array>  $sections           From hsrtech_build_toc_sections().
- * @var bool              $show_toc_excerpt   From hsrtech_show_toc_excerpt().
- * @var int                $current_chapter_id The chapter currently being read, or 0 on the book page itself (nothing is ever "current" there). Used only to mark that one row with aria-current="page".
+ * @var array<int,array>  $hsrtech_sections           From hsrtech_build_toc_sections().
+ * @var bool              $hsrtech_show_toc_excerpt   From hsrtech_show_toc_excerpt().
+ * @var int                $hsrtech_current_chapter_id The chapter currently being read, or 0 on the book page itself (nothing is ever "current" there). Used only to mark that one row with aria-current="page".
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$current_chapter_id = isset( $current_chapter_id ) ? (int) $current_chapter_id : 0;
+$hsrtech_current_chapter_id = isset( $hsrtech_current_chapter_id ) ? (int) $hsrtech_current_chapter_id : 0;
 ?>
-<?php if ( $sections ) : ?>
-	<?php foreach ( $sections as $section ) : ?>
+<?php if ( $hsrtech_sections ) : ?>
+	<?php foreach ( $hsrtech_sections as $hsrtech_section ) : ?>
 		<div class="hsrtech-toc-section">
 			<div class="hsrtech-toc-section__heading">
-				<h3><?php echo esc_html( $section['name'] ); ?></h3>
-				<?php if ( $section['description'] ) : ?>
-					<p class="hsrtech-toc-section__description"><?php echo esc_html( $section['description'] ); ?></p>
+				<h3><?php echo esc_html( $hsrtech_section['name'] ); ?></h3>
+				<?php if ( $hsrtech_section['description'] ) : ?>
+					<p class="hsrtech-toc-section__description"><?php echo esc_html( $hsrtech_section['description'] ); ?></p>
 				<?php endif; ?>
 			</div>
-			<ol start="<?php echo esc_attr( (int) get_post_meta( $section['chapters'][0]->ID, '_hsrtech_order', true ) ); ?>">
-				<?php foreach ( $section['chapters'] as $chapter ) : ?>
+			<ol start="<?php echo esc_attr( (int) get_post_meta( $hsrtech_section['chapters'][0]->ID, '_hsrtech_order', true ) ); ?>">
+				<?php foreach ( $hsrtech_section['chapters'] as $hsrtech_chapter ) : ?>
 					<?php
 					// A draft chapter only ever reaches this list at all when
 					// the site owner turned on "Draft chapters in the table of
 					// contents" (hsrtech_show_draft_chapters(), admin/settings.php)
-					// — see the $toc_chapters variable in the two templates
+					// — see the $hsrtech_toc_chapters variable in the two templates
 					// that require this partial. It renders as a <span>, never
 					// an <a>: get_permalink() on a draft either 404s or leaks a
 					// private-preview URL for a logged-out visitor, neither of
 					// which is a real, working link.
-					$is_draft = 'publish' !== $chapter->post_status;
+					$hsrtech_is_draft = 'publish' !== $hsrtech_chapter->post_status;
 					?>
 					<li>
-						<?php if ( $is_draft ) : ?>
+						<?php if ( $hsrtech_is_draft ) : ?>
 							<span class="hsrtech-toc-row-link hsrtech-toc-row-link--draft" aria-disabled="true">
 						<?php else : ?>
-							<a class="hsrtech-toc-row-link" href="<?php echo esc_url( get_permalink( $chapter ) ); ?>" <?php echo $chapter->ID === $current_chapter_id ? 'aria-current="page"' : ''; ?>>
+							<a class="hsrtech-toc-row-link" href="<?php echo esc_url( get_permalink( $hsrtech_chapter ) ); ?>" <?php echo $hsrtech_chapter->ID === $hsrtech_current_chapter_id ? 'aria-current="page"' : ''; ?>>
 						<?php endif; ?>
 							<span class="hsrtech-toc-row">
-								<span class="hsrtech-toc-row__title"><?php echo esc_html( get_the_title( $chapter ) ); ?></span>
+								<span class="hsrtech-toc-row__title"><?php echo esc_html( get_the_title( $hsrtech_chapter ) ); ?></span>
 								<span class="hsrtech-toc-row__leader" aria-hidden="true"></span>
 								<?php
 								/*
@@ -69,12 +69,12 @@ $current_chapter_id = isset( $current_chapter_id ) ? (int) $current_chapter_id :
 								 * no indication it wasn't actually available yet.
 								 */
 								?>
-								<b<?php echo $is_draft ? '' : ' aria-hidden="true"'; ?>><?php echo $is_draft ? esc_html__( 'Draft', 'chapterwright' ) : esc_html( get_post_meta( $chapter->ID, '_hsrtech_order', true ) ); ?></b>
+								<b<?php echo $hsrtech_is_draft ? '' : ' aria-hidden="true"'; ?>><?php echo $hsrtech_is_draft ? esc_html__( 'Draft', 'chapterwright' ) : esc_html( get_post_meta( $hsrtech_chapter->ID, '_hsrtech_order', true ) ); ?></b>
 							</span>
-							<?php if ( $show_toc_excerpt && ! $is_draft && get_the_excerpt( $chapter ) ) : ?>
-								<small><?php echo esc_html( get_the_excerpt( $chapter ) ); ?></small>
+							<?php if ( $hsrtech_show_toc_excerpt && ! $hsrtech_is_draft && get_the_excerpt( $hsrtech_chapter ) ) : ?>
+								<small><?php echo esc_html( get_the_excerpt( $hsrtech_chapter ) ); ?></small>
 							<?php endif; ?>
-						<?php echo $is_draft ? '</span>' : '</a>'; ?>
+						<?php echo $hsrtech_is_draft ? '</span>' : '</a>'; ?>
 					</li>
 				<?php endforeach; ?>
 			</ol>

@@ -22,7 +22,7 @@ add_shortcode( 'hsrtech_books', 'hsrtech_library_shortcode' );
 function hsrtech_library_shortcode( $atts ) {
 	$atts  = shortcode_atts( array( 'limit' => 12 ), (array) $atts, 'hsrtech_books' );
 	$limit = max( 1, min( 100, absint( $atts['limit'] ) ) );
-	$query = new WP_Query(
+	$hsrtech_query = new WP_Query(
 		array(
 			'post_type'      => HSRTECH_BOOK_POST_TYPE,
 			'post_status'    => 'publish',
@@ -33,6 +33,9 @@ function hsrtech_library_shortcode( $atts ) {
 	);
 
 	ob_start();
+	// templates/book-grid.php reads $hsrtech_query from this function's scope
+	// (include() doesn't create a new one) — keep the name in sync if either
+	// side changes.
 	include HSRTECH_PATH . 'templates/book-grid.php';
 	wp_reset_postdata();
 

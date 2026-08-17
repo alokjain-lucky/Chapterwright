@@ -11,29 +11,29 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 require HSRTECH_PATH . 'templates/partials/document-start.php';
 global $wp_query;
-$query = $wp_query;
+$hsrtech_query = $wp_query;
 
-$archive_eyebrow    = hsrtech_get_text( 'archive_eyebrow' );
-$archive_heading    = hsrtech_get_text( 'archive_heading' );
-$archive_subheading = hsrtech_get_text( 'archive_subheading' );
-$has_header_text    = $archive_eyebrow || $archive_heading || $archive_subheading;
+$hsrtech_archive_eyebrow    = hsrtech_get_text( 'archive_eyebrow' );
+$hsrtech_archive_heading    = hsrtech_get_text( 'archive_heading' );
+$hsrtech_archive_subheading = hsrtech_get_text( 'archive_subheading' );
+$hsrtech_has_header_text    = $hsrtech_archive_eyebrow || $hsrtech_archive_heading || $hsrtech_archive_subheading;
 ?>
 <a class="hsrtech-skip-link" href="#hsrtech-archive-content"><?php esc_html_e( 'Skip to book library', 'chapterwright' ); ?></a>
 <main id="hsrtech-archive-content" class="hsrtech-page hsrtech-archive" tabindex="-1">
-	<?php if ( $has_header_text ) : ?>
+	<?php if ( $hsrtech_has_header_text ) : ?>
 		<header class="hsrtech-archive__header">
-			<?php if ( $archive_eyebrow ) { ?>
-				<p class="hsrtech-eyebrow"><?php echo esc_html( $archive_eyebrow ); ?></p>
+			<?php if ( $hsrtech_archive_eyebrow ) { ?>
+				<p class="hsrtech-eyebrow"><?php echo esc_html( $hsrtech_archive_eyebrow ); ?></p>
 			<?php } ?>
-			<?php if ( $archive_heading ) { ?>
-				<h1><?php echo esc_html( $archive_heading ); ?></h1>
+			<?php if ( $hsrtech_archive_heading ) { ?>
+				<h1><?php echo esc_html( $hsrtech_archive_heading ); ?></h1>
 			<?php } ?>
-			<?php if ( $archive_subheading ) { ?>
-				<p><?php echo esc_html( $archive_subheading ); ?></p>
+			<?php if ( $hsrtech_archive_subheading ) { ?>
+				<p><?php echo esc_html( $hsrtech_archive_subheading ); ?></p>
 			<?php } ?>
 		</header>
 	<?php endif; ?>
-	<?php if ( ! $archive_heading ) : ?>
+	<?php if ( ! $hsrtech_archive_heading ) : ?>
 		<?php
 		/*
 		 * Clearing the "Heading" field in Settings is documented (see

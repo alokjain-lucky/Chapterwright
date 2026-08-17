@@ -16,23 +16,23 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$code     = isset( $attributes['code'] ) ? (string) $attributes['code'] : '';
-$language = isset( $attributes['language'] ) ? sanitize_key( $attributes['language'] ) : 'text';
-$caption  = isset( $attributes['caption'] ) ? (string) $attributes['caption'] : '';
+$hsrtech_code     = isset( $attributes['code'] ) ? (string) $attributes['code'] : '';
+$hsrtech_language = isset( $attributes['language'] ) ? sanitize_key( $attributes['language'] ) : 'text';
+$hsrtech_caption  = isset( $attributes['caption'] ) ? (string) $attributes['caption'] : '';
 
 // Nothing to show yet (e.g. a freshly inserted, still-empty block).
-if ( '' === trim( $code ) ) {
+if ( '' === trim( $hsrtech_code ) ) {
 	return;
 }
 
-$wrapper_attributes = get_block_wrapper_attributes( array( 'class' => 'hsrtech-code' ) );
+$hsrtech_wrapper_attributes = get_block_wrapper_attributes( array( 'class' => 'hsrtech-code' ) );
 ?>
-<figure <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() escapes its own output. ?>>
-	<?php if ( $caption ) : ?>
-		<figcaption class="hsrtech-code__caption"><?php echo esc_html( $caption ); ?></figcaption>
+<figure <?php echo $hsrtech_wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() escapes its own output. ?>>
+	<?php if ( $hsrtech_caption ) : ?>
+		<figcaption class="hsrtech-code__caption"><?php echo esc_html( $hsrtech_caption ); ?></figcaption>
 	<?php endif; ?>
 	<div class="hsrtech-code__frame">
-		<span class="hsrtech-code__lang" aria-hidden="true"><?php echo esc_html( strtoupper( $language ) ); ?></span>
+		<span class="hsrtech-code__lang" aria-hidden="true"><?php echo esc_html( strtoupper( $hsrtech_language ) ); ?></span>
 		<button
 			class="hsrtech-code__copy"
 			type="button"
@@ -43,6 +43,6 @@ $wrapper_attributes = get_block_wrapper_attributes( array( 'class' => 'hsrtech-c
 			<svg class="hsrtech-code__copy-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"></rect><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"></path></svg>
 			<svg class="hsrtech-code__copied-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
 		</button>
-		<pre data-hsrtech-language="<?php echo esc_attr( $language ); ?>"><code><?php echo esc_html( $code ); ?></code></pre>
+		<pre data-hsrtech-language="<?php echo esc_attr( $hsrtech_language ); ?>"><code><?php echo esc_html( $hsrtech_code ); ?></code></pre>
 	</div>
 </figure>

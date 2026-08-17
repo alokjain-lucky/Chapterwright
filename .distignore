@@ -1,0 +1,50 @@
+# What a real WordPress install of this plugin never needs — kept out of
+# chapterwright.zip and out of whatever gets committed to the WordPress.org
+# SVN repo. Mirrors the exclude list in AGENTS.md's release checklist;
+# keep the two in sync if either changes.
+#
+# tests/ in particular must stay out of the shipped plugin: tests/bootstrap.php
+# is a PHPUnit bootstrap that intentionally runs *before* WordPress core (and
+# therefore ABSPATH) is loaded, so it can never carry the usual
+# "if ( ! defined( 'ABSPATH' ) ) exit;" guard — a static "does this file
+# guard against direct access" scan run against the raw source tree will
+# always flag it. That's expected and does not need a code fix; excluding
+# tests/ from the actual submission is the fix.
+
+.git
+.github
+.gitignore
+.distignore
+.wp-env.json
+.npmrc
+node_modules
+vendor
+tests
+admin/app/src
+package.json
+package-lock.json
+composer.json
+composer.lock
+phpcs.xml.dist
+phpunit.xml.dist
+chapterwright.zip
+coverage
+.phpunit.cache
+.phpcs-cache
+*.log
+.env
+.env.*
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea
+.vscode
+AGENTS.md
+TODO.md
+.agents
+.codex
+.claude
+.cursor
+CLAUDE.md
+GEMINI.md

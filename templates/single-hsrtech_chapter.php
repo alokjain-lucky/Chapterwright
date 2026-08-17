@@ -12,31 +12,31 @@ if ( ! defined( 'ABSPATH' ) ) {
 require HSRTECH_PATH . 'templates/partials/document-start.php';
 the_post();
 
-$chapter_id = get_the_ID();
-$book_id    = absint( get_post_meta( $chapter_id, '_hsrtech_book_id', true ) );
-$chapters   = $book_id ? hsrtech_get_chapters( $book_id ) : array();
-$accent     = $book_id ? get_post_meta( $book_id, '_hsrtech_accent', true ) : '';
-$neighbors  = hsrtech_locate_chapter( $chapter_id, $chapters );
-$current    = $neighbors['index'];
-$previous   = $neighbors['previous'];
-$next       = $neighbors['next'];
+$hsrtech_chapter_id = get_the_ID();
+$hsrtech_book_id    = absint( get_post_meta( $hsrtech_chapter_id, '_hsrtech_book_id', true ) );
+$hsrtech_chapters   = $hsrtech_book_id ? hsrtech_get_chapters( $hsrtech_book_id ) : array();
+$hsrtech_accent     = $hsrtech_book_id ? get_post_meta( $hsrtech_book_id, '_hsrtech_accent', true ) : '';
+$hsrtech_neighbors  = hsrtech_locate_chapter( $hsrtech_chapter_id, $hsrtech_chapters );
+$hsrtech_current    = $hsrtech_neighbors['index'];
+$hsrtech_previous   = $hsrtech_neighbors['previous'];
+$hsrtech_next       = $hsrtech_neighbors['next'];
 
 // For the table-of-contents drawer (below). See hsrtech_build_toc_sections(),
 // includes/queries.php — the exact same grouping the book page itself uses,
 // so the drawer can never show a different chapter list than the book page
-// would. $current_chapter_id is read by templates/partials/toc-list.php to
+// would. $hsrtech_current_chapter_id is read by templates/partials/toc-list.php to
 // mark this chapter's own row in the list. The drawer's chapter list can
 // include drafts (unlinked, faded — see toc-list.php) when the site owner
-// turns that on; $chapters above stays published-only since it also drives
+// turns that on; $hsrtech_chapters above stays published-only since it also drives
 // prev/next navigation and the "X of Y" counter, which must never count or
 // link to an unpublished chapter.
-$show_drawer_toc    = $book_id && hsrtech_show_toc_button();
-$toc_chapters       = ( $show_drawer_toc && hsrtech_show_draft_chapters() )
-	? hsrtech_get_chapters( $book_id, array( 'publish', 'draft' ) )
-	: $chapters;
-$sections           = $show_drawer_toc ? hsrtech_build_toc_sections( $book_id, $toc_chapters ) : array();
-$show_toc_excerpt   = hsrtech_show_toc_excerpt();
-$current_chapter_id = $chapter_id;
+$hsrtech_show_drawer_toc    = $hsrtech_book_id && hsrtech_show_toc_button();
+$hsrtech_toc_chapters       = ( $hsrtech_show_drawer_toc && hsrtech_show_draft_chapters() )
+	? hsrtech_get_chapters( $hsrtech_book_id, array( 'publish', 'draft' ) )
+	: $hsrtech_chapters;
+$hsrtech_sections           = $hsrtech_show_drawer_toc ? hsrtech_build_toc_sections( $hsrtech_book_id, $hsrtech_toc_chapters ) : array();
+$hsrtech_show_toc_excerpt   = hsrtech_show_toc_excerpt();
+$hsrtech_current_chapter_id = $hsrtech_chapter_id;
 
 // How far into the *book* this chapter sits, inclusive of itself (chapter 2
 // of 2 is "100% through" — not this single chapter's own scroll position,
@@ -45,12 +45,12 @@ $current_chapter_id = $chapter_id;
 // bar's bottom divider and the prev/next nav's top divider (see
 // .hsrtech-reader__bar::after / .hsrtech-reader__next::before in chapterwright.css),
 // which double as a book-completion indicator instead of being plain lines.
-$book_progress = ( false !== $current && count( $chapters ) > 0 )
-	? round( ( $current + 1 ) / count( $chapters ) * 100 )
+$hsrtech_book_progress = ( false !== $hsrtech_current && count( $hsrtech_chapters ) > 0 )
+	? round( ( $hsrtech_current + 1 ) / count( $hsrtech_chapters ) * 100 )
 	: 0;
 ?>
 <a class="hsrtech-skip-link" href="#hsrtech-chapter-content"><?php esc_html_e( 'Skip to chapter content', 'chapterwright' ); ?></a>
-<main id="hsrtech-chapter-content" class="hsrtech-page hsrtech-reader" style="--hsrtech-accent:<?php echo esc_attr( $accent ? $accent : '#f45d48' ); ?>;--hsrtech-progress:<?php echo esc_attr( $book_progress ); ?>%;" tabindex="-1">
+<main id="hsrtech-chapter-content" class="hsrtech-page hsrtech-reader" style="--hsrtech-accent:<?php echo esc_attr( $hsrtech_accent ? $hsrtech_accent : '#f45d48' ); ?>;--hsrtech-progress:<?php echo esc_attr( $hsrtech_book_progress ); ?>%;" tabindex="-1">
 	<?php
 	/*
 	 * Lives inside <main>, not as a sibling before it, specifically so it
@@ -67,12 +67,12 @@ $book_progress = ( false !== $current && count( $chapters ) > 0 )
 	?>
 	<div class="hsrtech-reading-progress" aria-hidden="true"><span data-hsrtech-reading-progress></span></div>
 	<nav class="hsrtech-reader__bar" aria-label="<?php esc_attr_e( 'Book navigation', 'chapterwright' ); ?>">
-		<?php if ( $book_id ) : ?>
-			<a class="hsrtech-reader__book" href="<?php echo esc_url( get_permalink( $book_id ) ); ?>"><span aria-hidden="true">←</span> <?php echo esc_html( get_the_title( $book_id ) ); ?></a>
+		<?php if ( $hsrtech_book_id ) : ?>
+			<a class="hsrtech-reader__book" href="<?php echo esc_url( get_permalink( $hsrtech_book_id ) ); ?>"><span aria-hidden="true">←</span> <?php echo esc_html( get_the_title( $hsrtech_book_id ) ); ?></a>
 		<?php endif; ?>
-		<?php if ( false !== $current && count( $chapters ) > 0 ) : ?>
+		<?php if ( false !== $hsrtech_current && count( $hsrtech_chapters ) > 0 ) : ?>
 			<?php /* translators: 1: current chapter number, 2: total number of chapters. */ ?>
-			<span><?php echo esc_html( sprintf( __( '%1$d of %2$d', 'chapterwright' ), $current + 1, count( $chapters ) ) ); ?></span>
+			<span><?php echo esc_html( sprintf( __( '%1$d of %2$d', 'chapterwright' ), $hsrtech_current + 1, count( $hsrtech_chapters ) ) ); ?></span>
 		<?php endif; ?>
 		<?php if ( hsrtech_show_mode_toggle() ) : ?>
 			<button class="hsrtech-mode-toggle" type="button" aria-live="polite"><span aria-hidden="true">◐</span> <span data-hsrtech-mode-label><?php esc_html_e( 'Color mode', 'chapterwright' ); ?></span></button>
@@ -82,16 +82,16 @@ $book_progress = ( false !== $current && count( $chapters ) > 0 )
 		<header class="hsrtech-chapter__header">
 			<p class="hsrtech-eyebrow">
 				<?php /* translators: %s: Chapter number. */ ?>
-				<?php echo esc_html( sprintf( __( 'Chapter %s', 'chapterwright' ), get_post_meta( $chapter_id, '_hsrtech_order', true ) ) ); ?>
+				<?php echo esc_html( sprintf( __( 'Chapter %s', 'chapterwright' ), get_post_meta( $hsrtech_chapter_id, '_hsrtech_order', true ) ) ); ?>
 				<span class="hsrtech-eyebrow__meta" aria-hidden="true">·</span>
 				<span class="hsrtech-eyebrow__meta">
 					<?php
-					$reading_minutes = hsrtech_reading_time( $chapter_id );
+					$hsrtech_reading_minutes = hsrtech_reading_time( $hsrtech_chapter_id );
 					echo esc_html(
 						sprintf(
 							/* translators: %d: estimated reading time in minutes. */
-							_n( '%d min read', '%d min read', $reading_minutes, 'chapterwright' ),
-							$reading_minutes
+							_n( '%d min read', '%d min read', $hsrtech_reading_minutes, 'chapterwright' ),
+							$hsrtech_reading_minutes
 						)
 					);
 					?>
@@ -108,22 +108,22 @@ $book_progress = ( false !== $current && count( $chapters ) > 0 )
 		<div class="hsrtech-chapter__content"><?php the_content(); ?></div>
 	</article>
 	<nav class="hsrtech-reader__next" aria-label="<?php esc_attr_e( 'Chapter pagination', 'chapterwright' ); ?>">
-		<?php if ( $previous ) { ?>
-			<a href="<?php echo esc_url( get_permalink( $previous ) ); ?>"><small><?php esc_html_e( 'Previous', 'chapterwright' ); ?></small><span>← <?php echo esc_html( get_the_title( $previous ) ); ?></span></a>
+		<?php if ( $hsrtech_previous ) { ?>
+			<a href="<?php echo esc_url( get_permalink( $hsrtech_previous ) ); ?>"><small><?php esc_html_e( 'Previous', 'chapterwright' ); ?></small><span>← <?php echo esc_html( get_the_title( $hsrtech_previous ) ); ?></span></a>
 		<?php } else { ?>
 			<span></span>
 		<?php } ?>
-		<?php if ( $next ) { ?>
-			<a class="is-next" href="<?php echo esc_url( get_permalink( $next ) ); ?>"><small><?php esc_html_e( 'Next', 'chapterwright' ); ?></small><span><?php echo esc_html( get_the_title( $next ) ); ?> →</span></a>
-		<?php } elseif ( $book_id ) { ?>
-			<a class="is-next" href="<?php echo esc_url( get_permalink( $book_id ) ); ?>"><small><?php esc_html_e( 'Finished', 'chapterwright' ); ?></small><span><?php esc_html_e( 'Back to contents', 'chapterwright' ); ?> →</span></a>
+		<?php if ( $hsrtech_next ) { ?>
+			<a class="is-next" href="<?php echo esc_url( get_permalink( $hsrtech_next ) ); ?>"><small><?php esc_html_e( 'Next', 'chapterwright' ); ?></small><span><?php echo esc_html( get_the_title( $hsrtech_next ) ); ?> →</span></a>
+		<?php } elseif ( $hsrtech_book_id ) { ?>
+			<a class="is-next" href="<?php echo esc_url( get_permalink( $hsrtech_book_id ) ); ?>"><small><?php esc_html_e( 'Finished', 'chapterwright' ); ?></small><span><?php esc_html_e( 'Back to contents', 'chapterwright' ); ?> →</span></a>
 		<?php } ?>
 	</nav>
 	<?php hsrtech_render_credit(); ?>
-	<?php if ( $show_drawer_toc ) : ?>
+	<?php if ( $hsrtech_show_drawer_toc ) : ?>
 		<a
 			class="hsrtech-toc-jump"
-			href="<?php echo esc_url( get_permalink( $book_id ) . '#hsrtech-toc-eyebrow' ); ?>"
+			href="<?php echo esc_url( get_permalink( $hsrtech_book_id ) . '#hsrtech-toc-eyebrow' ); ?>"
 			aria-controls="hsrtech-toc-drawer"
 			aria-expanded="false"
 			aria-haspopup="dialog"

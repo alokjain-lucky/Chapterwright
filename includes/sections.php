@@ -40,10 +40,10 @@ function hsrtech_get_book_sections( $book_id ) {
 
 	$table = hsrtech_get_sections_table();
 
-	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table with no WP API equivalent; not cached because sections are small, book-scoped lists edited rarely and read on every book page.
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Custom table with no WP API equivalent; not cached because sections are small, book-scoped lists edited rarely and read on every book page. $table (interpolated below) is a fixed prefix from hsrtech_get_sections_table(), not user input — flagged here rather than on the string line below because that's the line PluginCheck's DirectDB sniff reports against for a get_results() call, not the string itself.
 	$rows = $wpdb->get_results(
 		$wpdb->prepare(
-			"SELECT id, book_id, name, description, menu_order FROM {$table} WHERE book_id = %d ORDER BY menu_order ASC, id ASC", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table name cannot be a placeholder; it is built from a fixed prefix by hsrtech_get_sections_table(), not user input.
+			"SELECT id, book_id, name, description, menu_order FROM {$table} WHERE book_id = %d ORDER BY menu_order ASC, id ASC", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name cannot be a placeholder; it is built from a fixed prefix by hsrtech_get_sections_table(), not user input.
 			$book_id
 		),
 		ARRAY_A
@@ -81,10 +81,10 @@ function hsrtech_get_section( $section_id ) {
 
 	$table = hsrtech_get_sections_table();
 
-	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table with no WP API equivalent.
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Custom table with no WP API equivalent. $table (interpolated below) is fixed, built by hsrtech_get_sections_table(), not user input — flagged here rather than on the string line below because that's the line PluginCheck's DirectDB sniff reports against for a get_row() call, not the string itself.
 	$row = $wpdb->get_row(
 		$wpdb->prepare(
-			"SELECT id, book_id, name, description, menu_order FROM {$table} WHERE id = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table name is fixed, built by hsrtech_get_sections_table(), not user input.
+			"SELECT id, book_id, name, description, menu_order FROM {$table} WHERE id = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is fixed, built by hsrtech_get_sections_table(), not user input.
 			$section_id
 		),
 		ARRAY_A
