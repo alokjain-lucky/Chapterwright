@@ -74,7 +74,21 @@
 
 .hsrtech-page {
 	box-sizing: border-box;
-	background: var(--hsrtech-surface);
+	/* Deliberately transparent, not var(--hsrtech-surface) — this element
+	   sits directly inside the active theme's own document body, and
+	   --hsrtech-surface (a plugin-defined light/dark reading-mode color, not
+	   a copy of the theme's own background) won't generally match the
+	   theme's actual background exactly. On this site in particular the
+	   theme's background is solid black while --hsrtech-surface's dark-mode
+	   value is a dark *gray* (#171716) — painting that here showed up as a
+	   visible, slightly-lighter rectangle behind every book/chapter/archive
+	   page, with no gap-like visual break below the site header since the
+	   page's own background started immediately under it. Individual
+	   components that truly need an opaque surface regardless of the theme
+	   (the table-of-contents drawer, the skip link, badges) still set their
+	   own background from this variable — only the page wrapper itself
+	   shouldn't. */
+	background: transparent;
 	color: var(--hsrtech-ink);
 	font-family: inherit;
 	font-size: 18px;
