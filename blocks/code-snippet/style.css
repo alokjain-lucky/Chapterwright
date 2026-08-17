@@ -111,6 +111,19 @@
 	padding: 0;
 }
 
+/* WP core's own TextControl input styles the placeholder with a hardcoded
+   gray meant for its usual white input background. This field sits directly
+   on the post editor canvas (which several themes, including this site's,
+   style dark via editor-styles) with `background: transparent` above — core's
+   placeholder gray on a dark canvas reads as all but invisible. Match the
+   dimmed light-ink treatment already used for other on-dark-frame labels
+   (see .hsrtech-code__lang's opacity: 0.55 just above) instead of relying on
+   whatever the surrounding canvas happens to default to. */
+.hsrtech-code--editing .hsrtech-code__caption-input input::placeholder {
+	color: var(--hsrtech-code-ink, #f5f2ea);
+	opacity: 0.5;
+}
+
 .hsrtech-code--editing .hsrtech-code__frame {
 	padding: 2.75rem 1.5rem 1.5rem;
 }

@@ -22,14 +22,22 @@
 	var TextControl = components.TextControl;
 	var __ = i18n.__;
 
-	var LANGUAGES = [
-		{ label: 'PHP', value: 'php' },
-		{ label: 'JavaScript', value: 'js' },
-		{ label: 'CSS', value: 'css' },
-		{ label: 'HTML', value: 'html' },
-		{ label: 'Shell', value: 'shell' },
-		{ label: __( 'Plain text', 'chapterwright' ), value: 'text' }
-	];
+	// hsrtechCodeSnippetLanguages is localized from PHP by
+	// hsrtech_localize_code_snippet_languages() (code-snippet.php), built from
+	// the filterable 'hsrtech_code_snippet_languages' list. Falling back to
+	// this small built-in set only matters if that localization somehow
+	// didn't run (e.g. a very old cached editor script from before this
+	// existed) — the dropdown still works either way.
+	var LANGUAGES = ( window.hsrtechCodeSnippetLanguages && window.hsrtechCodeSnippetLanguages.length )
+		? window.hsrtechCodeSnippetLanguages
+		: [
+			{ label: 'PHP', value: 'php' },
+			{ label: 'JavaScript', value: 'js' },
+			{ label: 'CSS', value: 'css' },
+			{ label: 'HTML', value: 'html' },
+			{ label: 'Shell', value: 'shell' },
+			{ label: __( 'Plain text', 'chapterwright' ), value: 'text' }
+		];
 
 	/**
 	 * Reduces a block attribute that may be a plain string, a RichTextData
