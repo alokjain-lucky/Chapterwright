@@ -1,6 +1,6 @@
 <?php
 /**
- * PHPUnit bootstrap for the Make a Book test suite.
+ * PHPUnit bootstrap for the Chapterwright test suite.
  *
  * Standard WordPress plugin test bootstrap: load the WP core test library
  * (provisioned by `wp-env` — see .wp-env.json's `testsPort`, which is what
@@ -9,7 +9,7 @@
  * bootstrap. Run with `npm run test:php` (see package.json), which is a
  * thin wrapper around `wp-env run tests-cli ... phpunit`.
  *
- * @package Make_A_Book
+ * @package Chapterwright
  */
 
 // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals -- Test bootstrap, mirrors the standard WP plugin test-suite boilerplate exactly; not part of the plugin's own namespace.
@@ -43,19 +43,19 @@ require_once $_tests_dir . '/includes/functions.php';
  * step here, so anything the plugin depends on happening at activation
  * (the sections table, capability grants) is done explicitly below instead.
  */
-function _mab_manually_load_plugin() {
-	require dirname( __DIR__ ) . '/make-a-book.php';
+function _hsrtech_manually_load_plugin() {
+	require dirname( __DIR__ ) . '/chapterwright.php';
 }
-tests_add_filter( 'muplugins_loaded', '_mab_manually_load_plugin' );
+tests_add_filter( 'muplugins_loaded', '_hsrtech_manually_load_plugin' );
 
 require $_tests_dir . '/includes/bootstrap.php';
 
-// mab_activate() (register_activation_hook) never runs under this bootstrap
+// hsrtech_activate() (register_activation_hook) never runs under this bootstrap
 // — the plugin is loaded directly above, not "activated" — so do the two
-// things every test in this suite needs by hand: the mab_sections table,
+// things every test in this suite needs by hand: the hsrtech_sections table,
 // and the Book/Chapter role capabilities (see includes/content-types.php
 // and includes/upgrade.php for what these do and why).
-mab_create_sections_table();
-mab_add_capabilities_to_roles();
+hsrtech_create_sections_table();
+hsrtech_add_capabilities_to_roles();
 
 // phpcs:enable WordPress.NamingConventions.PrefixAllGlobals

@@ -1,28 +1,28 @@
 /**
  * Table-of-contents drawer on chapter pages.
  *
- * Progressive enhancement over a plain link: templates/single-mab_chapter.php
- * renders `.mab-toc-jump` as a real `<a href="{book}#mab-toc-eyebrow">`, so
+ * Progressive enhancement over a plain link: templates/single-hsrtech_chapter.php
+ * renders `.hsrtech-toc-jump` as a real `<a href="{book}#hsrtech-toc-eyebrow">`, so
  * without this script (or with JS disabled) it still works exactly as
  * before — navigates to the book page and jumps straight to the table of
  * contents. With this script, its click is intercepted and it opens an
  * in-page slide-in panel instead, so reading isn't interrupted by a full
  * navigation just to glance at the chapter list.
  *
- * Deliberately its own file rather than folded into make-a-book-reader.js
- * — that file returns early when no `.mab-mode-toggle` button is on the
+ * Deliberately its own file rather than folded into chapterwright-reader.js
+ * — that file returns early when no `.hsrtech-mode-toggle` button is on the
  * page (i.e. the "Color mode toggle" setting is off), which would have
  * silently taken this along with it.
  *
- * @package Make_A_Book
+ * @package Chapterwright
  */
 ( function () {
 	'use strict';
 
-	const trigger = document.querySelector( '[data-mab-toc-trigger]' );
-	const drawer = document.getElementById( 'mab-toc-drawer' );
-	const backdrop = document.querySelector( '[data-mab-toc-backdrop]' );
-	const closeButton = document.querySelector( '[data-mab-toc-close]' );
+	const trigger = document.querySelector( '[data-hsrtech-toc-trigger]' );
+	const drawer = document.getElementById( 'hsrtech-toc-drawer' );
+	const backdrop = document.querySelector( '[data-hsrtech-toc-backdrop]' );
+	const closeButton = document.querySelector( '[data-hsrtech-toc-close]' );
 
 	if ( ! trigger || ! drawer || ! backdrop ) {
 		return;
@@ -56,7 +56,7 @@
 		} );
 
 		trigger.setAttribute( 'aria-expanded', 'true' );
-		document.body.classList.add( 'mab-no-scroll' );
+		document.body.classList.add( 'hsrtech-no-scroll' );
 
 		const focusable = getFocusable();
 		( closeButton || focusable[ 0 ] || drawer ).focus();
@@ -73,11 +73,11 @@
 		drawer.classList.remove( 'is-open' );
 		backdrop.classList.remove( 'is-open' );
 		trigger.setAttribute( 'aria-expanded', 'false' );
-		document.body.classList.remove( 'mab-no-scroll' );
+		document.body.classList.remove( 'hsrtech-no-scroll' );
 		document.removeEventListener( 'keydown', onKeydown );
 
 		// Wait for the closing transition before actually hiding — matches
-		// the CSS transition duration (.mab-toc-drawer / -backdrop, 250ms).
+		// the CSS transition duration (.hsrtech-toc-drawer / -backdrop, 250ms).
 		window.setTimeout( function () {
 			if ( ! isOpen ) {
 				drawer.hidden = true;

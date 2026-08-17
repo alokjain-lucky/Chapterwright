@@ -1,8 +1,8 @@
 <?php
 /**
- * "This book is created with Make a Book" footer credit.
+ * "This book is created with Chapterwright" footer credit.
  *
- * @package Make_A_Book
+ * @package Chapterwright
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -12,9 +12,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Render the credit line, if enabled in Settings.
  *
- * Called directly from templates/archive-mab_book.php,
- * templates/single-mab_book.php, and templates/single-mab_chapter.php,
- * just before their closing </main>, so it sits inside .mab-page and
+ * Called directly from templates/archive-hsrtech_book.php,
+ * templates/single-hsrtech_book.php, and templates/single-hsrtech_chapter.php,
+ * just before their closing </main>, so it sits inside .hsrtech-page and
  * inherits the same color variables and font as the surrounding page.
  *
  * @param string $context 'book' (default — used on book and chapter pages,
@@ -23,19 +23,19 @@ if ( ! defined( 'ABSPATH' ) ) {
  *                         page, which lists many books, so the wording
  *                         doesn't reference a single "book").
  */
-function mab_render_credit( $context = 'book' ) {
-	if ( ! mab_show_credit() ) {
+function hsrtech_render_credit( $context = 'book' ) {
+	if ( ! hsrtech_show_credit() ) {
 		return;
 	}
 
-	$repo_url = 'https://github.com/alokjain-lucky/Make-a-Book';
+	$repo_url = 'https://github.com/alokjain-lucky/Chapterwright';
 	$label    = 'archive' === $context
 		/* translators: 1: opening <a> tag linking to the plugin's repository, 2: closing </a> tag. */
-		? __( 'This library is powered by %1$sMake a Book%2$s', 'make-a-book' )
+		? __( 'This library is powered by %1$sChapterwright%2$s', 'chapterwright' )
 		/* translators: 1: opening <a> tag linking to the plugin's repository, 2: closing </a> tag. */
-		: __( 'This book is created with %1$sMake a Book%2$s', 'make-a-book' );
+		: __( 'This book is created with %1$sChapterwright%2$s', 'chapterwright' );
 	?>
-	<p class="mab-credit">
+	<p class="hsrtech-credit">
 		<?php
 		printf(
 			esc_html( $label ),

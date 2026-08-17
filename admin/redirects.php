@@ -1,12 +1,12 @@
 <?php
 /**
  * Redirect native post-type screens this plugin hides from the admin menu
- * back to the equivalent screen in the "Make a Book" admin app.
+ * back to the equivalent screen in the "Chapterwright" admin app.
  *
  * Books and Chapters register with `show_ui => true` (so post.php — the
  * actual Block Editor screen — keeps working; the admin app and the editor
  * sidebar panel both deep-link straight into it) but `show_in_menu => false`
- * (see mab_register_post_types(), includes/content-types.php). That leaves
+ * (see hsrtech_register_post_types(), includes/content-types.php). That leaves
  * their native list-table and "Add New" screens still directly reachable by
  * URL even though nothing in the plugin links to them anymore, and landing
  * on one shows the old, scattered pre-2.0.0 interface the admin app
@@ -24,24 +24,24 @@
  * table, not a taxonomy — see includes/sections.php and the "Notable
  * history" entry on why), so there is nothing to redirect on that front.
  *
- * @package Make_A_Book
+ * @package Chapterwright
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-add_action( 'load-edit.php', 'mab_redirect_post_type_list_screen' );
-add_action( 'load-post-new.php', 'mab_redirect_post_type_new_screen' );
+add_action( 'load-edit.php', 'hsrtech_redirect_post_type_list_screen' );
+add_action( 'load-post-new.php', 'hsrtech_redirect_post_type_new_screen' );
 
 /**
  * Redirect the native Books/Chapters list-table screens
- * (edit.php?post_type=mab_book, edit.php?post_type=mab_chapter) to the
+ * (edit.php?post_type=hsrtech_book, edit.php?post_type=hsrtech_chapter) to the
  * admin app — except when viewing Trash, which the admin app does not
  * reimplement.
  */
-function mab_redirect_post_type_list_screen() {
-	if ( ! mab_current_request_targets_plugin_post_type() ) {
+function hsrtech_redirect_post_type_list_screen() {
+	if ( ! hsrtech_current_request_targets_plugin_post_type() ) {
 		return;
 	}
 
@@ -50,12 +50,12 @@ function mab_redirect_post_type_list_screen() {
 		return;
 	}
 
-	wp_safe_redirect( mab_redirect_target_for_list_screen() );
+	wp_safe_redirect( hsrtech_redirect_target_for_list_screen() );
 	exit;
 }
 
 /**
- * Work out where mab_redirect_post_type_list_screen() should send the user:
+ * Work out where hsrtech_redirect_post_type_list_screen() should send the user:
  * the specific book they were just working on, when that can be determined,
  * or the general books list otherwise.
  *
@@ -70,8 +70,8 @@ function mab_redirect_post_type_list_screen() {
  *
  * @return string Admin URL to redirect to.
  */
-function mab_redirect_target_for_list_screen() {
-	$books_list_url = admin_url( 'admin.php?page=make-a-book' );
+function hsrtech_redirect_target_for_list_screen() {
+	$books_list_url = admin_url( 'admin.php?page=chapterwright' );
 
 	// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only redirect decision.
 	$post_type = isset( $_GET['post_type'] ) ? sanitize_key( wp_unslash( $_GET['post_type'] ) ) : 'post';
@@ -83,7 +83,7 @@ function mab_redirect_target_for_list_screen() {
 		return $books_list_url;
 	}
 
-	if ( MAB_BOOK_POST_TYPE === $post_type ) {
+	if ( HSRTECH_BOOK_POST_TYPE === $post_type ) {
 		// The book itself was just acted on. If it was trashed or
 		// permanently deleted, its own detail page in the app has nothing to
 		// show — fall back to the list. Otherwise (most commonly: restored
@@ -96,12 +96,12 @@ function mab_redirect_target_for_list_screen() {
 		return $books_list_url . '#/books/' . $first_id;
 	}
 
-	if ( MAB_CHAPTER_POST_TYPE === $post_type ) {
+	if ( HSRTECH_CHAPTER_POST_TYPE === $post_type ) {
 		// A chapter's own post meta survives trashing (only a permanent
 		// delete removes it, and that path keeps post_status=trash in the
 		// query — exempted before this function is ever called), so this
 		// works for the trash/restore cases that actually reach here.
-		$book_id = absint( get_post_meta( $first_id, '_mab_book_id', true ) );
+		$book_id = absint( get_post_meta( $first_id, '_hsrtech_book_id', true ) );
 		if ( $book_id ) {
 			return $books_list_url . '#/books/' . $book_id;
 		}
@@ -116,15 +116,15 @@ function mab_redirect_target_for_list_screen() {
  * form (on the books list) and add-chapter form (on a book's detail page).
  *
  * Creating a Chapter directly on this native screen would skip setting
- * `_mab_book_id`, leaving an orphaned chapter assigned to no book — one more
+ * `_hsrtech_book_id`, leaving an orphaned chapter assigned to no book — one more
  * reason this redirect matters beyond just UI consistency.
  */
-function mab_redirect_post_type_new_screen() {
-	if ( ! mab_current_request_targets_plugin_post_type() ) {
+function hsrtech_redirect_post_type_new_screen() {
+	if ( ! hsrtech_current_request_targets_plugin_post_type() ) {
 		return;
 	}
 
-	wp_safe_redirect( admin_url( 'admin.php?page=make-a-book' ) );
+	wp_safe_redirect( admin_url( 'admin.php?page=chapterwright' ) );
 	exit;
 }
 
@@ -134,9 +134,9 @@ function mab_redirect_post_type_new_screen() {
  *
  * @return bool
  */
-function mab_current_request_targets_plugin_post_type() {
+function hsrtech_current_request_targets_plugin_post_type() {
 	// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only redirect decision, not a form submission.
 	$post_type = isset( $_GET['post_type'] ) ? sanitize_key( wp_unslash( $_GET['post_type'] ) ) : 'post';
 
-	return in_array( $post_type, array( MAB_BOOK_POST_TYPE, MAB_CHAPTER_POST_TYPE ), true );
+	return in_array( $post_type, array( HSRTECH_BOOK_POST_TYPE, HSRTECH_CHAPTER_POST_TYPE ), true );
 }

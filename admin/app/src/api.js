@@ -3,10 +3,10 @@
  *
  * Book/chapter title, excerpt, cover, and the small scalar meta fields
  * (subtitle, accent color, book/section/order) all go through the core
- * `/wp/v2/mab_book` and `/wp/v2/mab_chapter` endpoints — those meta keys are
+ * `/wp/v2/hsrtech_book` and `/wp/v2/hsrtech_chapter` endpoints — those meta keys are
  * registered for REST in includes/content-types.php, so no custom
  * controller is needed for them. Sections, and the one bulk chapter-reorder
- * operation, go through the small custom `make-a-book/v1` namespace
+ * operation, go through the small custom `chapterwright/v1` namespace
  * registered in admin/rest/.
  *
  * WordPress automatically wires the REST nonce into every apiFetch() call
@@ -32,7 +32,7 @@ const EDITABLE_STATUSES = [ 'publish', 'draft', 'pending', 'private', 'future' ]
  */
 export function getBooks() {
 	return apiFetch( {
-		path: addQueryArgs( '/wp/v2/mab_book', {
+		path: addQueryArgs( '/wp/v2/hsrtech_book', {
 			per_page: 100,
 			status: EDITABLE_STATUSES,
 			orderby: 'title',
@@ -51,7 +51,7 @@ export function getBooks() {
  */
 export function getBook( bookId ) {
 	return apiFetch( {
-		path: addQueryArgs( `/wp/v2/mab_book/${ bookId }`, {
+		path: addQueryArgs( `/wp/v2/hsrtech_book/${ bookId }`, {
 			context: 'edit',
 			_embed: 'wp:featuredmedia',
 		} ),
@@ -68,7 +68,7 @@ export function getBook( bookId ) {
  */
 export function createBook( title ) {
 	return apiFetch( {
-		path: '/wp/v2/mab_book',
+		path: '/wp/v2/hsrtech_book',
 		method: 'POST',
 		data: { title, status: 'draft' },
 	} );
@@ -82,7 +82,7 @@ export function createBook( title ) {
  * @return {Promise<Object>} The updated book post object.
  */
 export function updateBook( bookId, data ) {
-	return apiFetch( { path: `/wp/v2/mab_book/${ bookId }`, method: 'POST', data } );
+	return apiFetch( { path: `/wp/v2/hsrtech_book/${ bookId }`, method: 'POST', data } );
 }
 
 /**
@@ -92,22 +92,22 @@ export function updateBook( bookId, data ) {
  * @return {Promise<Object>}
  */
 export function trashBook( bookId ) {
-	return apiFetch( { path: `/wp/v2/mab_book/${ bookId }`, method: 'DELETE' } );
+	return apiFetch( { path: `/wp/v2/hsrtech_book/${ bookId }`, method: 'DELETE' } );
 }
 
 /**
- * Fetch every chapter belonging to one book, in `_mab_order` order,
+ * Fetch every chapter belonging to one book, in `_hsrtech_order` order,
  * regardless of status (draft, pending, private, future, or published).
  *
- * Goes through the make-a-book/v1 namespace rather than the core
- * `/wp/v2/mab_chapter` collection endpoint — this used to fetch every
+ * Goes through the chapterwright/v1 namespace rather than the core
+ * `/wp/v2/hsrtech_chapter` collection endpoint — this used to fetch every
  * chapter the current user could edit (across every book) with `status` as
- * an array and `context=edit`, then filter client-side by `_mab_book_id`.
+ * an array and `context=edit`, then filter client-side by `_hsrtech_book_id`.
  * That relied on the collection endpoint's own status/context capability
  * handling behaving as expected for every status in the array on every
  * request, and a newly created draft chapter could silently fail to come
  * back — no error, just missing from the list. The server-side route this
- * calls instead wraps `mab_get_all_chapters_for_admin()`
+ * calls instead wraps `hsrtech_get_all_chapters_for_admin()`
  * (includes/queries.php), the same plain `get_posts()` query already
  * trusted elsewhere in this plugin.
  *
@@ -115,7 +115,7 @@ export function trashBook( bookId ) {
  * @return {Promise<Array>} Chapter post objects belonging to this book, already ordered.
  */
 export function getBookChapters( bookId ) {
-	return apiFetch( { path: `/make-a-book/v1/books/${ bookId }/chapters` } );
+	return apiFetch( { path: `/chapterwright/v1/books/${ bookId }/chapters` } );
 }
 
 /**
@@ -127,11 +127,11 @@ export function getBookChapters( bookId ) {
  * separate update call. (An earlier version of this function did split it,
  * on the theory that `create_item()` couldn't resolve capabilities for a
  * brand-new post in time; that theory was wrong. The real cause was that
- * neither `mab_book` nor `mab_chapter` declared `'custom-fields'` support,
+ * neither `hsrtech_book` nor `hsrtech_chapter` declared `'custom-fields'` support,
  * so `WP_REST_Posts_Controller::get_item_schema()` never added a `meta`
  * property to either post type's REST schema in the first place — every
  * `meta` value sent to either endpoint, in a create or an update, was
- * silently ignored with no error. Fixed in `mab_register_post_types()`,
+ * silently ignored with no error. Fixed in `hsrtech_register_post_types()`,
  * includes/content-types.php; see that function's docblock and the
  * "Unreleased" entry in AGENTS.md for how this was actually root-caused.)
  *
@@ -144,18 +144,18 @@ export function getBookChapters( bookId ) {
  */
 export function createChapter( { bookId, title, sectionId, siblings } ) {
 	const nextOrder =
-		1 + siblings.reduce( ( max, chapter ) => Math.max( max, Number( chapter.meta?._mab_order || 0 ) ), 0 );
+		1 + siblings.reduce( ( max, chapter ) => Math.max( max, Number( chapter.meta?._hsrtech_order || 0 ) ), 0 );
 
 	return apiFetch( {
-		path: '/wp/v2/mab_chapter',
+		path: '/wp/v2/hsrtech_chapter',
 		method: 'POST',
 		data: {
 			title,
 			status: 'draft',
 			meta: {
-				_mab_book_id: bookId,
-				_mab_order: nextOrder,
-				...( sectionId ? { _mab_section_id: sectionId } : {} ),
+				_hsrtech_book_id: bookId,
+				_hsrtech_order: nextOrder,
+				...( sectionId ? { _hsrtech_section_id: sectionId } : {} ),
 			},
 		},
 	} );
@@ -168,7 +168,7 @@ export function createChapter( { bookId, title, sectionId, siblings } ) {
  * @return {Promise<Object>}
  */
 export function trashChapter( chapterId ) {
-	return apiFetch( { path: `/wp/v2/mab_chapter/${ chapterId }`, method: 'DELETE' } );
+	return apiFetch( { path: `/wp/v2/hsrtech_chapter/${ chapterId }`, method: 'DELETE' } );
 }
 
 /**
@@ -181,7 +181,7 @@ export function trashChapter( chapterId ) {
  */
 export function reorderChapters( bookId, chapters ) {
 	return apiFetch( {
-		path: `/make-a-book/v1/books/${ bookId }/chapters/reorder`,
+		path: `/chapterwright/v1/books/${ bookId }/chapters/reorder`,
 		method: 'POST',
 		data: {
 			chapters: chapters.map( ( chapter ) => ( {
@@ -200,7 +200,7 @@ export function reorderChapters( bookId, chapters ) {
  * @return {Promise<Array>} Section rows.
  */
 export function getSections( bookId ) {
-	return apiFetch( { path: `/make-a-book/v1/books/${ bookId }/sections` } );
+	return apiFetch( { path: `/chapterwright/v1/books/${ bookId }/sections` } );
 }
 
 /**
@@ -213,7 +213,7 @@ export function getSections( bookId ) {
  */
 export function createSection( bookId, name, description = '' ) {
 	return apiFetch( {
-		path: `/make-a-book/v1/books/${ bookId }/sections`,
+		path: `/chapterwright/v1/books/${ bookId }/sections`,
 		method: 'POST',
 		data: { name, description },
 	} );
@@ -227,7 +227,7 @@ export function createSection( bookId, name, description = '' ) {
  * @return {Promise<Object>} The updated section row.
  */
 export function updateSection( sectionId, data ) {
-	return apiFetch( { path: `/make-a-book/v1/sections/${ sectionId }`, method: 'POST', data } );
+	return apiFetch( { path: `/chapterwright/v1/sections/${ sectionId }`, method: 'POST', data } );
 }
 
 /**
@@ -237,7 +237,7 @@ export function updateSection( sectionId, data ) {
  * @return {Promise<Object>}
  */
 export function deleteSection( sectionId ) {
-	return apiFetch( { path: `/make-a-book/v1/sections/${ sectionId }`, method: 'DELETE' } );
+	return apiFetch( { path: `/chapterwright/v1/sections/${ sectionId }`, method: 'DELETE' } );
 }
 
 /**
@@ -249,7 +249,7 @@ export function deleteSection( sectionId ) {
  */
 export function reorderSections( bookId, orderedIds ) {
 	return apiFetch( {
-		path: `/make-a-book/v1/books/${ bookId }/sections/reorder`,
+		path: `/chapterwright/v1/books/${ bookId }/sections/reorder`,
 		method: 'POST',
 		data: { order: orderedIds },
 	} );

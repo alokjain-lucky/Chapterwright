@@ -2,15 +2,15 @@
 /**
  * Book and Chapter post type registration.
  *
- * @package Make_A_Book
+ * @package Chapterwright
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-add_action( 'init', 'mab_register_post_types' );
-add_action( 'init', 'mab_register_meta_fields', 20 );
+add_action( 'init', 'hsrtech_register_post_types' );
+add_action( 'init', 'hsrtech_register_meta_fields', 20 );
 
 /**
  * Register the Book and Chapter custom post types.
@@ -18,11 +18,11 @@ add_action( 'init', 'mab_register_meta_fields', 20 );
  * Both types support the block editor and the WordPress REST API. Books
  * have a public archive at /books/; chapters are reached through their own
  * permalinks under /book-chapter/. The post type keys themselves live in
- * MAB_BOOK_POST_TYPE / MAB_CHAPTER_POST_TYPE (defined in make-a-book.php)
+ * HSRTECH_BOOK_POST_TYPE / HSRTECH_CHAPTER_POST_TYPE (defined in chapterwright.php)
  * and are part of the plugin's stable data contract — see AGENTS.md.
  *
  * As of 2.0.0, `show_in_menu` is false for both: the admin app registered in
- * admin/app.php (top-level "Make a Book" menu) is the primary place authors
+ * admin/app.php (top-level "Chapterwright" menu) is the primary place authors
  * browse and organize Books/Chapters/Sections, so the native list/edit
  * screens no longer clutter the sidebar. `show_ui` stays at its true
  * default so those screens still exist and work — the admin app and the
@@ -43,43 +43,43 @@ add_action( 'init', 'mab_register_meta_fields', 20 );
  * rounds of live debug.log instrumentation) — don't remove this support
  * flag without re-reading that first.
  *
- * As of 2.2.0, both types register their own `capability_type` (`mab_book`/
- * `mab_books`, `mab_chapter`/`mab_chapters`) with `map_meta_cap => true`,
+ * As of 2.2.0, both types register their own `capability_type` (`hsrtech_book`/
+ * `hsrtech_books`, `hsrtech_chapter`/`hsrtech_chapters`) with `map_meta_cap => true`,
  * instead of defaulting to generic `post`/`posts` capabilities. This means
  * "who can touch Books/Chapters" is no longer the same permission as "who
  * can edit any post on the site" — a site can now create a role scoped to
- * just this plugin. `mab_add_capabilities_to_roles()` below grants the
+ * just this plugin. `hsrtech_add_capabilities_to_roles()` below grants the
  * default roles exactly the capabilities they already effectively had
  * under the old generic-post behavior, so this change is a no-op for any
  * existing site unless it deliberately creates a new role.
  */
-function mab_register_post_types() {
+function hsrtech_register_post_types() {
 	register_post_type(
-		MAB_BOOK_POST_TYPE,
+		HSRTECH_BOOK_POST_TYPE,
 		array(
-			'labels'          => mab_book_labels(),
+			'labels'          => hsrtech_book_labels(),
 			'public'          => true,
 			'has_archive'     => 'books',
 			'rewrite'         => array( 'slug' => 'books' ),
 			'show_in_menu'    => false,
 			'show_in_rest'    => true,
 			'supports'        => array( 'title', 'editor', 'excerpt', 'thumbnail', 'author', 'revisions', 'custom-fields' ),
-			'capability_type' => array( 'mab_book', 'mab_books' ),
+			'capability_type' => array( 'hsrtech_book', 'hsrtech_books' ),
 			'map_meta_cap'    => true,
 		)
 	);
 
 	register_post_type(
-		MAB_CHAPTER_POST_TYPE,
+		HSRTECH_CHAPTER_POST_TYPE,
 		array(
-			'labels'          => mab_chapter_labels(),
+			'labels'          => hsrtech_chapter_labels(),
 			'public'          => true,
 			'has_archive'     => false,
 			'rewrite'         => array( 'slug' => 'book-chapter' ),
 			'show_in_menu'    => false,
 			'show_in_rest'    => true,
 			'supports'        => array( 'title', 'editor', 'excerpt', 'thumbnail', 'revisions', 'custom-fields' ),
-			'capability_type' => array( 'mab_chapter', 'mab_chapters' ),
+			'capability_type' => array( 'hsrtech_chapter', 'hsrtech_chapters' ),
 			'map_meta_cap'    => true,
 		)
 	);
@@ -101,11 +101,11 @@ function mab_register_post_types() {
  *
  * Safe to call repeatedly: WP_Role::add_cap() is idempotent.
  */
-function mab_add_capabilities_to_roles() {
+function hsrtech_add_capabilities_to_roles() {
 	// Mirrors what WordPress itself grants each default role for the 'post'
 	// type — see populate_roles() in wp-admin/includes/schema.php. Only the
 	// plural/primitive capabilities are listed here; the singular ones
-	// (edit_mab_book, read_mab_book, delete_mab_book) are meta capabilities
+	// (edit_hsrtech_book, read_hsrtech_book, delete_hsrtech_book) are meta capabilities
 	// that map_meta_cap resolves per-post from these at request time and are
 	// never granted to a role directly.
 	$role_caps = array(
@@ -115,7 +115,7 @@ function mab_add_capabilities_to_roles() {
 		'contributor'   => array( 'edit_posts', 'delete_posts' ),
 	);
 
-	foreach ( array( MAB_BOOK_POST_TYPE, MAB_CHAPTER_POST_TYPE ) as $post_type ) {
+	foreach ( array( HSRTECH_BOOK_POST_TYPE, HSRTECH_CHAPTER_POST_TYPE ) as $post_type ) {
 		$post_type_object = get_post_type_object( $post_type );
 		if ( ! $post_type_object ) {
 			continue;
@@ -141,35 +141,35 @@ function mab_add_capabilities_to_roles() {
  *
  * The admin app (admin/app/src/) and the Gutenberg editor sidebar panel
  * both read and write these fields through the standard
- * `/wp/v2/mab_book/{id}` and `/wp/v2/mab_chapter/{id}` REST endpoints
+ * `/wp/v2/hsrtech_book/{id}` and `/wp/v2/hsrtech_chapter/{id}` REST endpoints
  * instead of a bespoke controller — `register_post_meta()` is all that is
  * needed for simple scalar fields already covered by core's REST meta
- * handling. `_mab_section_id` is the one relationship not covered here
+ * handling. `_hsrtech_section_id` is the one relationship not covered here
  * because assigning a chapter to a section also needs its sibling order
  * recalculated in the same request; see admin/rest/chapters.php.
  */
-function mab_register_meta_fields() {
+function hsrtech_register_meta_fields() {
 	register_post_meta(
-		MAB_BOOK_POST_TYPE,
-		'_mab_subtitle',
+		HSRTECH_BOOK_POST_TYPE,
+		'_hsrtech_subtitle',
 		array(
 			'type'              => 'string',
 			'single'            => true,
 			'show_in_rest'      => true,
 			'sanitize_callback' => 'sanitize_textarea_field',
-			'auth_callback'     => 'mab_meta_auth_callback',
+			'auth_callback'     => 'hsrtech_meta_auth_callback',
 		)
 	);
 
 	register_post_meta(
-		MAB_BOOK_POST_TYPE,
-		'_mab_accent',
+		HSRTECH_BOOK_POST_TYPE,
+		'_hsrtech_accent',
 		array(
 			'type'              => 'string',
 			'single'            => true,
 			'show_in_rest'      => true,
-			'sanitize_callback' => 'mab_sanitize_accent_color',
-			'auth_callback'     => 'mab_meta_auth_callback',
+			'sanitize_callback' => 'hsrtech_sanitize_accent_color',
+			'auth_callback'     => 'hsrtech_meta_auth_callback',
 		)
 	);
 
@@ -181,58 +181,58 @@ function mab_register_meta_fields() {
 	// publishes the book together as one action, since an unpublished draft
 	// would not appear in the library at all regardless of this flag.
 	register_post_meta(
-		MAB_BOOK_POST_TYPE,
-		'_mab_coming_soon',
+		HSRTECH_BOOK_POST_TYPE,
+		'_hsrtech_coming_soon',
 		array(
 			'type'              => 'boolean',
 			'single'            => true,
 			'show_in_rest'      => true,
 			'default'           => false,
 			'sanitize_callback' => 'rest_sanitize_boolean',
-			'auth_callback'     => 'mab_meta_auth_callback',
+			'auth_callback'     => 'hsrtech_meta_auth_callback',
 		)
 	);
 
 	register_post_meta(
-		MAB_CHAPTER_POST_TYPE,
-		'_mab_book_id',
+		HSRTECH_CHAPTER_POST_TYPE,
+		'_hsrtech_book_id',
 		array(
 			'type'              => 'integer',
 			'single'            => true,
 			'show_in_rest'      => true,
 			'sanitize_callback' => 'absint',
-			'auth_callback'     => 'mab_meta_auth_callback',
+			'auth_callback'     => 'hsrtech_meta_auth_callback',
 		)
 	);
 
 	register_post_meta(
-		MAB_CHAPTER_POST_TYPE,
-		'_mab_order',
+		HSRTECH_CHAPTER_POST_TYPE,
+		'_hsrtech_order',
 		array(
 			'type'              => 'integer',
 			'single'            => true,
 			'show_in_rest'      => true,
 			'sanitize_callback' => 'absint',
-			'auth_callback'     => 'mab_meta_auth_callback',
+			'auth_callback'     => 'hsrtech_meta_auth_callback',
 		)
 	);
 
 	register_post_meta(
-		MAB_CHAPTER_POST_TYPE,
-		'_mab_section_id',
+		HSRTECH_CHAPTER_POST_TYPE,
+		'_hsrtech_section_id',
 		array(
 			'type'              => 'integer',
 			'single'            => true,
 			'show_in_rest'      => true,
 			'sanitize_callback' => 'absint',
-			'auth_callback'     => 'mab_meta_auth_callback',
+			'auth_callback'     => 'hsrtech_meta_auth_callback',
 		)
 	);
 }
 
 /**
  * Shared auth callback for every registered meta field: only someone who
- * can edit the specific post may read or write its Make a Book metadata
+ * can edit the specific post may read or write its Chapterwright metadata
  * through the REST API.
  *
  * @param bool   $allowed Whether the value should be allowed. Ignored; recomputed here.
@@ -240,7 +240,7 @@ function mab_register_meta_fields() {
  * @param int    $post_id  Post the meta belongs to.
  * @return bool Whether the current user may read/write this field.
  */
-function mab_meta_auth_callback( $allowed, $meta_key, $post_id ) {
+function hsrtech_meta_auth_callback( $allowed, $meta_key, $post_id ) {
 	unset( $allowed, $meta_key );
 	return current_user_can( 'edit_post', $post_id );
 }
@@ -252,7 +252,7 @@ function mab_meta_auth_callback( $allowed, $meta_key, $post_id ) {
  * @param string $value Raw color value.
  * @return string A valid hex color.
  */
-function mab_sanitize_accent_color( $value ) {
+function hsrtech_sanitize_accent_color( $value ) {
 	$color = sanitize_hex_color( $value );
 	return $color ? $color : '#f45d48';
 }
@@ -262,23 +262,23 @@ function mab_sanitize_accent_color( $value ) {
  *
  * @return array<string,string> Post type labels.
  */
-function mab_book_labels() {
+function hsrtech_book_labels() {
 	return array(
-		'name'               => __( 'Books', 'make-a-book' ),
-		'singular_name'      => __( 'Book', 'make-a-book' ),
-		'add_new'            => __( 'Add New', 'make-a-book' ),
-		'add_new_item'       => __( 'Add New Book', 'make-a-book' ),
-		'edit_item'          => __( 'Edit Book', 'make-a-book' ),
-		'new_item'           => __( 'New Book', 'make-a-book' ),
-		'view_item'          => __( 'View Book', 'make-a-book' ),
-		'search_items'       => __( 'Search Books', 'make-a-book' ),
-		'not_found'          => __( 'No books found.', 'make-a-book' ),
-		'not_found_in_trash' => __( 'No books found in Trash.', 'make-a-book' ),
-		'all_items'          => __( 'All Books', 'make-a-book' ),
+		'name'               => __( 'Books', 'chapterwright' ),
+		'singular_name'      => __( 'Book', 'chapterwright' ),
+		'add_new'            => __( 'Add New', 'chapterwright' ),
+		'add_new_item'       => __( 'Add New Book', 'chapterwright' ),
+		'edit_item'          => __( 'Edit Book', 'chapterwright' ),
+		'new_item'           => __( 'New Book', 'chapterwright' ),
+		'view_item'          => __( 'View Book', 'chapterwright' ),
+		'search_items'       => __( 'Search Books', 'chapterwright' ),
+		'not_found'          => __( 'No books found.', 'chapterwright' ),
+		'not_found_in_trash' => __( 'No books found in Trash.', 'chapterwright' ),
+		'all_items'          => __( 'All Books', 'chapterwright' ),
 		// The admin sidebar's top-level label for this whole menu (Books +
 		// Chapters + Settings), not just this post type — see
-		// mab_register_post_types() for how Chapters nests under it.
-		'menu_name'          => __( 'Make a Book', 'make-a-book' ),
+		// hsrtech_register_post_types() for how Chapters nests under it.
+		'menu_name'          => __( 'Chapterwright', 'chapterwright' ),
 	);
 }
 
@@ -287,19 +287,19 @@ function mab_book_labels() {
  *
  * @return array<string,string> Post type labels.
  */
-function mab_chapter_labels() {
+function hsrtech_chapter_labels() {
 	return array(
-		'name'               => __( 'Chapters', 'make-a-book' ),
-		'singular_name'      => __( 'Chapter', 'make-a-book' ),
-		'add_new'            => __( 'Add New', 'make-a-book' ),
-		'add_new_item'       => __( 'Add New Chapter', 'make-a-book' ),
-		'edit_item'          => __( 'Edit Chapter', 'make-a-book' ),
-		'new_item'           => __( 'New Chapter', 'make-a-book' ),
-		'view_item'          => __( 'View Chapter', 'make-a-book' ),
-		'search_items'       => __( 'Search Chapters', 'make-a-book' ),
-		'not_found'          => __( 'No chapters found.', 'make-a-book' ),
-		'not_found_in_trash' => __( 'No chapters found in Trash.', 'make-a-book' ),
-		'all_items'          => __( 'All Chapters', 'make-a-book' ),
-		'menu_name'          => __( 'Chapters', 'make-a-book' ),
+		'name'               => __( 'Chapters', 'chapterwright' ),
+		'singular_name'      => __( 'Chapter', 'chapterwright' ),
+		'add_new'            => __( 'Add New', 'chapterwright' ),
+		'add_new_item'       => __( 'Add New Chapter', 'chapterwright' ),
+		'edit_item'          => __( 'Edit Chapter', 'chapterwright' ),
+		'new_item'           => __( 'New Chapter', 'chapterwright' ),
+		'view_item'          => __( 'View Chapter', 'chapterwright' ),
+		'search_items'       => __( 'Search Chapters', 'chapterwright' ),
+		'not_found'          => __( 'No chapters found.', 'chapterwright' ),
+		'not_found_in_trash' => __( 'No chapters found in Trash.', 'chapterwright' ),
+		'all_items'          => __( 'All Chapters', 'chapterwright' ),
+		'menu_name'          => __( 'Chapters', 'chapterwright' ),
 	);
 }

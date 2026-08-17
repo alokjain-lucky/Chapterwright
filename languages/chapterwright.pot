@@ -2,8 +2,8 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Make a Book\n"
-"Report-Msgid-Bugs-To: https://github.com/alokjain-lucky/Make-a-Book/issues\n"
+"Project-Id-Version: Chapterwright\n"
+"Report-Msgid-Bugs-To: https://github.com/alokjain-lucky/Chapterwright/issues\n"
 "POT-Creation-Date: 2026-08-12 10:09+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -14,7 +14,7 @@ msgstr ""
 "X-Generator: make_pot.py (regex-based, see languages/README.md)\n"
 
 #: admin/app.php:57 admin/app.php:58 admin/app.php:68 admin/app/src/app.js:46 includes/abilities.php:41 includes/content-types.php:247
-msgid "Make a Book"
+msgid "Chapterwright"
 msgstr ""
 
 #: admin/app.php:69
@@ -42,7 +42,7 @@ msgid "Colors links, hover states, blockquote/callout borders, and the reading-p
 msgstr ""
 
 #: admin/app/src/editor-sidebar.js:65
-msgid "Manage this book's sections and chapter order from the Make a Book admin page."
+msgid "Manage this book's sections and chapter order from the Chapterwright admin page."
 msgstr ""
 
 #: admin/app/src/editor-sidebar.js:108
@@ -74,7 +74,7 @@ msgid "Change book, section, or order →"
 msgstr ""
 
 #: admin/app/src/editor-sidebar.js:131
-msgid "This chapter isn't assigned to a book yet. Add it to a book from the Make a Book admin page."
+msgid "This chapter isn't assigned to a book yet. Add it to a book from the Chapterwright admin page."
 msgstr ""
 
 #: admin/app/src/screens/book-detail.js:58
@@ -201,7 +201,7 @@ msgstr ""
 msgid "Chapters (no section)"
 msgstr ""
 
-#: admin/app/src/screens/book-detail.js:478 includes/content-types.php:258 includes/content-types.php:269 templates/single-mab_book.php:51
+#: admin/app/src/screens/book-detail.js:478 includes/content-types.php:258 includes/content-types.php:269 templates/single-hsrtech_book.php:51
 msgid "Chapters"
 msgstr ""
 
@@ -280,7 +280,7 @@ msgid "A Book is the landing page and table of contents for one publication. It 
 msgstr ""
 
 #: admin/help.php:52
-msgid "Most day-to-day work — adding chapters, grouping them into sections, and reordering — is faster from the Make a Book admin page (Books & Chapters) than from this screen. Use this screen for the book's actual content: title, introduction, cover image, and excerpt."
+msgid "Most day-to-day work — adding chapters, grouping them into sections, and reordering — is faster from the Chapterwright admin page (Books & Chapters) than from this screen. Use this screen for the book's actual content: title, introduction, cover image, and excerpt."
 msgstr ""
 
 #: admin/help.php:61
@@ -296,7 +296,7 @@ msgid "Accent color — colors links, hover states, blockquote/callout borders, 
 msgstr ""
 
 #: admin/help.php:66
-msgid "These same fields are also editable from the Make a Book admin page, alongside this book's sections and chapters."
+msgid "These same fields are also editable from the Chapterwright admin page, alongside this book's sections and chapters."
 msgstr ""
 
 #: admin/help.php:73
@@ -316,7 +316,7 @@ msgid "A Chapter is one page of reading content that belongs to a Book. Write th
 msgstr ""
 
 #: admin/help.php:94
-msgid "A chapter is created already assigned to a Book from the Make a Book admin page, and must be published before it appears in that book's table of contents or reading navigation."
+msgid "A chapter is created already assigned to a Book from the Chapterwright admin page, and must be published before it appears in that book's table of contents or reading navigation."
 msgstr ""
 
 #: admin/help.php:101
@@ -340,7 +340,7 @@ msgid "Order — controls reading order, lowest to highest."
 msgstr ""
 
 #: admin/help.php:109
-msgid "Creating chapters, assigning them to a book and section, and reordering them are all done from the Make a Book admin page (Books & Chapters), not from this screen — open a book there to see every chapter and section together in one place. The Chapter Details panel links straight there."
+msgid "Creating chapters, assigning them to a book and section, and reordering them are all done from the Chapterwright admin page (Books & Chapters), not from this screen — open a book there to see every chapter and section together in one place. The Chapter Details panel links straight there."
 msgstr ""
 
 #: admin/help.php:116
@@ -356,11 +356,11 @@ msgid "For more information"
 msgstr ""
 
 #: admin/help.php:131 admin/settings.php:151 admin/settings.php:170
-msgid "Make a Book Settings"
+msgid "Chapterwright Settings"
 msgstr ""
 
 #: admin/help.php:132
-msgid "Make a Book: Books & Chapters"
+msgid "Chapterwright: Books & Chapters"
 msgstr ""
 
 #: admin/help.php:133
@@ -444,7 +444,7 @@ msgid "Credit link"
 msgstr ""
 
 #: admin/settings.php:193
-msgid "Show \"This book is created with Make a Book\" at the bottom of book, chapter, and library pages"
+msgid "Show \"This book is created with Chapterwright\" at the bottom of book, chapter, and library pages"
 msgstr ""
 
 #: admin/settings.php:199
@@ -644,11 +644,11 @@ msgid "Use dark color mode"
 msgstr ""
 
 #: public/credit.php:34
-msgid "This library is powered by %1$sMake a Book%2$s"
+msgid "This library is powered by %1$sChapterwright%2$s"
 msgstr ""
 
 #: public/credit.php:36
-msgid "This book is created with %1$sMake a Book%2$s"
+msgid "This book is created with %1$sChapterwright%2$s"
 msgstr ""
 
 #: templates/book-grid.php:18
@@ -667,70 +667,70 @@ msgstr ""
 msgid "No books have been published yet."
 msgstr ""
 
-#: templates/single-mab_book.php:68
+#: templates/single-hsrtech_book.php:68
 msgid "Skip to book content"
 msgstr ""
 
-#: templates/single-mab_book.php:71
+#: templates/single-hsrtech_book.php:71
 msgid "Back to library"
 msgstr ""
 
-#: templates/single-mab_book.php:73 templates/single-mab_chapter.php:43
+#: templates/single-hsrtech_book.php:73 templates/single-hsrtech_chapter.php:43
 msgid "Color mode"
 msgstr ""
 
-#: templates/single-mab_book.php:78
+#: templates/single-hsrtech_book.php:78
 msgid "A book by"
 msgstr ""
 
-#: templates/single-mab_book.php:85
+#: templates/single-hsrtech_book.php:85
 msgid "Start reading"
 msgstr ""
 
-#: templates/single-mab_book.php:99
+#: templates/single-hsrtech_book.php:99
 msgid "Table of contents"
 msgstr ""
 
-#: templates/single-mab_book.php:125
+#: templates/single-hsrtech_book.php:125
 msgid "Chapters are coming soon."
 msgstr ""
 
-#: templates/single-mab_chapter.php:32
+#: templates/single-hsrtech_chapter.php:32
 msgid "Skip to chapter content"
 msgstr ""
 
-#: templates/single-mab_chapter.php:35
+#: templates/single-hsrtech_chapter.php:35
 msgid "Book navigation"
 msgstr ""
 
-#: templates/single-mab_chapter.php:40
+#: templates/single-hsrtech_chapter.php:40
 msgid "%1$d of %2$d"
 msgstr ""
 
-#: templates/single-mab_chapter.php:48
+#: templates/single-hsrtech_chapter.php:48
 msgid "Chapter %s"
 msgstr ""
 
-#: templates/single-mab_chapter.php:60
+#: templates/single-hsrtech_chapter.php:60
 msgid "%1$d min read · %2$s"
 msgstr ""
 
-#: templates/single-mab_chapter.php:73
+#: templates/single-hsrtech_chapter.php:73
 msgid "Chapter pagination"
 msgstr ""
 
-#: templates/single-mab_chapter.php:74
+#: templates/single-hsrtech_chapter.php:74
 msgid "Previous"
 msgstr ""
 
-#: templates/single-mab_chapter.php:75
+#: templates/single-hsrtech_chapter.php:75
 msgid "Next"
 msgstr ""
 
-#: templates/single-mab_chapter.php:75
+#: templates/single-hsrtech_chapter.php:75
 msgid "Finished"
 msgstr ""
 
-#: templates/single-mab_chapter.php:75
+#: templates/single-hsrtech_chapter.php:75
 msgid "Back to contents"
 msgstr ""

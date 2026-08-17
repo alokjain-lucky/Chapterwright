@@ -17,7 +17,7 @@ export default function BooksList() {
 		setError( '' );
 		getBooks()
 			.then( setBooks )
-			.catch( ( err ) => setError( err.message || __( 'Books could not be loaded.', 'make-a-book' ) ) );
+			.catch( ( err ) => setError( err.message || __( 'Books could not be loaded.', 'chapterwright' ) ) );
 	}, [] );
 
 	useEffect( loadBooks, [ loadBooks ] );
@@ -25,12 +25,12 @@ export default function BooksList() {
 	const handleTrash = ( book ) => {
 		const title = book.title?.raw || book.title?.rendered || '';
 		// eslint-disable-next-line no-alert
-		if ( ! window.confirm( sprintf( __( 'Move "%s" to the trash? Its chapters and sections are not affected — restore the book from Trash to bring it back.', 'make-a-book' ), title ) ) ) {
+		if ( ! window.confirm( sprintf( __( 'Move "%s" to the trash? Its chapters and sections are not affected — restore the book from Trash to bring it back.', 'chapterwright' ), title ) ) ) {
 			return;
 		}
 		trashBook( book.id )
 			.then( loadBooks )
-			.catch( ( err ) => setError( err.message || __( 'The book could not be trashed.', 'make-a-book' ) ) );
+			.catch( ( err ) => setError( err.message || __( 'The book could not be trashed.', 'chapterwright' ) ) );
 	};
 
 	const handleCreate = ( event ) => {
@@ -47,27 +47,27 @@ export default function BooksList() {
 			} )
 			.catch( ( err ) => {
 				setCreating( false );
-				setError( err.message || __( 'The book could not be created.', 'make-a-book' ) );
+				setError( err.message || __( 'The book could not be created.', 'chapterwright' ) );
 			} );
 	};
 
 	return (
-		<div className="mab-books-list">
+		<div className="hsrtech-books-list">
 			{ error && (
-				<Notice status="error" isDismissible={ false } className="mab-notice">
+				<Notice status="error" isDismissible={ false } className="hsrtech-notice">
 					{ error }
 				</Notice>
 			) }
 
-			<Card className="mab-panel mab-add-book">
+			<Card className="hsrtech-panel hsrtech-add-book">
 				<CardBody>
-					<form onSubmit={ handleCreate } className="mab-inline-form">
+					<form onSubmit={ handleCreate } className="hsrtech-inline-form">
 						<TextControl
 							__next40pxDefaultSize
 							__nextHasNoMarginBottom
-							label={ __( 'New book title', 'make-a-book' ) }
+							label={ __( 'New book title', 'chapterwright' ) }
 							hideLabelFromVision
-							placeholder={ __( 'New book title…', 'make-a-book' ) }
+							placeholder={ __( 'New book title…', 'chapterwright' ) }
 							value={ newTitle }
 							onChange={ setNewTitle }
 						/>
@@ -78,79 +78,79 @@ export default function BooksList() {
 							isBusy={ creating }
 							disabled={ creating || ! newTitle.trim() }
 						>
-							{ __( 'Add Book', 'make-a-book' ) }
+							{ __( 'Add Book', 'chapterwright' ) }
 						</Button>
 					</form>
 				</CardBody>
 			</Card>
 
 			{ null === books && (
-				<div className="mab-loading">
+				<div className="hsrtech-loading">
 					<Spinner />
 				</div>
 			) }
 
 			{ books && 0 === books.length && (
-				<div className="mab-empty-state">
-					<p>{ __( 'No books yet. Add your first one above.', 'make-a-book' ) }</p>
+				<div className="hsrtech-empty-state">
+					<p>{ __( 'No books yet. Add your first one above.', 'chapterwright' ) }</p>
 				</div>
 			) }
 
 			{ books && books.length > 0 && (
 				<>
-					<p className="mab-books-list__count">
+					<p className="hsrtech-books-list__count">
 						{ sprintf(
 							/* translators: %d: number of books. */
-							_n( '%d book', '%d books', books.length, 'make-a-book' ),
+							_n( '%d book', '%d books', books.length, 'chapterwright' ),
 							books.length
 						) }
 					</p>
-					<div className="mab-book-grid">
+					<div className="hsrtech-book-grid">
 						{ books.map( ( book ) => (
-							<Card key={ book.id } className="mab-panel mab-book-card">
-								<a className="mab-book-card__cover-link" href={ `#/books/${ book.id }` } tabIndex={ -1 } aria-hidden="true">
+							<Card key={ book.id } className="hsrtech-panel hsrtech-book-card">
+								<a className="hsrtech-book-card__cover-link" href={ `#/books/${ book.id }` } tabIndex={ -1 } aria-hidden="true">
 									{ book._embedded?.[ 'wp:featuredmedia' ]?.[ 0 ]?.source_url ? (
 										<img
-											className="mab-book-card__cover"
+											className="hsrtech-book-card__cover"
 											src={ book._embedded[ 'wp:featuredmedia' ][ 0 ].source_url }
 											alt=""
 										/>
 									) : (
-										<span className="mab-book-card__cover mab-book-card__cover--placeholder">
+										<span className="hsrtech-book-card__cover hsrtech-book-card__cover--placeholder">
 											<span className="dashicons dashicons-book-alt" aria-hidden="true"></span>
 										</span>
 									) }
 								</a>
 								<CardBody>
-									<h2 className="mab-book-card__title">
+									<h2 className="hsrtech-book-card__title">
 										<a href={ `#/books/${ book.id }` }>
-											{ book.title?.raw || book.title?.rendered || __( '(no title)', 'make-a-book' ) }
+											{ book.title?.raw || book.title?.rendered || __( '(no title)', 'chapterwright' ) }
 										</a>
 									</h2>
 									{ 'publish' !== book.status && (
-										<span className={ `mab-status-pill mab-status-pill--${ book.status }` }>{ book.status }</span>
+										<span className={ `hsrtech-status-pill hsrtech-status-pill--${ book.status }` }>{ book.status }</span>
 									) }
-									{ book.meta?._mab_coming_soon && (
-										<span className="mab-status-pill mab-status-pill--coming-soon">
-											{ __( 'Coming soon', 'make-a-book' ) }
+									{ book.meta?._hsrtech_coming_soon && (
+										<span className="hsrtech-status-pill hsrtech-status-pill--coming-soon">
+											{ __( 'Coming soon', 'chapterwright' ) }
 										</span>
 									) }
 								</CardBody>
 								<CardFooter>
 									<Button __next40pxDefaultSize variant="secondary" href={ `#/books/${ book.id }` }>
-										{ __( 'Manage', 'make-a-book' ) }
+										{ __( 'Manage', 'chapterwright' ) }
 									</Button>
 									<Button __next40pxDefaultSize variant="tertiary" isDestructive onClick={ () => handleTrash( book ) }>
-										{ __( 'Trash', 'make-a-book' ) }
+										{ __( 'Trash', 'chapterwright' ) }
 									</Button>
 								</CardFooter>
 							</Card>
 						) ) }
 					</div>
 
-					<p className="mab-books-list__trash-link">
-						<a href={ `${ window.makeABookApp?.adminUrl || '/wp-admin/' }edit.php?post_type=mab_book&post_status=trash` }>
-							{ __( 'View trashed books →', 'make-a-book' ) }
+					<p className="hsrtech-books-list__trash-link">
+						<a href={ `${ window.hsrtechApp?.adminUrl || '/wp-admin/' }edit.php?post_type=hsrtech_book&post_status=trash` }>
+							{ __( 'View trashed books →', 'chapterwright' ) }
 						</a>
 					</p>
 				</>

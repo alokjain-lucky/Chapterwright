@@ -9,14 +9,14 @@
  * `edit_post` capability, the same permission the classic editor already
  * required to change a book's structure.
  *
- * @package Make_A_Book
+ * @package Chapterwright
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-add_action( 'rest_api_init', 'mab_register_sections_routes' );
+add_action( 'rest_api_init', 'hsrtech_register_sections_routes' );
 
 /**
  * `validate_callback` for a numeric route/body param.
@@ -33,37 +33,37 @@ add_action( 'rest_api_init', 'mab_register_sections_routes' );
  * @param mixed $value Parameter value to validate.
  * @return bool Whether the value is numeric.
  */
-function mab_rest_validate_numeric_param( $value ) {
+function hsrtech_rest_validate_numeric_param( $value ) {
 	return is_numeric( $value );
 }
 
 /**
- * Register the make-a-book/v1 section routes.
+ * Register the chapterwright/v1 section routes.
  */
-function mab_register_sections_routes() {
+function hsrtech_register_sections_routes() {
 	register_rest_route(
-		'make-a-book/v1',
+		'chapterwright/v1',
 		'/books/(?P<book_id>\d+)/sections',
 		array(
 			array(
 				'methods'             => WP_REST_Server::READABLE,
-				'callback'            => 'mab_rest_get_sections',
-				'permission_callback' => 'mab_rest_can_edit_book',
+				'callback'            => 'hsrtech_rest_get_sections',
+				'permission_callback' => 'hsrtech_rest_can_edit_book',
 				'args'                => array(
 					'book_id' => array(
 						'required'          => true,
-						'validate_callback' => 'mab_rest_validate_numeric_param',
+						'validate_callback' => 'hsrtech_rest_validate_numeric_param',
 					),
 				),
 			),
 			array(
 				'methods'             => WP_REST_Server::CREATABLE,
-				'callback'            => 'mab_rest_create_section',
-				'permission_callback' => 'mab_rest_can_edit_book',
+				'callback'            => 'hsrtech_rest_create_section',
+				'permission_callback' => 'hsrtech_rest_can_edit_book',
 				'args'                => array(
 					'book_id'     => array(
 						'required'          => true,
-						'validate_callback' => 'mab_rest_validate_numeric_param',
+						'validate_callback' => 'hsrtech_rest_validate_numeric_param',
 					),
 					'name'        => array(
 						'required' => true,
@@ -79,16 +79,16 @@ function mab_register_sections_routes() {
 	);
 
 	register_rest_route(
-		'make-a-book/v1',
+		'chapterwright/v1',
 		'/books/(?P<book_id>\d+)/sections/reorder',
 		array(
 			'methods'             => WP_REST_Server::CREATABLE,
-			'callback'            => 'mab_rest_reorder_sections',
-			'permission_callback' => 'mab_rest_can_edit_book',
+			'callback'            => 'hsrtech_rest_reorder_sections',
+			'permission_callback' => 'hsrtech_rest_can_edit_book',
 			'args'                => array(
 				'book_id' => array(
 					'required'          => true,
-					'validate_callback' => 'mab_rest_validate_numeric_param',
+					'validate_callback' => 'hsrtech_rest_validate_numeric_param',
 				),
 				'order'   => array(
 					'required' => true,
@@ -100,17 +100,17 @@ function mab_register_sections_routes() {
 	);
 
 	register_rest_route(
-		'make-a-book/v1',
+		'chapterwright/v1',
 		'/sections/(?P<id>\d+)',
 		array(
 			array(
 				'methods'             => WP_REST_Server::EDITABLE,
-				'callback'            => 'mab_rest_update_section',
-				'permission_callback' => 'mab_rest_can_edit_section',
+				'callback'            => 'hsrtech_rest_update_section',
+				'permission_callback' => 'hsrtech_rest_can_edit_section',
 				'args'                => array(
 					'id'          => array(
 						'required'          => true,
-						'validate_callback' => 'mab_rest_validate_numeric_param',
+						'validate_callback' => 'hsrtech_rest_validate_numeric_param',
 					),
 					'name'        => array( 'type' => 'string' ),
 					'description' => array( 'type' => 'string' ),
@@ -118,12 +118,12 @@ function mab_register_sections_routes() {
 			),
 			array(
 				'methods'             => WP_REST_Server::DELETABLE,
-				'callback'            => 'mab_rest_delete_section',
-				'permission_callback' => 'mab_rest_can_edit_section',
+				'callback'            => 'hsrtech_rest_delete_section',
+				'permission_callback' => 'hsrtech_rest_can_edit_section',
 				'args'                => array(
 					'id' => array(
 						'required'          => true,
-						'validate_callback' => 'mab_rest_validate_numeric_param',
+						'validate_callback' => 'hsrtech_rest_validate_numeric_param',
 					),
 				),
 			),
@@ -137,11 +137,11 @@ function mab_register_sections_routes() {
  * @param WP_REST_Request $request Current request.
  * @return bool|WP_Error
  */
-function mab_rest_can_edit_book( $request ) {
+function hsrtech_rest_can_edit_book( $request ) {
 	$book_id = (int) $request['book_id'];
 
-	if ( MAB_BOOK_POST_TYPE !== get_post_type( $book_id ) ) {
-		return new WP_Error( 'mab_rest_book_not_found', __( 'That book does not exist.', 'make-a-book' ), array( 'status' => 404 ) );
+	if ( HSRTECH_BOOK_POST_TYPE !== get_post_type( $book_id ) ) {
+		return new WP_Error( 'hsrtech_rest_book_not_found', __( 'That book does not exist.', 'chapterwright' ), array( 'status' => 404 ) );
 	}
 
 	return current_user_can( 'edit_post', $book_id );
@@ -154,11 +154,11 @@ function mab_rest_can_edit_book( $request ) {
  * @param WP_REST_Request $request Current request.
  * @return bool|WP_Error
  */
-function mab_rest_can_edit_section( $request ) {
-	$section = mab_get_section( (int) $request['id'] );
+function hsrtech_rest_can_edit_section( $request ) {
+	$section = hsrtech_get_section( (int) $request['id'] );
 
 	if ( ! $section ) {
-		return new WP_Error( 'mab_rest_section_not_found', __( 'That section no longer exists.', 'make-a-book' ), array( 'status' => 404 ) );
+		return new WP_Error( 'hsrtech_rest_section_not_found', __( 'That section no longer exists.', 'chapterwright' ), array( 'status' => 404 ) );
 	}
 
 	return current_user_can( 'edit_post', $section['book_id'] );
@@ -170,8 +170,8 @@ function mab_rest_can_edit_section( $request ) {
  * @param WP_REST_Request $request Current request.
  * @return WP_REST_Response
  */
-function mab_rest_get_sections( $request ) {
-	return rest_ensure_response( mab_get_book_sections( (int) $request['book_id'] ) );
+function hsrtech_rest_get_sections( $request ) {
+	return rest_ensure_response( hsrtech_get_book_sections( (int) $request['book_id'] ) );
 }
 
 /**
@@ -180,8 +180,8 @@ function mab_rest_get_sections( $request ) {
  * @param WP_REST_Request $request Current request.
  * @return WP_REST_Response|WP_Error
  */
-function mab_rest_create_section( $request ) {
-	$section_id = mab_insert_section(
+function hsrtech_rest_create_section( $request ) {
+	$section_id = hsrtech_insert_section(
 		(int) $request['book_id'],
 		array(
 			'name'        => $request['name'],
@@ -194,7 +194,7 @@ function mab_rest_create_section( $request ) {
 		return $section_id;
 	}
 
-	return rest_ensure_response( mab_get_section( $section_id ) );
+	return rest_ensure_response( hsrtech_get_section( $section_id ) );
 }
 
 /**
@@ -203,15 +203,15 @@ function mab_rest_create_section( $request ) {
  * @param WP_REST_Request $request Current request.
  * @return WP_REST_Response|WP_Error
  */
-function mab_rest_reorder_sections( $request ) {
-	$result = mab_reorder_sections( (int) $request['book_id'], array_map( 'absint', (array) $request['order'] ) );
+function hsrtech_rest_reorder_sections( $request ) {
+	$result = hsrtech_reorder_sections( (int) $request['book_id'], array_map( 'absint', (array) $request['order'] ) );
 
 	if ( is_wp_error( $result ) ) {
 		$result->add_data( array( 'status' => 400 ) );
 		return $result;
 	}
 
-	return rest_ensure_response( mab_get_book_sections( (int) $request['book_id'] ) );
+	return rest_ensure_response( hsrtech_get_book_sections( (int) $request['book_id'] ) );
 }
 
 /**
@@ -220,7 +220,7 @@ function mab_rest_reorder_sections( $request ) {
  * @param WP_REST_Request $request Current request.
  * @return WP_REST_Response|WP_Error
  */
-function mab_rest_update_section( $request ) {
+function hsrtech_rest_update_section( $request ) {
 	$args = array();
 	foreach ( array( 'name', 'description', 'menu_order' ) as $field ) {
 		if ( null !== $request->get_param( $field ) ) {
@@ -228,14 +228,14 @@ function mab_rest_update_section( $request ) {
 		}
 	}
 
-	$result = mab_update_section( (int) $request['id'], $args );
+	$result = hsrtech_update_section( (int) $request['id'], $args );
 
 	if ( is_wp_error( $result ) ) {
 		$result->add_data( array( 'status' => 400 ) );
 		return $result;
 	}
 
-	return rest_ensure_response( mab_get_section( (int) $request['id'] ) );
+	return rest_ensure_response( hsrtech_get_section( (int) $request['id'] ) );
 }
 
 /**
@@ -244,8 +244,8 @@ function mab_rest_update_section( $request ) {
  * @param WP_REST_Request $request Current request.
  * @return WP_REST_Response|WP_Error
  */
-function mab_rest_delete_section( $request ) {
-	$result = mab_delete_section( (int) $request['id'] );
+function hsrtech_rest_delete_section( $request ) {
+	$result = hsrtech_delete_section( (int) $request['id'] );
 
 	if ( is_wp_error( $result ) ) {
 		$result->add_data( array( 'status' => 400 ) );

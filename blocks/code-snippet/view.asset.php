@@ -2,7 +2,7 @@
 /**
  * Script dependency manifest for view.js — no dependencies needed.
  *
- * @package Make_A_Book
+ * @package Chapterwright
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -11,5 +11,5 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 return array(
 	'dependencies' => array(),
-	'version'      => MAKE_A_BOOK_VERSION,
+	'version'      => HSRTECH_VERSION,
 );

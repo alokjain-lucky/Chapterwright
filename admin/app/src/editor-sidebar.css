@@ -2,7 +2,7 @@
  * Minimal styling for the Book/Chapter Details sidebar panel fields.
  */
 
-.mab-color-input {
+.hsrtech-color-input {
 	appearance: none;
 	background: none;
 	border: 1px solid #949494;
@@ -14,6 +14,6 @@
 	width: 56px;
 }
 
-.mab-sidebar-field {
+.hsrtech-sidebar-field {
 	margin: 0 0 8px;
 }

@@ -5,7 +5,7 @@
 	beStrictAboutTestsThatDoNotTestAnything="true"
 >
 	<testsuites>
-		<testsuite name="make-a-book">
+		<testsuite name="chapterwright">
 			<directory prefix="test-" suffix=".php">./tests/</directory>
 		</testsuite>
 	</testsuites>

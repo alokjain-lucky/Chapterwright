@@ -2,7 +2,7 @@
 /**
  * Close the theme document for classic and block themes.
  *
- * @package Make_A_Book
+ * @package Chapterwright
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

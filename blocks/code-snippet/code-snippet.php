@@ -1,6 +1,6 @@
 <?php
 /**
- * Registers the make-a-book/code-snippet block.
+ * Registers the chapterwright/code-snippet block.
  *
  * A dynamic block: the editor only collects `code`, `language`, and
  * `caption`; the front end is always rendered by render.php from those
@@ -9,18 +9,18 @@
  * script handles WordPress already registers, matching the rest of this
  * plugin's dependency-free JavaScript.
  *
- * @package Make_A_Book
+ * @package Chapterwright
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-add_action( 'init', 'mab_register_code_snippet_block' );
+add_action( 'init', 'hsrtech_register_code_snippet_block' );
 
 /**
  * Register the Code Snippet block from its block.json.
  */
-function mab_register_code_snippet_block() {
+function hsrtech_register_code_snippet_block() {
 	register_block_type( __DIR__ );
 }

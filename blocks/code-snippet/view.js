@@ -1,30 +1,30 @@
 /**
- * Front-end copy-to-clipboard behavior for make-a-book/code-snippet.
+ * Front-end copy-to-clipboard behavior for chapterwright/code-snippet.
  *
  * Dependency-free and loaded only on pages that actually contain the block
  * (block.json's viewScript is enqueued automatically and only then), matching
  * the rest of this plugin's front-end JavaScript.
  *
- * @package Make_A_Book
+ * @package Chapterwright
  */
 ( function () {
 	'use strict';
 
 	document.addEventListener( 'click', function ( event ) {
-		var button = event.target.closest( '.mab-code__copy' );
+		var button = event.target.closest( '.hsrtech-code__copy' );
 		if ( ! button ) {
 			return;
 		}
 
-		var figure = button.closest( '.mab-code' );
+		var figure = button.closest( '.hsrtech-code' );
 		var code = figure ? figure.querySelector( 'code' ) : null;
 		if ( ! code ) {
 			return;
 		}
 
 		var text = code.textContent || '';
-		var copiedLabel = button.getAttribute( 'data-mab-copied-label' ) || 'Copied!';
-		var defaultLabel = button.getAttribute( 'data-mab-copy-label' ) || 'Copy code';
+		var copiedLabel = button.getAttribute( 'data-hsrtech-copied-label' ) || 'Copied!';
+		var defaultLabel = button.getAttribute( 'data-hsrtech-copy-label' ) || 'Copy code';
 
 		// Icon-only button: the visible state change is a swapped icon (via
 		// the .is-copied class, see style.css), with the accessible name

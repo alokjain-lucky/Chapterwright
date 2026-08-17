@@ -2,28 +2,28 @@
 /**
  * Book library archive.
  *
- * @package Make_A_Book
+ * @package Chapterwright
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-require MAKE_A_BOOK_PATH . 'templates/partials/document-start.php';
+require HSRTECH_PATH . 'templates/partials/document-start.php';
 global $wp_query;
 $query = $wp_query;
 
-$archive_eyebrow    = mab_get_text( 'archive_eyebrow' );
-$archive_heading    = mab_get_text( 'archive_heading' );
-$archive_subheading = mab_get_text( 'archive_subheading' );
+$archive_eyebrow    = hsrtech_get_text( 'archive_eyebrow' );
+$archive_heading    = hsrtech_get_text( 'archive_heading' );
+$archive_subheading = hsrtech_get_text( 'archive_subheading' );
 $has_header_text    = $archive_eyebrow || $archive_heading || $archive_subheading;
 ?>
-<a class="mab-skip-link" href="#mab-archive-content"><?php esc_html_e( 'Skip to book library', 'make-a-book' ); ?></a>
-<main id="mab-archive-content" class="mab-page mab-archive" tabindex="-1">
+<a class="hsrtech-skip-link" href="#hsrtech-archive-content"><?php esc_html_e( 'Skip to book library', 'chapterwright' ); ?></a>
+<main id="hsrtech-archive-content" class="hsrtech-page hsrtech-archive" tabindex="-1">
 	<?php if ( $has_header_text ) : ?>
-		<header class="mab-archive__header">
+		<header class="hsrtech-archive__header">
 			<?php if ( $archive_eyebrow ) { ?>
-				<p class="mab-eyebrow"><?php echo esc_html( $archive_eyebrow ); ?></p>
+				<p class="hsrtech-eyebrow"><?php echo esc_html( $archive_eyebrow ); ?></p>
 			<?php } ?>
 			<?php if ( $archive_heading ) { ?>
 				<h1><?php echo esc_html( $archive_heading ); ?></h1>
@@ -46,9 +46,9 @@ $has_header_text    = $archive_eyebrow || $archive_heading || $archive_subheadin
 		 * promises while still giving assistive tech something to land on.
 		 */
 		?>
-		<h1 class="mab-sr-only"><?php echo esc_html( post_type_archive_title( '', false ) ); ?></h1>
+		<h1 class="hsrtech-sr-only"><?php echo esc_html( post_type_archive_title( '', false ) ); ?></h1>
 	<?php endif; ?>
-	<?php require MAKE_A_BOOK_PATH . 'templates/book-grid.php'; ?>
-	<?php mab_render_credit( 'archive' ); ?>
+	<?php require HSRTECH_PATH . 'templates/book-grid.php'; ?>
+	<?php hsrtech_render_credit( 'archive' ); ?>
 </main>
-<?php require MAKE_A_BOOK_PATH . 'templates/partials/document-end.php'; ?>
+<?php require HSRTECH_PATH . 'templates/partials/document-end.php'; ?>

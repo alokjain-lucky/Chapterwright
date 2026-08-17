@@ -2,19 +2,19 @@
 /**
  * Background prefetch of the previous/next chapter, for faster navigation.
  *
- * @package Make_A_Book
+ * @package Chapterwright
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-add_action( 'wp_head', 'mab_print_chapter_prefetch_links' );
+add_action( 'wp_head', 'hsrtech_print_chapter_prefetch_links' );
 
 /**
  * Hint the browser to fetch the previous/next chapter's HTML in the
  * background while the current chapter is being read, so clicking
- * "Previous"/"Next" (.mab-reader__next in templates/single-mab_chapter.php)
+ * "Previous"/"Next" (.hsrtech-reader__next in templates/single-hsrtech_chapter.php)
  * is typically served from cache instead of waiting on a fresh request.
  *
  * A plain `<link rel="prefetch">` rather than a JS-driven fetch(): it's the
@@ -34,19 +34,19 @@ add_action( 'wp_head', 'mab_print_chapter_prefetch_links' );
  * resolved by this point regardless, so `is_singular()` and
  * `get_queried_object_id()` work exactly as they would anywhere else.
  */
-function mab_print_chapter_prefetch_links() {
-	if ( ! is_singular( MAB_CHAPTER_POST_TYPE ) ) {
+function hsrtech_print_chapter_prefetch_links() {
+	if ( ! is_singular( HSRTECH_CHAPTER_POST_TYPE ) ) {
 		return;
 	}
 
 	$chapter_id = get_queried_object_id();
-	$book_id    = absint( get_post_meta( $chapter_id, '_mab_book_id', true ) );
+	$book_id    = absint( get_post_meta( $chapter_id, '_hsrtech_book_id', true ) );
 
 	if ( ! $book_id ) {
 		return;
 	}
 
-	$neighbors = mab_locate_chapter( $chapter_id, mab_get_chapters( $book_id ) );
+	$neighbors = hsrtech_locate_chapter( $chapter_id, hsrtech_get_chapters( $book_id ) );
 
 	foreach ( array( $neighbors['previous'], $neighbors['next'] ) as $neighbor ) {
 		if ( $neighbor ) {

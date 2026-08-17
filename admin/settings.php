@@ -14,7 +14,7 @@
  * templates — those are UI chrome, not copy a site owner is likely to want
  * to reword, so they don't need a settings-page field.
  *
- * @package Make_A_Book
+ * @package Chapterwright
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -22,13 +22,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Default priority (10) is intentional and must stay *after* admin/app.php's
-// mab_add_app_page(), which runs at priority 5 specifically so the
-// top-level "make-a-book" menu it registers exists before this file's
-// add_submenu_page( 'make-a-book', ... ) call below. See the priority
+// hsrtech_add_app_page(), which runs at priority 5 specifically so the
+// top-level "chapterwright" menu it registers exists before this file's
+// add_submenu_page( 'chapterwright', ... ) call below. See the priority
 // comment on that hook in admin/app.php for what breaks if this ordering
 // is lost.
-add_action( 'admin_menu', 'mab_add_settings_page' );
-add_action( 'admin_init', 'mab_register_settings' );
+add_action( 'admin_menu', 'hsrtech_add_settings_page' );
+add_action( 'admin_init', 'hsrtech_register_settings' );
 
 /**
  * The plugin's default settings, including the current default copy for
@@ -38,32 +38,32 @@ add_action( 'admin_init', 'mab_register_settings' );
  *
  * @return array<string,string> Default settings, keyed by field name.
  */
-function mab_default_settings() {
+function hsrtech_default_settings() {
 	return array(
 		'show_mode_toggle'    => '1',
-		'show_credit'         => '1',
+		'show_credit'         => '0',
 		'show_toc_excerpt'    => '1',
 		'show_toc_button'     => '1',
 		'show_draft_chapters' => '0',
-		'archive_eyebrow'     => __( 'The library', 'make-a-book' ),
-		'archive_heading'     => __( 'Books worth opening', 'make-a-book' ),
-		'archive_subheading'  => __( 'Read one chapter at a time, right here on the web.', 'make-a-book' ),
-		'toc_heading'         => __( 'Read at your own pace', 'make-a-book' ),
+		'archive_eyebrow'     => __( 'The library', 'chapterwright' ),
+		'archive_heading'     => __( 'Books worth opening', 'chapterwright' ),
+		'archive_subheading'  => __( 'Read one chapter at a time, right here on the web.', 'chapterwright' ),
+		'toc_heading'         => __( 'Read at your own pace', 'chapterwright' ),
 	);
 }
 
 /**
- * Register the `mab_settings` option, stored as a single array so the
+ * Register the `hsrtech_settings` option, stored as a single array so the
  * plugin's admin footprint in wp_options stays to one row.
  */
-function mab_register_settings() {
+function hsrtech_register_settings() {
 	register_setting(
-		'mab_settings_group',
-		'mab_settings',
+		'hsrtech_settings_group',
+		'hsrtech_settings',
 		array(
 			'type'              => 'array',
-			'sanitize_callback' => 'mab_sanitize_settings',
-			'default'           => mab_default_settings(),
+			'sanitize_callback' => 'hsrtech_sanitize_settings',
+			'default'           => hsrtech_default_settings(),
 		)
 	);
 }
@@ -76,9 +76,9 @@ function mab_register_settings() {
  *                               so a field missing from $input (e.g. an
  *                               unchecked checkbox) still resolves cleanly.
  */
-function mab_sanitize_settings( $input ) {
+function hsrtech_sanitize_settings( $input ) {
 	$input    = is_array( $input ) ? $input : array();
-	$defaults = mab_default_settings();
+	$defaults = hsrtech_default_settings();
 
 	return array(
 		'show_mode_toggle'    => empty( $input['show_mode_toggle'] ) ? '0' : '1',
@@ -99,9 +99,9 @@ function mab_sanitize_settings( $input ) {
  *
  * @return array<string,string> Current settings.
  */
-function mab_get_settings() {
-	$settings = get_option( 'mab_settings', array() );
-	return wp_parse_args( is_array( $settings ) ? $settings : array(), mab_default_settings() );
+function hsrtech_get_settings() {
+	$settings = get_option( 'hsrtech_settings', array() );
+	return wp_parse_args( is_array( $settings ) ? $settings : array(), hsrtech_default_settings() );
 }
 
 /**
@@ -112,21 +112,23 @@ function mab_get_settings() {
  *
  * @return bool
  */
-function mab_show_mode_toggle() {
-	$settings = mab_get_settings();
+function hsrtech_show_mode_toggle() {
+	$settings = hsrtech_get_settings();
 	return '1' === $settings['show_mode_toggle'];
 }
 
 /**
- * Whether the "This book is created with Make a Book" / "This library is
- * powered by Make a Book" credit line should be rendered at the bottom of
- * book/chapter/archive pages. On by default; a site owner can turn it off
- * in Settings.
+ * Whether the "This book is created with Chapterwright" / "This library is
+ * powered by Chapterwright" credit line should be rendered at the bottom of
+ * book/chapter/archive pages. Off by default — this is front-end attribution,
+ * so per the Plugin Directory guidelines it must be an explicit, deliberate
+ * opt-in from the site owner in Settings, not something shown until someone
+ * notices and turns it off.
  *
  * @return bool
  */
-function mab_show_credit() {
-	$settings = mab_get_settings();
+function hsrtech_show_credit() {
+	$settings = hsrtech_get_settings();
 	return '1' === $settings['show_credit'];
 }
 
@@ -137,8 +139,8 @@ function mab_show_credit() {
  *
  * @return bool
  */
-function mab_show_toc_excerpt() {
-	$settings = mab_get_settings();
+function hsrtech_show_toc_excerpt() {
+	$settings = hsrtech_get_settings();
 	return '1' === $settings['show_toc_excerpt'];
 }
 
@@ -149,8 +151,8 @@ function mab_show_toc_excerpt() {
  *
  * @return bool
  */
-function mab_show_toc_button() {
-	$settings = mab_get_settings();
+function hsrtech_show_toc_button() {
+	$settings = hsrtech_get_settings();
 	return '1' === $settings['show_toc_button'];
 }
 
@@ -164,8 +166,8 @@ function mab_show_toc_button() {
  *
  * @return bool
  */
-function mab_show_draft_chapters() {
-	$settings = mab_get_settings();
+function hsrtech_show_draft_chapters() {
+	$settings = hsrtech_get_settings();
 	return '1' === $settings['show_draft_chapters'];
 }
 
@@ -181,122 +183,122 @@ function mab_show_draft_chapters() {
  *                     archive_subheading, toc_heading.
  * @return string
  */
-function mab_get_text( $key ) {
-	$settings = mab_get_settings();
+function hsrtech_get_text( $key ) {
+	$settings = hsrtech_get_settings();
 	return isset( $settings[ $key ] ) ? $settings[ $key ] : '';
 }
 
 /**
- * Add the settings page under the top-level "Make a Book" admin menu
+ * Add the settings page under the top-level "Chapterwright" admin menu
  * (registered in admin/app.php, alongside the Books & Chapters app page).
  */
-function mab_add_settings_page() {
+function hsrtech_add_settings_page() {
 	add_submenu_page(
-		'make-a-book',
-		__( 'Make a Book Settings', 'make-a-book' ),
-		__( 'Settings', 'make-a-book' ),
+		'chapterwright',
+		__( 'Chapterwright Settings', 'chapterwright' ),
+		__( 'Settings', 'chapterwright' ),
 		'manage_options',
-		'make-a-book-settings',
-		'mab_render_settings_page'
+		'chapterwright-settings',
+		'hsrtech_render_settings_page'
 	);
 }
 
 /**
  * Render the settings page.
  */
-function mab_render_settings_page() {
+function hsrtech_render_settings_page() {
 	if ( ! current_user_can( 'manage_options' ) ) {
 		return;
 	}
 
-	$settings = mab_get_settings();
+	$settings = hsrtech_get_settings();
 	?>
 	<div class="wrap">
-		<h1><?php esc_html_e( 'Make a Book Settings', 'make-a-book' ); ?></h1>
+		<h1><?php esc_html_e( 'Chapterwright Settings', 'chapterwright' ); ?></h1>
 		<form method="post" action="options.php">
-			<?php settings_fields( 'mab_settings_group' ); ?>
+			<?php settings_fields( 'hsrtech_settings_group' ); ?>
 
-			<h2><?php esc_html_e( 'Reading experience', 'make-a-book' ); ?></h2>
+			<h2><?php esc_html_e( 'Reading experience', 'chapterwright' ); ?></h2>
 			<table class="form-table" role="presentation">
 				<tr>
-					<th scope="row"><?php esc_html_e( 'Color mode toggle', 'make-a-book' ); ?></th>
+					<th scope="row"><?php esc_html_e( 'Color mode toggle', 'chapterwright' ); ?></th>
 					<td>
 						<label>
-							<input type="checkbox" name="mab_settings[show_mode_toggle]" value="1" <?php checked( '1', $settings['show_mode_toggle'] ); ?> />
-							<?php esc_html_e( 'Show the light/dark reading mode button on book and chapter pages', 'make-a-book' ); ?>
+							<input type="checkbox" name="hsrtech_settings[show_mode_toggle]" value="1" <?php checked( '1', $settings['show_mode_toggle'] ); ?> />
+							<?php esc_html_e( 'Show the light/dark reading mode button on book and chapter pages', 'chapterwright' ); ?>
 						</label>
 						<p class="description">
-							<?php esc_html_e( 'This is the reader\'s own toggle and is separate from any color-mode switch your theme adds to the site header. Turn this off if the two feel redundant and let the reader simply follow the system/browser color preference instead.', 'make-a-book' ); ?>
+							<?php esc_html_e( 'This is the reader\'s own toggle and is separate from any color-mode switch your theme adds to the site header. Turn this off if the two feel redundant and let the reader simply follow the system/browser color preference instead.', 'chapterwright' ); ?>
 						</p>
 					</td>
 				</tr>
 				<tr>
-					<th scope="row"><?php esc_html_e( 'Credit link', 'make-a-book' ); ?></th>
+					<th scope="row"><?php esc_html_e( 'Credit link', 'chapterwright' ); ?></th>
 					<td>
 						<label>
-							<input type="checkbox" name="mab_settings[show_credit]" value="1" <?php checked( '1', $settings['show_credit'] ); ?> />
-							<?php esc_html_e( 'Show "This book is created with Make a Book" at the bottom of book, chapter, and library pages', 'make-a-book' ); ?>
+							<input type="checkbox" name="hsrtech_settings[show_credit]" value="1" <?php checked( '1', $settings['show_credit'] ); ?> />
+							<?php esc_html_e( 'Show "This book is created with Chapterwright" at the bottom of book, chapter, and library pages', 'chapterwright' ); ?>
 						</label>
 					</td>
 				</tr>
 				<tr>
-					<th scope="row"><?php esc_html_e( 'Table of contents excerpts', 'make-a-book' ); ?></th>
+					<th scope="row"><?php esc_html_e( 'Table of contents excerpts', 'chapterwright' ); ?></th>
 					<td>
 						<label>
-							<input type="checkbox" name="mab_settings[show_toc_excerpt]" value="1" <?php checked( '1', $settings['show_toc_excerpt'] ); ?> />
-							<?php esc_html_e( 'Show each chapter\'s excerpt below its title in the table of contents', 'make-a-book' ); ?>
+							<input type="checkbox" name="hsrtech_settings[show_toc_excerpt]" value="1" <?php checked( '1', $settings['show_toc_excerpt'] ); ?> />
+							<?php esc_html_e( 'Show each chapter\'s excerpt below its title in the table of contents', 'chapterwright' ); ?>
 						</label>
 						<p class="description">
-							<?php esc_html_e( 'Turn this off for a shorter, title-and-number-only chapter list.', 'make-a-book' ); ?>
+							<?php esc_html_e( 'Turn this off for a shorter, title-and-number-only chapter list.', 'chapterwright' ); ?>
 						</p>
 					</td>
 				</tr>
 				<tr>
-					<th scope="row"><?php esc_html_e( 'Floating table of contents button', 'make-a-book' ); ?></th>
+					<th scope="row"><?php esc_html_e( 'Floating table of contents button', 'chapterwright' ); ?></th>
 					<td>
 						<label>
-							<input type="checkbox" name="mab_settings[show_toc_button]" value="1" <?php checked( '1', $settings['show_toc_button'] ); ?> />
-							<?php esc_html_e( 'Show a floating button on chapter pages that opens the book\'s table of contents in a side panel', 'make-a-book' ); ?>
+							<input type="checkbox" name="hsrtech_settings[show_toc_button]" value="1" <?php checked( '1', $settings['show_toc_button'] ); ?> />
+							<?php esc_html_e( 'Show a floating button on chapter pages that opens the book\'s table of contents in a side panel', 'chapterwright' ); ?>
 						</label>
 					</td>
 				</tr>
 				<tr>
-					<th scope="row"><?php esc_html_e( 'Draft chapters in the table of contents', 'make-a-book' ); ?></th>
+					<th scope="row"><?php esc_html_e( 'Draft chapters in the table of contents', 'chapterwright' ); ?></th>
 					<td>
 						<label>
-							<input type="checkbox" name="mab_settings[show_draft_chapters]" value="1" <?php checked( '1', $settings['show_draft_chapters'] ); ?> />
-							<?php esc_html_e( 'List chapters still in draft alongside published ones, faded and without a link', 'make-a-book' ); ?>
+							<input type="checkbox" name="hsrtech_settings[show_draft_chapters]" value="1" <?php checked( '1', $settings['show_draft_chapters'] ); ?> />
+							<?php esc_html_e( 'List chapters still in draft alongside published ones, faded and without a link', 'chapterwright' ); ?>
 						</label>
 						<p class="description">
-							<?php esc_html_e( 'Gives readers a preview of what\'s coming without letting them open an unfinished chapter. Off by default.', 'make-a-book' ); ?>
+							<?php esc_html_e( 'Gives readers a preview of what\'s coming without letting them open an unfinished chapter. Off by default.', 'chapterwright' ); ?>
 						</p>
 					</td>
 				</tr>
 			</table>
 
-			<h2><?php esc_html_e( 'Library page text', 'make-a-book' ); ?></h2>
-			<p class="description"><?php esc_html_e( 'Shown at the top of the book library (/books/). Clear a field to remove that line entirely.', 'make-a-book' ); ?></p>
+			<h2><?php esc_html_e( 'Library page text', 'chapterwright' ); ?></h2>
+			<p class="description"><?php esc_html_e( 'Shown at the top of the book library (/books/). Clear a field to remove that line entirely.', 'chapterwright' ); ?></p>
 			<table class="form-table" role="presentation">
 				<tr>
-					<th scope="row"><label for="mab-archive-eyebrow"><?php esc_html_e( 'Eyebrow label', 'make-a-book' ); ?></label></th>
-					<td><input type="text" id="mab-archive-eyebrow" class="regular-text" name="mab_settings[archive_eyebrow]" value="<?php echo esc_attr( $settings['archive_eyebrow'] ); ?>" /></td>
+					<th scope="row"><label for="hsrtech-archive-eyebrow"><?php esc_html_e( 'Eyebrow label', 'chapterwright' ); ?></label></th>
+					<td><input type="text" id="hsrtech-archive-eyebrow" class="regular-text" name="hsrtech_settings[archive_eyebrow]" value="<?php echo esc_attr( $settings['archive_eyebrow'] ); ?>" /></td>
 				</tr>
 				<tr>
-					<th scope="row"><label for="mab-archive-heading"><?php esc_html_e( 'Heading', 'make-a-book' ); ?></label></th>
-					<td><input type="text" id="mab-archive-heading" class="regular-text" name="mab_settings[archive_heading]" value="<?php echo esc_attr( $settings['archive_heading'] ); ?>" /></td>
+					<th scope="row"><label for="hsrtech-archive-heading"><?php esc_html_e( 'Heading', 'chapterwright' ); ?></label></th>
+					<td><input type="text" id="hsrtech-archive-heading" class="regular-text" name="hsrtech_settings[archive_heading]" value="<?php echo esc_attr( $settings['archive_heading'] ); ?>" /></td>
 				</tr>
 				<tr>
-					<th scope="row"><label for="mab-archive-subheading"><?php esc_html_e( 'Subheading', 'make-a-book' ); ?></label></th>
-					<td><input type="text" id="mab-archive-subheading" class="regular-text" name="mab_settings[archive_subheading]" value="<?php echo esc_attr( $settings['archive_subheading'] ); ?>" /></td>
+					<th scope="row"><label for="hsrtech-archive-subheading"><?php esc_html_e( 'Subheading', 'chapterwright' ); ?></label></th>
+					<td><input type="text" id="hsrtech-archive-subheading" class="regular-text" name="hsrtech_settings[archive_subheading]" value="<?php echo esc_attr( $settings['archive_subheading'] ); ?>" /></td>
 				</tr>
 			</table>
 
-			<h2><?php esc_html_e( 'Book page text', 'make-a-book' ); ?></h2>
+			<h2><?php esc_html_e( 'Book page text', 'chapterwright' ); ?></h2>
 			<table class="form-table" role="presentation">
 				<tr>
-					<th scope="row"><label for="mab-toc-heading"><?php esc_html_e( 'Table of contents heading', 'make-a-book' ); ?></label></th>
-					<td><input type="text" id="mab-toc-heading" class="regular-text" name="mab_settings[toc_heading]" value="<?php echo esc_attr( $settings['toc_heading'] ); ?>" />
-					<p class="description"><?php esc_html_e( 'Shown above the chapter list on every book\'s page.', 'make-a-book' ); ?></p>
+					<th scope="row"><label for="hsrtech-toc-heading"><?php esc_html_e( 'Table of contents heading', 'chapterwright' ); ?></label></th>
+					<td><input type="text" id="hsrtech-toc-heading" class="regular-text" name="hsrtech_settings[toc_heading]" value="<?php echo esc_attr( $settings['toc_heading'] ); ?>" />
+					<p class="description"><?php esc_html_e( 'Shown above the chapter list on every book\'s page.', 'chapterwright' ); ?></p>
 					</td>
 				</tr>
 			</table>

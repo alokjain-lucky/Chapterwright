@@ -28,41 +28,41 @@ import { BaseControl, TextareaControl } from '@wordpress/components';
 import apiFetch from '@wordpress/api-fetch';
 import './editor-sidebar.css';
 
-const BOOK_POST_TYPE = 'mab_book';
-const CHAPTER_POST_TYPE = 'mab_chapter';
+const BOOK_POST_TYPE = 'hsrtech_book';
+const CHAPTER_POST_TYPE = 'hsrtech_chapter';
 
 function BookPanel() {
 	// useEntityProp() can return `undefined` for `meta` on the very first
 	// render, before the post entity has finished resolving — reading
-	// meta._mab_subtitle below would throw and crash this whole sidebar
+	// meta._hsrtech_subtitle below would throw and crash this whole sidebar
 	// (Gutenberg's plugin error boundary is what the user actually sees:
-	// "The 'make-a-book' plugin has encountered an error"). Defaulting to
+	// "The 'chapterwright' plugin has encountered an error"). Defaulting to
 	// {} here is required, not just tidy.
 	const [ meta = {}, setMeta ] = useEntityProp( 'postType', BOOK_POST_TYPE, 'meta' );
 
 	return (
-		<PluginDocumentSettingPanel name="mab-book-details" title={ __( 'Book Details', 'make-a-book' ) }>
+		<PluginDocumentSettingPanel name="hsrtech-book-details" title={ __( 'Book Details', 'chapterwright' ) }>
 			<TextareaControl
-				label={ __( 'Subtitle', 'make-a-book' ) }
-				value={ meta._mab_subtitle || '' }
-				onChange={ ( value ) => setMeta( { ...meta, _mab_subtitle: value } ) }
+				label={ __( 'Subtitle', 'chapterwright' ) }
+				value={ meta._hsrtech_subtitle || '' }
+				onChange={ ( value ) => setMeta( { ...meta, _hsrtech_subtitle: value } ) }
 				rows={ 3 }
 			/>
 			<BaseControl
-				id="mab-sidebar-accent"
-				label={ __( 'Accent color', 'make-a-book' ) }
-				help={ __( 'Colors links, hover states, blockquote/callout borders, and the reading-progress bar on this book’s pages.', 'make-a-book' ) }
+				id="hsrtech-sidebar-accent"
+				label={ __( 'Accent color', 'chapterwright' ) }
+				help={ __( 'Colors links, hover states, blockquote/callout borders, and the reading-progress bar on this book’s pages.', 'chapterwright' ) }
 			>
 				<input
-					id="mab-sidebar-accent"
-					className="mab-color-input"
+					id="hsrtech-sidebar-accent"
+					className="hsrtech-color-input"
 					type="color"
-					value={ meta._mab_accent || '#f45d48' }
-					onChange={ ( event ) => setMeta( { ...meta, _mab_accent: event.target.value } ) }
+					value={ meta._hsrtech_accent || '#f45d48' }
+					onChange={ ( event ) => setMeta( { ...meta, _hsrtech_accent: event.target.value } ) }
 				/>
 			</BaseControl>
 			<p className="description">
-				{ __( 'Manage this book\'s sections and chapter order from the Make a Book admin page.', 'make-a-book' ) }
+				{ __( 'Manage this book\'s sections and chapter order from the Chapterwright admin page.', 'chapterwright' ) }
 			</p>
 		</PluginDocumentSettingPanel>
 	);
@@ -74,7 +74,7 @@ function ChapterPanel() {
 	const [ sections, setSections ] = useState( [] );
 	const [ bookTitle, setBookTitle ] = useState( '' );
 
-	const bookId = meta._mab_book_id || 0;
+	const bookId = meta._hsrtech_book_id || 0;
 
 	// Which book this chapter belongs to, its section, and its reading order
 	// are shown here read-only, not editable — reassigning a chapter to a
@@ -93,49 +93,49 @@ function ChapterPanel() {
 			setBookTitle( '' );
 			return;
 		}
-		apiFetch( { path: `/wp/v2/mab_book/${ bookId }?_fields=id,title` } )
+		apiFetch( { path: `/wp/v2/hsrtech_book/${ bookId }?_fields=id,title` } )
 			.then( ( book ) => setBookTitle( book.title?.rendered || book.title?.raw || '' ) )
 			.catch( () => setBookTitle( '' ) );
-		apiFetch( { path: `/make-a-book/v1/books/${ bookId }/sections` } )
+		apiFetch( { path: `/chapterwright/v1/books/${ bookId }/sections` } )
 			.then( setSections )
 			.catch( () => setSections( [] ) );
 	}, [ bookId ] );
 
-	const adminUrl = window.makeABookApp?.adminUrl || '/wp-admin/';
-	const section = sections.find( ( candidate ) => candidate.id === Number( meta._mab_section_id ) );
+	const adminUrl = window.hsrtechApp?.adminUrl || '/wp-admin/';
+	const section = sections.find( ( candidate ) => candidate.id === Number( meta._hsrtech_section_id ) );
 
 	return (
-		<PluginDocumentSettingPanel name="mab-chapter-details" title={ __( 'Chapter Details', 'make-a-book' ) }>
+		<PluginDocumentSettingPanel name="hsrtech-chapter-details" title={ __( 'Chapter Details', 'chapterwright' ) }>
 			{ bookId ? (
 				<>
-					<p className="mab-sidebar-field">
-						<strong>{ __( 'Book:', 'make-a-book' ) }</strong>{ ' ' }
-						{ bookTitle || __( '…', 'make-a-book' ) }
+					<p className="hsrtech-sidebar-field">
+						<strong>{ __( 'Book:', 'chapterwright' ) }</strong>{ ' ' }
+						{ bookTitle || __( '…', 'chapterwright' ) }
 					</p>
-					<p className="mab-sidebar-field">
-						<strong>{ __( 'Section:', 'make-a-book' ) }</strong>{ ' ' }
-						{ section ? section.name : __( 'None', 'make-a-book' ) }
+					<p className="hsrtech-sidebar-field">
+						<strong>{ __( 'Section:', 'chapterwright' ) }</strong>{ ' ' }
+						{ section ? section.name : __( 'None', 'chapterwright' ) }
 					</p>
-					<p className="mab-sidebar-field">
-						<strong>{ __( 'Order:', 'make-a-book' ) }</strong>{ ' ' }
-						{ meta._mab_order || '—' }
+					<p className="hsrtech-sidebar-field">
+						<strong>{ __( 'Order:', 'chapterwright' ) }</strong>{ ' ' }
+						{ meta._hsrtech_order || '—' }
 					</p>
 					<p className="description">
-						<a href={ `${ adminUrl }admin.php?page=make-a-book#/books/${ bookId }` }>
-							{ __( 'Change book, section, or order →', 'make-a-book' ) }
+						<a href={ `${ adminUrl }admin.php?page=chapterwright#/books/${ bookId }` }>
+							{ __( 'Change book, section, or order →', 'chapterwright' ) }
 						</a>
 					</p>
 				</>
 			) : (
 				<p className="description">
-					{ __( 'This chapter isn\'t assigned to a book yet. Add it to a book from the Make a Book admin page.', 'make-a-book' ) }
+					{ __( 'This chapter isn\'t assigned to a book yet. Add it to a book from the Chapterwright admin page.', 'chapterwright' ) }
 				</p>
 			) }
 		</PluginDocumentSettingPanel>
 	);
 }
 
-function MakeABookSidebar() {
+function HsrtechSidebar() {
 	const postType = useSelect( ( select ) => select( 'core/editor' ).getCurrentPostType(), [] );
 
 	if ( BOOK_POST_TYPE === postType ) {
@@ -149,4 +149,4 @@ function MakeABookSidebar() {
 	return null;
 }
 
-registerPlugin( 'make-a-book', { render: MakeABookSidebar } );
+registerPlugin( 'chapterwright', { render: HsrtechSidebar } );

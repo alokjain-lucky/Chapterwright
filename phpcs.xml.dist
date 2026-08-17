@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<ruleset name="Make a Book">
-	<description>Coding standards for the Make a Book plugin.</description>
+<ruleset name="Chapterwright">
+	<description>Coding standards for the Chapterwright plugin.</description>
 
 	<file>.</file>
 
@@ -32,25 +32,23 @@
 
 	<!-- The plugin's text domain, for WordPress.I18n sniffs (checks every
 	     translation function call uses this exact domain — see the 2.1.0
-	     i18n work and languages/make-a-book.pot). -->
+	     i18n work and languages/chapterwright.pot). -->
 	<rule ref="WordPress.WP.I18n">
 		<properties>
 			<property name="text_domain" type="array">
-				<element value="make-a-book"/>
+				<element value="chapterwright"/>
 			</property>
 		</properties>
 	</rule>
 
-	<!-- mab_* function names are already prefixed consistently; this sniff
+	<!-- hsrtech_* function names are already prefixed consistently; this sniff
 	     mainly guards against a stray unprefixed global function/constant
 	     being introduced by accident. -->
 	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
 		<properties>
 			<property name="prefixes" type="array">
-				<element value="mab_"/>
-				<element value="MAB_"/>
-				<element value="MAKE_A_BOOK_"/>
-				<element value="Make_A_Book"/>
+				<element value="hsrtech_"/>
+				<element value="HSRTECH_"/>
 			</property>
 		</properties>
 	</rule>
@@ -67,22 +65,22 @@
 		<exclude-pattern>/blocks/*/render.php</exclude-pattern>
 	</rule>
 
-	<!-- edit_mab_books and edit_mab_chapters are real custom capabilities
-	     registered by mab_add_capabilities_to_roles() (includes/abilities.php)
+	<!-- edit_hsrtech_books and edit_hsrtech_chapters are real custom capabilities
+	     registered by hsrtech_add_capabilities_to_roles() (includes/abilities.php)
 	     and granted to default roles on activation — not typos of core
 	     capabilities. -->
 	<rule ref="WordPress.WP.Capabilities">
 		<properties>
 			<property name="custom_capabilities" type="array">
-				<element value="edit_mab_books"/>
-				<element value="edit_mab_chapters"/>
+				<element value="edit_hsrtech_books"/>
+				<element value="edit_hsrtech_chapters"/>
 			</property>
 		</properties>
 	</rule>
 
 	<!-- WordPress' template hierarchy dictates these exact filenames
 	     (single-{post_type}.php / archive-{post_type}.php), and the plugin's
-	     post type slugs (mab_book, mab_chapter) contain underscores — the
+	     post type slugs (hsrtech_book, hsrtech_chapter) contain underscores — the
 	     resulting filenames can't be hyphenated without breaking WordPress'
 	     template lookup. -->
 	<rule ref="WordPress.Files.FileName.NotHyphenatedLowercase">

@@ -1,0 +1,465 @@
+/**
+ * Chapterwright — reader styles.
+ *
+ * Typography intentionally uses `font-family: inherit` throughout (see
+ * .hsrtech-page and its descendants below) instead of a bundled font stack, so
+ * every book visually belongs to the active theme instead of looking like a
+ * separate reading app bolted onto the site. `.hsrtech-page` is rendered inside
+ * the theme's own document body, so `inherit` resolves to whatever font the
+ * theme sets on `body` — Poppins on this site, something else on another
+ * theme. Code blocks stay monospace regardless of theme, which readers
+ * expect. Colors remain plugin-defined (the --hsrtech-* custom properties
+ * below) since accent/paper/ink need to work consistently across any theme,
+ * light or dark.
+ *
+ * @package Chapterwright
+ */
+
+:root {
+	--hsrtech-ink: #171716;
+	--hsrtech-paper: #f6f3ec;
+	--hsrtech-surface: #fff;
+	--hsrtech-muted: #716e67;
+	--hsrtech-line: rgba(23, 23, 22, 0.14);
+	--hsrtech-code: #202124;
+	--hsrtech-code-ink: #f5f2ea;
+
+	/* Code token colors: fixed regardless of reading mode, since --hsrtech-code
+	   stays a dark background in both light and dark mode (see below) — a
+	   code block never needs a separate light-mode token palette. */
+	--hsrtech-tok-comment: #9099ab;
+	--hsrtech-tok-string: #9ece6a;
+	--hsrtech-tok-number: #ff9e64;
+	--hsrtech-tok-keyword: #c586c0;
+	--hsrtech-tok-function: #61afef;
+	--hsrtech-tok-variable: #e5c07b;
+	--hsrtech-tok-tag: #e06c75;
+	--hsrtech-tok-attr-name: #d19a66;
+	--hsrtech-tok-attr-value: #98c379;
+	--hsrtech-tok-property: #56b6c2;
+	--hsrtech-tok-punctuation: rgba(245, 242, 234, 0.55);
+}
+
+@media (prefers-color-scheme: dark) {
+	:root:not([data-hsrtech-mode="light"]) {
+		--hsrtech-ink: #f5f2ea;
+		--hsrtech-paper: #252521;
+		--hsrtech-surface: #171716;
+		--hsrtech-muted: #b8b4aa;
+		--hsrtech-line: rgba(245, 242, 234, 0.18);
+		--hsrtech-code: #090a0b;
+		--hsrtech-code-ink: #f7f4ed;
+	}
+}
+
+:root[data-hsrtech-mode="dark"] {
+	--hsrtech-ink: #f5f2ea;
+	--hsrtech-paper: #252521;
+	--hsrtech-surface: #171716;
+	--hsrtech-muted: #b8b4aa;
+	--hsrtech-line: rgba(245, 242, 234, 0.18);
+	--hsrtech-code: #090a0b;
+	--hsrtech-code-ink: #f7f4ed;
+}
+
+:root[data-hsrtech-mode="light"] {
+	--hsrtech-ink: #171716;
+	--hsrtech-paper: #f6f3ec;
+	--hsrtech-surface: #fff;
+	--hsrtech-muted: #716e67;
+	--hsrtech-line: rgba(23, 23, 22, 0.14);
+	--hsrtech-code: #202124;
+	--hsrtech-code-ink: #f5f2ea;
+}
+
+.hsrtech-page {
+	box-sizing: border-box;
+	background: var(--hsrtech-surface);
+	color: var(--hsrtech-ink);
+	font-family: inherit;
+	font-size: 18px;
+	line-height: 1.65;
+	margin-inline: auto;
+	max-width: 1440px;
+	padding: clamp(2rem, 5vw, 5rem);
+	/* Top padding is fixed rather than clamped so the gap below the site
+	   header is a known, exact value the theme can match — see
+	   .bento-wrap's padding-top in the theme's bento.css. Individual page
+	   headers (.hsrtech-archive__header, .hsrtech-book-hero) no longer add their
+	   own extra top spacing on top of this. */
+	padding-top: 80px;
+}
+
+.hsrtech-skip-link { background: var(--hsrtech-ink); color: var(--hsrtech-surface); left: 1rem; padding: .75rem 1rem; position: fixed; top: 1rem; transform: translateY(-200%); z-index: 99999; }
+.hsrtech-skip-link:focus { transform: translateY(0); }
+
+/* Standard visually-hidden-but-still-announced pattern (clip to 1px instead
+   of display:none/visibility:hidden, which assistive tech also ignores) —
+   used where a heading or label needs to exist for screen-reader heading
+   navigation without adding visible text (e.g. templates/archive-hsrtech_book.php's
+   fallback <h1> when the site owner has cleared the visible heading text). */
+.hsrtech-sr-only {
+	clip: rect(0, 0, 0, 0);
+	border: 0;
+	height: 1px;
+	margin: -1px;
+	overflow: hidden;
+	padding: 0;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+.hsrtech-page :focus-visible { outline: 3px solid var(--hsrtech-accent, #f45d48); outline-offset: 4px; }
+.hsrtech-display-controls { align-items: center; display: flex; gap: 1rem; justify-content: space-between; }
+.hsrtech-back-link { align-items: center; color: var(--hsrtech-muted); display: inline-flex; font-size: .8rem; font-weight: 700; gap: .4rem; text-decoration: none; }
+.hsrtech-back-link:hover { color: var(--hsrtech-ink); }
+.hsrtech-mode-toggle { align-items: center; background: var(--hsrtech-paper); border: 1px solid var(--hsrtech-line); border-radius: 999px; color: var(--hsrtech-ink); cursor: pointer; display: inline-flex; font: inherit; font-size: .72rem; font-weight: 700; gap: .5rem; line-height: 1; padding: .7rem .9rem; }
+.hsrtech-reading-progress { background: var(--hsrtech-line); height: 3px; inset: 0 0 auto; position: fixed; z-index: 9999; }
+.hsrtech-reading-progress span { background: var(--hsrtech-accent, #f45d48); display: block; height: 100%; transform: scaleX(0); transform-origin: left center; will-change: transform; }
+.hsrtech-credit { color: var(--hsrtech-muted); font-size: .75rem; margin-top: 4rem; text-align: center; }
+.hsrtech-credit a { color: inherit; text-decoration: underline; text-underline-offset: .18em; }
+
+.hsrtech-page *, .hsrtech-page *::before, .hsrtech-page *::after { box-sizing: border-box; }
+.hsrtech-page h1, .hsrtech-page h2, .hsrtech-page h3 {
+	color: var(--hsrtech-ink);
+	font-family: inherit;
+	font-optical-sizing: auto;
+	letter-spacing: -0.035em;
+	line-height: 1.02;
+	/* Balances line lengths across a heading instead of leaving whatever
+	   greedy-wraps onto the last line — the classic "one orphaned word"
+	   headline. No-op past ~6 lines (browsers cap the cost of balancing),
+	   which is exactly the point: only short display text needs it. */
+	text-wrap: balance;
+}
+.hsrtech-page a { color: inherit; }
+.hsrtech-eyebrow { color: var(--hsrtech-muted); font-size: .72rem; font-weight: 750; letter-spacing: .16em; margin: 0 0 1rem; text-transform: uppercase; }
+/* Reading time sits next to the chapter number in the same eyebrow line —
+   lighter weight than "Chapter N" so it reads as secondary metadata rather
+   than competing with it, same muted color either way. */
+.hsrtech-eyebrow__meta { font-weight: 400; letter-spacing: .08em; }
+
+.hsrtech-book-hero { align-items: center; display: grid; gap: clamp(2rem, 6vw, 5rem); grid-template-columns: minmax(0, 1.15fr) minmax(240px, .85fr); padding-block: 1.5rem 3rem; }
+.hsrtech-book-hero h1 { margin: 0; }
+.hsrtech-book-hero__subtitle { font-family: inherit; font-size: clamp(1.25rem, 1.8vw, 1.6rem); line-height: 1.4; margin: 1.25rem 0 1rem; max-width: 29ch; text-wrap: balance; }
+.hsrtech-book-hero__description { color: var(--hsrtech-muted); font-size: 1.05rem; line-height: 1.6; max-width: 48ch; }
+.hsrtech-book-hero__cover img { box-shadow: 1.4rem 1.4rem 0 var(--hsrtech-accent); display: block; height: auto; transform: rotate(1.5deg); width: 100%; }
+.hsrtech-book-hero__actions { align-items: center; display: flex; flex-wrap: wrap; gap: 1rem; }
+.hsrtech-button { background: var(--hsrtech-ink); border-radius: 999px; color: #fff !important; display: inline-flex; font-size: .85rem; font-weight: 700; gap: 1.5rem; margin-top: 1.5rem; padding: .9rem 1.4rem; text-decoration: none; transition: transform .2s ease; }
+.hsrtech-button:hover { transform: translateY(-3px); }
+/* Secondary action (jump to the table of contents, below "Start reading" in
+   visual weight) — same shape/spacing as .hsrtech-button, border-and-text
+   instead of filled, using --hsrtech-ink/--hsrtech-line the way .hsrtech-mode-toggle
+   already does, so it stays readable in both color modes without its own
+   dark-mode override. */
+.hsrtech-button--outline { background: transparent; border: 2px solid var(--hsrtech-line); color: var(--hsrtech-ink) !important; padding: calc(.9rem - 2px) calc(1.4rem - 2px); }
+.hsrtech-button--outline:hover { border-color: var(--hsrtech-ink); }
+.hsrtech-book-intro { border-block: 1px solid var(--hsrtech-line); font-family: inherit; font-size: 1.1rem; line-height: 1.6; margin: 0 auto 3rem; max-width: 920px; padding: 2rem 0; }
+
+.hsrtech-toc { background: var(--hsrtech-paper); border-radius: 2rem; padding: clamp(1.5rem, 4vw, 3rem); }
+.hsrtech-toc__heading { margin-bottom: 2rem; }
+.hsrtech-toc__heading h2 { margin: 0; }
+.hsrtech-toc-section { display: flex; flex-direction: column; gap: .75rem; padding: 1.5rem 0; }
+.hsrtech-toc-section + .hsrtech-toc-section { border-top: 1px solid var(--hsrtech-line); }
+.hsrtech-toc-section h3 { font-size: 1.25rem; margin: .5rem 0; text-transform: uppercase; }
+.hsrtech-toc-section__description { color: var(--hsrtech-muted); font-size: .88rem; line-height: 1.45; margin: 0 0 .5rem; }
+.hsrtech-toc-section ol { list-style: none; margin: 0; padding: 0; }
+/* No rule between rows on purpose — chapters within a section are grouped by
+   spacing alone (each row's own padding below), not a divider line. The
+   section-to-section border above is the only separator left, so it reads
+   as the one meaningful boundary instead of competing with per-chapter
+   lines. */
+/* .hsrtech-toc-row-link covers both the normal <a> row and the unlinked <span>
+   draft row (templates/partials/toc-list.php) so both pick up the same
+   layout without duplicating it per element type. */
+.hsrtech-toc-row-link { display: flex; flex-direction: column; gap: .4rem; padding: 1.1rem 0; text-decoration: none; }
+.hsrtech-toc-row-link:not(.hsrtech-toc-row-link--draft):hover .hsrtech-toc-row span { color: var(--hsrtech-accent); }
+.hsrtech-toc-row-link:not(.hsrtech-toc-row-link--draft):hover .hsrtech-toc-row__leader { --hsrtech-toc-leader-color: var(--hsrtech-accent); }
+/* Faded and inert on purpose — reads as "coming, not clickable" rather than
+   a broken/dead link. cursor: default (not not-allowed) since this isn't an
+   error state, just not open yet. */
+.hsrtech-toc-row-link--draft { cursor: default; opacity: .48; }
+.hsrtech-toc-row-link--draft b { font-style: italic; text-transform: none; }
+.hsrtech-toc-row { align-items: baseline; display: flex; gap: .6rem; }
+.hsrtech-toc-row__title { flex-shrink: 0; }
+/* Dot leader connecting chapter title to its number, like a printed book's
+   table of contents — fills whatever space is left on the line instead of a
+   fixed width, so it still works with short and long chapter titles alike.
+   align-self/margin-bottom (rather than relying on the row's own
+   align-items: baseline, which an empty element has nothing to compute a
+   baseline from) pull the empty line up off the row's true bottom edge to
+   roughly where the surrounding text's baseline actually sits.
+
+   A real border-bottom: dotted renders each dot right up against the next
+   one (spacing is tied to the 1px border-width, not something border-spacing
+   controls) — too tight to read as a printed leader. A repeating
+   radial-gradient painted as a background lets the dot size and the gap
+   between dots be set independently instead. The color is a custom property
+   (rather than the gradient reading --hsrtech-line directly) purely so the hover
+   rule below can swap just that value without redeclaring the whole
+   gradient. */
+.hsrtech-toc-row__leader {
+	--hsrtech-toc-leader-color: var(--hsrtech-line);
+	align-self: flex-end;
+	background-image: radial-gradient(circle, var(--hsrtech-toc-leader-color) 1px, transparent 1.2px);
+	background-position: bottom left;
+	background-repeat: repeat-x;
+	background-size: 6px 3px;
+	flex: 1 1 auto;
+	height: 3px;
+	margin-bottom: .3em;
+	min-width: 1.5rem;
+}
+.hsrtech-toc-section small { color: var(--hsrtech-muted); line-height: 1.4; }
+.hsrtech-toc-section b { flex-shrink: 0; font-size: .8rem; font-variant-numeric: tabular-nums; }
+
+.hsrtech-reader { max-width: 1120px; }
+/* The bar's own bottom divider (see ::after below) doubles as a
+   book-completion indicator instead of a plain line, so this needs
+   position: relative for that pseudo-element to anchor to, and padding
+   instead of a literal border to leave it room. */
+.hsrtech-reader__bar { align-items: center; display: flex; font-size: .75rem; font-weight: 700; justify-content: space-between; letter-spacing: .08em; padding-bottom: 1.15rem; position: relative; text-transform: uppercase; }
+.hsrtech-reader__bar a { text-decoration: none; }
+/* --hsrtech-progress (0%–100%, set inline per chapter — see
+   templates/single-hsrtech_chapter.php) is how far into the *book* this
+   chapter sits, inclusive of itself — not this chapter's own scroll
+   position, which .hsrtech-reading-progress at the top of the page already
+   shows separately. The "0" second color-stop is shorthand for "pick up
+   exactly where the previous stop left off," so the line is accent-filled
+   up to the completed fraction and --hsrtech-line for the remainder, with no
+   visible seam. Falls back to a plain --hsrtech-line line if --hsrtech-progress is
+   ever unset (e.g. a template that doesn't set it). */
+.hsrtech-reader__bar::after,
+.hsrtech-reader__next::before {
+	background: linear-gradient( to right, var(--hsrtech-accent, #f45d48) var(--hsrtech-progress, 0%), var(--hsrtech-line) 0 );
+	border-radius: 999px;
+	content: '';
+	height: 2px;
+	left: 0;
+	position: absolute;
+	right: 0;
+}
+.hsrtech-reader__bar::after { bottom: 0; }
+.hsrtech-chapter { margin: 0 auto; max-width: 720px; padding-block: clamp(2rem, 5vw, 3rem) clamp(4rem, 9vw, 7rem); }
+.hsrtech-chapter__header { margin-bottom: 3rem; }
+.hsrtech-chapter h1 { line-height: 1.08; margin: 0; }
+.hsrtech-chapter__deck { color: var(--hsrtech-muted); font-family: inherit; font-size: 1.15rem; line-height: 1.45; margin: 1rem 0 1.5rem; text-wrap: pretty; }
+.hsrtech-chapter__image { margin: 0 0 3rem; }
+.hsrtech-chapter__image img { height: auto; width: 100%; }
+/* Flat 16px (1rem) base, not fluid — a chapter reads at a fixed, predictable
+   size instead of scaling with viewport width; every other measurement in
+   this block (margins, heading sizes, list spacing) was tuned relative to
+   this exact base rather than to the old, looser clamp()-scaled one. */
+.hsrtech-chapter__content { font-family: inherit; font-size: 1rem; line-height: 1.6; overflow-wrap: break-word; }
+
+/* Nothing above the very first element should add its own top margin on
+   top of .hsrtech-chapter__header's own spacing below it — otherwise a chapter
+   that opens on a heading (skipping straight past a lead paragraph) gets
+   visibly more gap than one that opens on a paragraph. */
+.hsrtech-chapter__content > *:first-child { margin-top: 0 !important; }
+
+.hsrtech-chapter__content p {
+	hanging-punctuation: first; /* Safari today; a no-op harmless elsewhere. */
+	margin: 0 0 1.2em;
+	text-wrap: pretty; /* Reworks only the last couple of lines to avoid a lone orphaned word — safe to set everywhere, it degrades to a normal rag where unsupported. */
+}
+
+.hsrtech-chapter__content h2 { font-size: 1.5rem; letter-spacing: -0.015em; line-height: 1.25; margin: 1.8em 0 .6em; }
+.hsrtech-chapter__content h3 { font-size: 1.2rem; letter-spacing: -0.01em; line-height: 1.3; margin: 1.5em 0 .5em; }
+/* Two headings back to back (no paragraph between) shouldn't be spaced as
+   if they were unrelated sections — tighten the gap so the second reads as
+   a subheading of the first, not a new break in the chapter. */
+.hsrtech-chapter__content h2 + h3,
+.hsrtech-chapter__content h3 + h3 { margin-top: .4em; }
+
+.hsrtech-chapter__content ul, .hsrtech-chapter__content ol { margin: 0 0 1.2em; padding-left: 1.4em; }
+.hsrtech-chapter__content li { margin-bottom: .4em; padding-left: .3em; text-wrap: pretty; }
+.hsrtech-chapter__content li:last-child { margin-bottom: 0; }
+.hsrtech-chapter__content li::marker { color: var(--hsrtech-accent, #f45d48); font-weight: 700; }
+.hsrtech-chapter__content li > ul, .hsrtech-chapter__content li > ol { margin-top: .4em; margin-bottom: 0; }
+
+.hsrtech-chapter__content a { text-decoration-color: var(--hsrtech-accent); text-decoration-thickness: .1em; text-underline-offset: .16em; }
+.hsrtech-chapter__content blockquote { border-left: 5px solid var(--hsrtech-accent); font-size: 1.15em; font-style: italic; hanging-punctuation: first; line-height: 1.5; margin: 1.75rem 0; padding: .3rem 0 .3rem 1.5rem; text-wrap: pretty; }
+
+/* Inline code: a quiet neutral chip (ink mixed faintly into the page
+   surface, so it automatically holds up in both light and dark reading
+   mode without its own light/dark branch) rather than an accent-colored
+   outline — a run of several inline-code references in one sentence (a
+   real, common case in this plugin's own docs-style content) turned into a
+   cluster of busy bordered pills with the outline approach. The book's own
+   accent color still does the differentiating work, just via the text
+   color alone; the background's only job is quiet legibility. Block code
+   (inside <pre>, reset separately below) stays on the fixed dark palette;
+   only inline code ties to the book's own accent and reading-mode ink. */
+.hsrtech-chapter__content code {
+	background: color-mix( in srgb, var(--hsrtech-ink) 8%, transparent );
+	border: 0;
+	border-radius: .35rem;
+	color: var(--hsrtech-accent, #f45d48);
+	font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+	font-size: .85em;
+	font-weight: 600;
+	padding: .15em .45em;
+}
+.hsrtech-chapter__content pre { background: var(--hsrtech-code); border-radius: .8rem; color: var(--hsrtech-code-ink); font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; font-size: .85rem; line-height: 1.55; margin: 1.5rem 0; max-width: 100%; overflow-x: auto; padding: 1.5rem; tab-size: 4; white-space: pre; }
+.hsrtech-chapter__content pre code { background: none; border: 0; border-radius: 0; color: inherit; font-size: inherit; font-weight: inherit; padding: 0; }
+
+/* Token colors applied by assets/js/code-highlight.js to both the
+   chapterwright/code-snippet block and plain core Code blocks. Not scoped to
+   a specific container — the "hsrtech-tok--" prefix is specific enough on its
+   own, and these need to apply equally inside .hsrtech-chapter__content pre
+   and inside the code-snippet block's own .hsrtech-code pre. */
+.hsrtech-tok--comment { color: var(--hsrtech-tok-comment); font-style: italic; }
+.hsrtech-tok--string { color: var(--hsrtech-tok-string); }
+.hsrtech-tok--attr-value { color: var(--hsrtech-tok-attr-value); }
+.hsrtech-tok--number, .hsrtech-tok--boolean { color: var(--hsrtech-tok-number); }
+.hsrtech-tok--keyword { color: var(--hsrtech-tok-keyword); }
+.hsrtech-tok--function { color: var(--hsrtech-tok-function); }
+.hsrtech-tok--variable { color: var(--hsrtech-tok-variable); }
+.hsrtech-tok--tag { color: var(--hsrtech-tok-tag); }
+.hsrtech-tok--attr-name { color: var(--hsrtech-tok-attr-name); }
+.hsrtech-tok--property { color: var(--hsrtech-tok-property); }
+.hsrtech-tok--punctuation, .hsrtech-tok--operator { color: var(--hsrtech-tok-punctuation); }
+.hsrtech-chapter__content .hsrtech-callout { background: var(--hsrtech-paper); border-left: 4px solid var(--hsrtech-accent); border-radius: 0 .5rem .5rem 0; font-family: inherit; font-size: .9rem; line-height: 1.55; margin: 1.5rem 0; padding: 1.1rem 1.4rem; }
+.hsrtech-chapter__content .hsrtech-callout > :first-child { margin-top: 0; }
+.hsrtech-chapter__content .hsrtech-callout > :last-child { margin-bottom: 0; }
+.hsrtech-chapter__content .hsrtech-callout--warning { --hsrtech-accent: #d97706; }
+.hsrtech-chapter__content table { border-collapse: collapse; display: block; margin: 1.5rem 0; max-width: 100%; overflow-x: auto; width: max-content; }
+.hsrtech-chapter__content th, .hsrtech-chapter__content td { border-bottom: 1px solid var(--hsrtech-line); padding: .75rem 1rem; text-align: left; }
+.hsrtech-chapter__content th { background: var(--hsrtech-paper); font-family: inherit; }
+/* border-top replaced with the shared ::before progress bar defined next to
+   .hsrtech-reader__bar::after above — same reasoning, same --hsrtech-progress. */
+.hsrtech-reader__next { display: grid; gap: 2rem; grid-template-columns: 1fr 1fr; padding-top: 2.15rem; position: relative; }
+.hsrtech-reader__next::before { top: 0; }
+.hsrtech-reader__next a { display: flex; flex-direction: column; text-decoration: none; }
+.hsrtech-reader__next .is-next { text-align: right; }
+.hsrtech-reader__next small { color: var(--hsrtech-muted); font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; }
+
+/* color is !important because .hsrtech-toc-jump is an <a>, and the general
+   ".hsrtech-page a { color: inherit; }" reset a few rules up outranks a single
+   class selector on specificity (one class + one element beats one class
+   alone) — without this, the icon silently inherits the page's ink color
+   instead of the button's own high-contrast surface color, and disappears
+   against its own background. Same reasoning as .hsrtech-button's existing
+   "color: #fff !important" a bit further up this file. */
+.hsrtech-toc-jump { align-items: center; background: var(--hsrtech-ink); border: 0; border-radius: 999px; bottom: 2rem; box-shadow: 0 .6rem 1.5rem rgba(0, 0, 0, .25); color: var(--hsrtech-surface) !important; cursor: pointer; display: flex; font-size: 1.3rem; height: 3.25rem; justify-content: center; position: fixed; right: 2rem; text-decoration: none; transition: transform .2s ease; width: 3.25rem; z-index: 100; }
+.hsrtech-toc-jump:hover { transform: translateY(-3px); }
+/* The <svg> has no width/height attributes (only a viewBox), so without
+   this it falls back to the browser's default replaced-element size —
+   much bigger than intended against a 3.25rem button. */
+.hsrtech-toc-jump svg { height: 1.4rem; width: 1.4rem; }
+
+/* CSS-only tooltip (no JS, matching this plugin's dependency-free
+   front-end convention) — content comes from data-tooltip so the same
+   translated string also lives in aria-label for screen readers, without
+   duplicating it. Shown above the button, right-aligned to it, so it never
+   reads as pointing at empty space near the corner of the viewport. */
+.hsrtech-toc-jump[data-tooltip]::after {
+	background: var(--hsrtech-ink);
+	border-radius: .4rem;
+	bottom: calc(100% + .65rem);
+	color: var(--hsrtech-surface);
+	content: attr(data-tooltip);
+	font-size: .75rem;
+	font-weight: 700;
+	opacity: 0;
+	padding: .4rem .7rem;
+	pointer-events: none;
+	position: absolute;
+	right: 0;
+	transform: translateY(.25rem);
+	transition: opacity .15s ease, transform .15s ease;
+	white-space: nowrap;
+}
+.hsrtech-toc-jump[data-tooltip]:hover::after,
+.hsrtech-toc-jump[data-tooltip]:focus-visible::after { opacity: 1; transform: translateY(0); }
+@media (prefers-reduced-motion: reduce) {
+	.hsrtech-toc-jump[data-tooltip]::after { transition: none; }
+}
+
+.hsrtech-no-scroll { overflow: hidden; }
+
+.hsrtech-toc-drawer-backdrop { background: rgba(0, 0, 0, .45); inset: 0; opacity: 0; position: fixed; transition: opacity .25s ease; z-index: 200; }
+.hsrtech-toc-drawer-backdrop.is-open { opacity: 1; }
+
+.hsrtech-toc-drawer { background: var(--hsrtech-surface); bottom: 0; box-shadow: -1.5rem 0 3rem rgba(0, 0, 0, .2); max-width: 26rem; overflow-y: auto; position: fixed; right: 0; top: 0; transform: translateX(100%); transition: transform .3s ease; width: 88vw; z-index: 201; }
+.hsrtech-toc-drawer.is-open { transform: translateX(0); }
+
+.hsrtech-toc-drawer__header { align-items: center; background: var(--hsrtech-surface); border-bottom: 1px solid var(--hsrtech-line); display: flex; justify-content: space-between; padding: 1.5rem clamp(1.5rem, 4vw, 2.5rem); position: sticky; top: 0; }
+.hsrtech-toc-drawer__header p { margin: 0; }
+.hsrtech-toc-drawer__close { background: none; border: 0; border-radius: 999px; color: var(--hsrtech-ink); cursor: pointer; font-size: 1.5rem; height: 2.25rem; line-height: 1; width: 2.25rem; }
+.hsrtech-toc-drawer__close:hover { background: var(--hsrtech-paper); }
+.hsrtech-toc-drawer__body { padding: .5rem clamp(1.5rem, 4vw, 2.5rem) 2.5rem; }
+.hsrtech-toc-drawer .hsrtech-toc-section:first-child { padding-top: 1rem; }
+.hsrtech-toc-drawer .hsrtech-toc-section a[aria-current="page"] span:first-child { color: var(--hsrtech-accent); font-weight: 700; }
+.hsrtech-badge { border: 1px solid var(--hsrtech-accent, #f45d48); border-radius: 999px; color: var(--hsrtech-accent, #f45d48); display: inline-block; font-size: .72rem; font-weight: 750; letter-spacing: .1em; margin: 0 0 1rem; padding: .3rem .8rem; text-transform: uppercase; }
+
+.hsrtech-archive__header { margin: 0 0 3rem; max-width: 900px; }
+.hsrtech-archive__header h1 { margin: 0 0 1rem; }
+.hsrtech-archive__header p:not(.hsrtech-eyebrow) { font-size: 1.1rem; line-height: 1.55; }
+.hsrtech-book-grid { display: grid; gap: clamp(2rem, 5vw, 5rem); grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
+/* auto-fit's whole point is collapsing empty tracks so existing cards can
+   grow into the space they'd otherwise leave — exactly what's wanted with
+   enough books to fill a row, but with only one or two books on a wide
+   screen it left a single grid column (and therefore the card, and its
+   aspect-ratio cover image inside it) stretching to fill the ENTIRE row
+   width, growing a portrait-ratio cover to an oversized, almost full-bleed
+   image. Capping the card's own max-width puts a ceiling on that growth —
+   sized to roughly match how wide a card naturally ends up once there ARE
+   enough books to form multiple columns — while leaving auto-fit's
+   collapsing behavior alone for the normal multi-book case. */
+.hsrtech-book-card { max-width: 420px; }
+.hsrtech-book-card__cover { align-items: center; aspect-ratio: 4/5; background: var(--hsrtech-accent); box-shadow: .8rem .8rem 0 var(--hsrtech-ink); display: flex; justify-content: center; overflow: hidden; position: relative; text-decoration: none; }
+.hsrtech-book-card__cover img { height: 100%; object-fit: cover; transition: transform .35s ease; width: 100%; }
+.hsrtech-book-card__cover:hover img { transform: scale(1.025); }
+.hsrtech-book-card__cover-label { color: #fff; font-family: inherit; font-size: 1.7rem; padding: 1.5rem; text-align: center; }
+/* A dimmer cover reinforces "not open yet" the way the faded draft-chapter
+   rows do (see .hsrtech-toc-row-link--draft) — same visual language, applied
+   here instead of opacity on the whole card so the title/excerpt below the
+   cover stay fully legible. */
+.hsrtech-book-card--coming-soon .hsrtech-book-card__cover img { filter: grayscale(.25) brightness(.8); }
+/* Solid background rather than the plain outlined .hsrtech-badge — this sits on
+   top of a cover image/photo, where an accent-outline-only badge can lose
+   contrast against busy artwork. */
+.hsrtech-book-card__badge { background: var(--hsrtech-ink); border: 0; color: var(--hsrtech-surface); left: 1rem; margin: 0; position: absolute; top: 1rem; }
+.hsrtech-book-card__body { padding: 1.5rem .25rem; }
+.hsrtech-book-card__body h2 { font-size: 1.8rem; margin: 0 0 .6rem; }
+.hsrtech-book-card__body h2 a, .hsrtech-text-link { text-decoration: none; }
+.hsrtech-book-card__body > p:not(.hsrtech-eyebrow) { color: var(--hsrtech-muted); font-size: .95rem; line-height: 1.55; }
+.hsrtech-text-link { border-bottom: 2px solid var(--hsrtech-accent); font-size: .85rem; font-weight: 750; padding-bottom: .25rem; }
+
+@media (max-width: 720px) {
+	.hsrtech-page { padding: 1.25rem; }
+	.hsrtech-book-hero { grid-template-columns: 1fr; padding-block: 1rem 3rem; }
+	.hsrtech-book-hero__copy { order: 2; }
+	.hsrtech-book-hero__cover { margin-inline: auto; max-width: 70vw; order: 1; }
+	.hsrtech-toc { border-radius: 1rem; padding: 1.5rem; }
+	.hsrtech-reader__next { grid-template-columns: 1fr; }
+	.hsrtech-reader__next .is-next { text-align: left; }
+	.hsrtech-toc-jump { bottom: 1.25rem; font-size: 1.1rem; height: 2.85rem; right: 1.25rem; width: 2.85rem; }
+	.hsrtech-toc-jump svg { height: 1.2rem; width: 1.2rem; }
+
+	/* The bar is a flex row with space-between everywhere else — fine for a
+	   short book title, but a long one (this plugin puts no length limit on
+	   book titles) wraps to two lines and collides with "X of Y" sitting at
+	   the same baseline on the right. Stack them instead: title first (its
+	   own line, however many lines it needs), then the "X of Y" counter and
+	   the color-mode toggle on their own row underneath. */
+	.hsrtech-reader__bar { align-items: flex-start; flex-direction: column; gap: .6rem; }
+
+	/* .hsrtech-page's own mobile padding two lines up (padding: 1.25rem, a
+	   shorthand that resets every side including top) replaces the desktop
+	   rule's fixed 80px top padding — sized for the site header at DESKTOP
+	   proportions — with a much smaller, purely decorative 1.25rem. Below
+	   782px the theme's own header can wrap onto two rows (title, then the
+	   nav/mode-toggle actions — see .site-header's flex-wrap in the theme's
+	   bento.css), so 1.25rem alone leaves almost no air between the header
+	   and the first "Chapter N" row. Give the reader view specifically more
+	   room; the book/archive pages don't have this same cramped-against-a-
+	   two-row-header problem at their own top padding. */
+	.hsrtech-reader { padding-top: 3rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.hsrtech-page * { scroll-behavior: auto !important; transition: none !important; }
+}

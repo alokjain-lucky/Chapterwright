@@ -6,7 +6,7 @@
  * themes produces a WordPress deprecation notice, so the plugin opens the
  * document and renders the registered Header template part directly.
  *
- * @package Make_A_Book
+ * @package Chapterwright
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -40,7 +40,7 @@ if ( wp_is_block_theme() ) :
 	// header actually appears in the document.
 	ob_start();
 	block_template_part( 'header' );
-	$mab_header_html = ob_get_clean();
+	$hsrtech_header_html = ob_get_clean();
 	?>
 	<!doctype html>
 	<html <?php language_attributes(); ?>>
@@ -52,7 +52,7 @@ if ( wp_is_block_theme() ) :
 	<body <?php body_class(); ?>>
 	<?php
 	wp_body_open();
-	echo $mab_header_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- already-rendered block markup captured above via block_template_part(), not raw user input.
+	echo $hsrtech_header_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- already-rendered block markup captured above via block_template_part(), not raw user input.
 else :
 	get_header();
 endif;

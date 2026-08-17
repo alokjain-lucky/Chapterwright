@@ -2,7 +2,7 @@
 /**
  * Reading-time estimation.
  *
- * @package Make_A_Book
+ * @package Chapterwright
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @param int $post_id Post ID.
  * @return int Estimated whole minutes.
  */
-function mab_reading_time( $post_id ) {
+function hsrtech_reading_time( $post_id ) {
 	$content = wp_strip_all_tags( strip_shortcodes( get_post_field( 'post_content', $post_id ) ) );
 	$words   = str_word_count( $content );
 

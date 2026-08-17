@@ -1,4 +1,4 @@
-=== Make a Book ===
+=== Chapterwright ===
 Contributors: alokjain_lucky
 Tags: ebook, books, publishing, reading, chapters
 Requires at least: 6.4
@@ -12,7 +12,7 @@ Publish multi-chapter ebooks in WordPress with tables of contents, sections, rea
 
 == Description ==
 
-Make a Book turns WordPress into a home for multiple, beautifully readable ebooks — each with its own landing page, grouped table of contents, ordered chapters, and a focused reading experience.
+Chapterwright turns WordPress into a home for multiple, beautifully readable ebooks — each with its own landing page, grouped table of contents, ordered chapters, and a focused reading experience.
 
 It adds two content types, **Books** and **Chapters**. Each book can have its own cover, subtitle, accent color, introduction, and table of contents. Chapters can be grouped into sections — each with its own name and description — and get automatic previous/next navigation.
 
@@ -21,7 +21,7 @@ It adds two content types, **Books** and **Chapters**. Each book can have its ow
 * Publish any number of books.
 * Organize chapters into sections, each with its own name and optional description shown in the table of contents.
 * Control chapter order, with automatic previous/next navigation.
-* Display a book library at `/books/`, or embed it anywhere with the `[make_a_book]` shortcode.
+* Display a book library at `/books/`, or embed it anywhere with the `[hsrtech_books]` shortcode.
 * Responsive book and chapter templates that use your active theme's header, footer, and fonts.
 * Full block editor, revisions, and REST API support.
 * Reader-selectable system, light, or dark color mode.
@@ -29,7 +29,7 @@ It adds two content types, **Books** and **Chapters**. Each book can have its ow
 * Book and Chapter schema.org structured data.
 * Accessible skip links, landmarks, focus indicators, and reduced-motion support.
 * Styled code blocks (with a dedicated **Code Snippet** block: syntax coloring, a language label, an optional caption, and a copy button), tables, and reusable callouts for technical writing.
-* A single **Make a Book** admin page to manage every book, its sections, and its chapters — adding, reordering, and reassigning them — without the classic post-type screens' back-and-forth.
+* A single **Chapterwright** admin page to manage every book, its sections, and its chapters — adding, reordering, and reassigning them — without the classic post-type screens' back-and-forth.
 * A Settings page to turn the reader's color-mode toggle on or off, and edit or remove page headings.
 * Registers with the WordPress Abilities API (WordPress 6.9+) so AI agents and automation tools can discover and use the plugin's book/chapter/section operations in a standardized, permission-checked way.
 
@@ -39,10 +39,10 @@ Anyone publishing a technical guide, course, documentation set, or serialized bo
 
 == Installation ==
 
-1. In your WordPress admin, go to **Plugins → Add New Plugin**, search for "Make a Book", and click **Install Now**, then **Activate**. (Or download the ZIP and upload it via **Plugins → Add New Plugin → Upload Plugin**.)
-2. Go to **Make a Book** in the admin sidebar and select **Add Book**.
+1. In your WordPress admin, go to **Plugins → Add New Plugin**, search for "Chapterwright", and click **Install Now**, then **Activate**. (Or download the ZIP and upload it via **Plugins → Add New Plugin → Upload Plugin**.)
+2. Go to **Chapterwright** in the admin sidebar and select **Add Book**.
 3. Open the new book, add a chapter from its detail screen, then follow the **Edit content →** link to write it in the block editor.
-4. Open the book's **View** link, visit `/books/`, or add `[make_a_book]` to a page.
+4. Open the book's **View** link, visit `/books/`, or add `[hsrtech_books]` to a page.
 
 If a book URL returns a 404 after activation, go to **Settings → Permalinks** and click **Save Changes** once.
 
@@ -50,7 +50,7 @@ If a book URL returns a 404 after activation, go to **Settings → Permalinks** 
 
 = Where do I manage my books and chapters? =
 
-Under **Make a Book → Books & Chapters** in the admin sidebar — a single-page app for organizing your library: adding books, adding and reordering sections and chapters, and jumping into the block editor to write. The classic Book/Chapter list and edit screens still exist underneath it; nothing about how content is written has changed.
+Under **Chapterwright → Books & Chapters** in the admin sidebar — a single-page app for organizing your library: adding books, adding and reordering sections and chapters, and jumping into the block editor to write. The classic Book/Chapter list and edit screens still exist underneath it; nothing about how content is written has changed.
 
 = Does this work with any theme? =
 
@@ -58,7 +58,7 @@ Yes. The reader uses `font-family: inherit` throughout, so headings and body tex
 
 = Can I customize the design? =
 
-Yes. Visitor-facing styles use a `.mab-` class prefix and expose a `--mab-accent` custom property for each book's accent color. See "Custom styling" in the plugin's full documentation for how to safely override the bundled stylesheet from a child theme or site-specific plugin without losing changes on update.
+Yes. Visitor-facing styles use a `.hsrtech-` class prefix and expose a `--hsrtech-accent` custom property for each book's accent color. See "Custom styling" in the plugin's full documentation for how to safely override the bundled stylesheet from a child theme or site-specific plugin without losing changes on update.
 
 = Is there a limit to how many books or chapters I can create? =
 
@@ -66,11 +66,11 @@ No. Books and Chapters are regular WordPress post types under the hood, so the o
 
 = What happens if I uninstall the plugin? =
 
-Deleting Make a Book from the **Plugins** screen performs a full clean sweep: every Book and Chapter (and their metadata), the sections database table, the Book/Chapter capabilities granted to any role, and the plugin's saved settings are all permanently deleted. Back up your site first if you want to keep any of it. Simply deactivating the plugin does not touch your data — only actually removing it does.
+Deleting Chapterwright from the **Plugins** screen performs a full clean sweep: every Book and Chapter (and their metadata), the sections database table, the Book/Chapter capabilities granted to any role, and the plugin's saved settings are all permanently deleted. Back up your site first if you want to keep any of it. Simply deactivating the plugin does not touch your data — only actually removing it does.
 
 = Does this support translations? =
 
-Yes. Every string (PHP and the admin app's JavaScript) is wrapped for translation under the `make-a-book` text domain.
+Yes. Every string (PHP and the admin app's JavaScript) is wrapped for translation under the `chapterwright` text domain.
 
 == Screenshots ==
 

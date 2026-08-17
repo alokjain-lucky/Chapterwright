@@ -8,11 +8,11 @@
  * (which is shared site-wide and does not naturally scope to one book).
  *
  * The table is created on activation and fully dropped on uninstall — see
- * mab_create_sections_table() in includes/upgrade.php and uninstall.php.
+ * hsrtech_create_sections_table() in includes/upgrade.php and uninstall.php.
  * Deleting a section never deletes the chapters assigned to it; they simply
  * become unassigned and fall back to the default "Chapters" heading.
  *
- * @package Make_A_Book
+ * @package Chapterwright
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -24,9 +24,9 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @return string Fully-prefixed table name.
  */
-function mab_get_sections_table() {
+function hsrtech_get_sections_table() {
 	global $wpdb;
-	return $wpdb->prefix . 'mab_sections';
+	return $wpdb->prefix . 'hsrtech_sections';
 }
 
 /**
@@ -35,21 +35,21 @@ function mab_get_sections_table() {
  * @param int $book_id Book post ID.
  * @return array<int,array<string,mixed>> Section rows (id, book_id, name, description, menu_order).
  */
-function mab_get_book_sections( $book_id ) {
+function hsrtech_get_book_sections( $book_id ) {
 	global $wpdb;
 
-	$table = mab_get_sections_table();
+	$table = hsrtech_get_sections_table();
 
 	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table with no WP API equivalent; not cached because sections are small, book-scoped lists edited rarely and read on every book page.
 	$rows = $wpdb->get_results(
 		$wpdb->prepare(
-			"SELECT id, book_id, name, description, menu_order FROM {$table} WHERE book_id = %d ORDER BY menu_order ASC, id ASC", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table name cannot be a placeholder; it is built from a fixed prefix by mab_get_sections_table(), not user input.
+			"SELECT id, book_id, name, description, menu_order FROM {$table} WHERE book_id = %d ORDER BY menu_order ASC, id ASC", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table name cannot be a placeholder; it is built from a fixed prefix by hsrtech_get_sections_table(), not user input.
 			$book_id
 		),
 		ARRAY_A
 	);
 
-	return $rows ? array_map( 'mab_cast_section_row', $rows ) : array();
+	return $rows ? array_map( 'hsrtech_cast_section_row', $rows ) : array();
 }
 
 /**
@@ -57,13 +57,13 @@ function mab_get_book_sections( $book_id ) {
  *
  * $wpdb returns every column as a string regardless of the database
  * column's actual type, which trips up strict comparisons (e.g.
- * wp_list_pluck() + assertSame()) against the ints mab_insert_section()
- * returns and mab_update_section() accepts.
+ * wp_list_pluck() + assertSame()) against the ints hsrtech_insert_section()
+ * returns and hsrtech_update_section() accepts.
  *
  * @param array<string,mixed> $row Raw section row from the database.
  * @return array<string,mixed> The same row with id, book_id, and menu_order cast to int.
  */
-function mab_cast_section_row( $row ) {
+function hsrtech_cast_section_row( $row ) {
 	$row['id']         = (int) $row['id'];
 	$row['book_id']    = (int) $row['book_id'];
 	$row['menu_order'] = (int) $row['menu_order'];
@@ -76,21 +76,21 @@ function mab_cast_section_row( $row ) {
  * @param int $section_id Section ID.
  * @return array<string,mixed>|null Section row, or null if it does not exist.
  */
-function mab_get_section( $section_id ) {
+function hsrtech_get_section( $section_id ) {
 	global $wpdb;
 
-	$table = mab_get_sections_table();
+	$table = hsrtech_get_sections_table();
 
 	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table with no WP API equivalent.
 	$row = $wpdb->get_row(
 		$wpdb->prepare(
-			"SELECT id, book_id, name, description, menu_order FROM {$table} WHERE id = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table name is fixed, built by mab_get_sections_table(), not user input.
+			"SELECT id, book_id, name, description, menu_order FROM {$table} WHERE id = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table name is fixed, built by hsrtech_get_sections_table(), not user input.
 			$section_id
 		),
 		ARRAY_A
 	);
 
-	return $row ? mab_cast_section_row( $row ) : null;
+	return $row ? hsrtech_cast_section_row( $row ) : null;
 }
 
 /**
@@ -106,12 +106,12 @@ function mab_get_section( $section_id ) {
  * }
  * @return int|WP_Error New section ID, or WP_Error when the name is missing.
  */
-function mab_insert_section( $book_id, $args ) {
+function hsrtech_insert_section( $book_id, $args ) {
 	global $wpdb;
 
 	$name = isset( $args['name'] ) ? trim( sanitize_text_field( $args['name'] ) ) : '';
 	if ( '' === $name ) {
-		return new WP_Error( 'mab_section_name_required', __( 'A section needs a name.', 'make-a-book' ) );
+		return new WP_Error( 'hsrtech_section_name_required', __( 'A section needs a name.', 'chapterwright' ) );
 	}
 
 	$description = isset( $args['description'] ) ? sanitize_textarea_field( $args['description'] ) : '';
@@ -119,7 +119,7 @@ function mab_insert_section( $book_id, $args ) {
 	if ( isset( $args['menu_order'] ) ) {
 		$menu_order = (int) $args['menu_order'];
 	} else {
-		$existing   = mab_get_book_sections( $book_id );
+		$existing   = hsrtech_get_book_sections( $book_id );
 		$menu_order = $existing ? ( (int) end( $existing )['menu_order'] + 1 ) : 0;
 	}
 
@@ -127,7 +127,7 @@ function mab_insert_section( $book_id, $args ) {
 
 	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table with no WP API equivalent.
 	$inserted = $wpdb->insert(
-		mab_get_sections_table(),
+		hsrtech_get_sections_table(),
 		array(
 			'book_id'     => absint( $book_id ),
 			'name'        => $name,
@@ -140,7 +140,7 @@ function mab_insert_section( $book_id, $args ) {
 	);
 
 	if ( ! $inserted ) {
-		return new WP_Error( 'mab_section_insert_failed', __( 'The section could not be saved.', 'make-a-book' ) );
+		return new WP_Error( 'hsrtech_section_insert_failed', __( 'The section could not be saved.', 'chapterwright' ) );
 	}
 
 	return (int) $wpdb->insert_id;
@@ -153,11 +153,11 @@ function mab_insert_section( $book_id, $args ) {
  * @param array<string,mixed> $args       Any of: name, description, menu_order.
  * @return bool|WP_Error True on success, WP_Error on failure.
  */
-function mab_update_section( $section_id, $args ) {
+function hsrtech_update_section( $section_id, $args ) {
 	global $wpdb;
 
-	if ( ! mab_get_section( $section_id ) ) {
-		return new WP_Error( 'mab_section_not_found', __( 'That section no longer exists.', 'make-a-book' ) );
+	if ( ! hsrtech_get_section( $section_id ) ) {
+		return new WP_Error( 'hsrtech_section_not_found', __( 'That section no longer exists.', 'chapterwright' ) );
 	}
 
 	$data   = array();
@@ -166,7 +166,7 @@ function mab_update_section( $section_id, $args ) {
 	if ( isset( $args['name'] ) ) {
 		$name = trim( sanitize_text_field( $args['name'] ) );
 		if ( '' === $name ) {
-			return new WP_Error( 'mab_section_name_required', __( 'A section needs a name.', 'make-a-book' ) );
+			return new WP_Error( 'hsrtech_section_name_required', __( 'A section needs a name.', 'chapterwright' ) );
 		}
 		$data['name'] = $name;
 		$format[]     = '%s';
@@ -191,7 +191,7 @@ function mab_update_section( $section_id, $args ) {
 
 	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table with no WP API equivalent.
 	$updated = $wpdb->update(
-		mab_get_sections_table(),
+		hsrtech_get_sections_table(),
 		$data,
 		array( 'id' => absint( $section_id ) ),
 		$format,
@@ -199,7 +199,7 @@ function mab_update_section( $section_id, $args ) {
 	);
 
 	if ( false === $updated ) {
-		return new WP_Error( 'mab_section_update_failed', __( 'The section could not be updated.', 'make-a-book' ) );
+		return new WP_Error( 'hsrtech_section_update_failed', __( 'The section could not be updated.', 'chapterwright' ) );
 	}
 
 	return true;
@@ -211,20 +211,20 @@ function mab_update_section( $section_id, $args ) {
  * @param int $section_id Section ID.
  * @return bool|WP_Error True on success, WP_Error if the section does not exist.
  */
-function mab_delete_section( $section_id ) {
+function hsrtech_delete_section( $section_id ) {
 	global $wpdb;
 
-	$section = mab_get_section( $section_id );
+	$section = hsrtech_get_section( $section_id );
 	if ( ! $section ) {
-		return new WP_Error( 'mab_section_not_found', __( 'That section no longer exists.', 'make-a-book' ) );
+		return new WP_Error( 'hsrtech_section_not_found', __( 'That section no longer exists.', 'chapterwright' ) );
 	}
 
-	foreach ( mab_get_chapters_in_section( $section_id ) as $chapter_id ) {
-		delete_post_meta( $chapter_id, '_mab_section_id' );
+	foreach ( hsrtech_get_chapters_in_section( $section_id ) as $chapter_id ) {
+		delete_post_meta( $chapter_id, '_hsrtech_section_id' );
 	}
 
 	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table with no WP API equivalent.
-	$wpdb->delete( mab_get_sections_table(), array( 'id' => absint( $section_id ) ), array( '%d' ) );
+	$wpdb->delete( hsrtech_get_sections_table(), array( 'id' => absint( $section_id ) ), array( '%d' ) );
 
 	return true;
 }
@@ -235,16 +235,16 @@ function mab_delete_section( $section_id ) {
  * @param int $section_id Section ID.
  * @return int[] Chapter post IDs.
  */
-function mab_get_chapters_in_section( $section_id ) {
+function hsrtech_get_chapters_in_section( $section_id ) {
 	$chapters = get_posts(
 		array(
-			'post_type'      => MAB_CHAPTER_POST_TYPE,
+			'post_type'      => HSRTECH_CHAPTER_POST_TYPE,
 			'post_status'    => array( 'publish', 'draft', 'pending', 'private', 'future' ),
 			'posts_per_page' => -1,
 			'fields'         => 'ids',
 			'meta_query'     => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Chapter-to-section relationship is stored as post meta.
 				array(
-					'key'   => '_mab_section_id',
+					'key'   => '_hsrtech_section_id',
 					'value' => absint( $section_id ),
 				),
 			),
@@ -261,17 +261,17 @@ function mab_get_chapters_in_section( $section_id ) {
  * @param int[] $ordered_ids Section IDs in the desired order. Must all belong to $book_id.
  * @return bool|WP_Error True on success, WP_Error if a section does not belong to the book.
  */
-function mab_reorder_sections( $book_id, $ordered_ids ) {
-	$existing = wp_list_pluck( mab_get_book_sections( $book_id ), 'id' );
+function hsrtech_reorder_sections( $book_id, $ordered_ids ) {
+	$existing = wp_list_pluck( hsrtech_get_book_sections( $book_id ), 'id' );
 
 	foreach ( $ordered_ids as $section_id ) {
 		if ( ! in_array( (int) $section_id, array_map( 'intval', $existing ), true ) ) {
-			return new WP_Error( 'mab_section_mismatch', __( 'One of those sections does not belong to this book.', 'make-a-book' ) );
+			return new WP_Error( 'hsrtech_section_mismatch', __( 'One of those sections does not belong to this book.', 'chapterwright' ) );
 		}
 	}
 
 	foreach ( array_values( $ordered_ids ) as $index => $section_id ) {
-		mab_update_section( $section_id, array( 'menu_order' => $index ) );
+		hsrtech_update_section( $section_id, array( 'menu_order' => $index ) );
 	}
 
 	return true;
@@ -286,20 +286,20 @@ function mab_reorder_sections( $book_id, $ordered_ids ) {
  *
  * @param int $book_id Book post ID.
  */
-function mab_delete_book_sections( $book_id ) {
+function hsrtech_delete_book_sections( $book_id ) {
 	global $wpdb;
 	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table with no WP API equivalent.
-	$wpdb->delete( mab_get_sections_table(), array( 'book_id' => absint( $book_id ) ), array( '%d' ) );
+	$wpdb->delete( hsrtech_get_sections_table(), array( 'book_id' => absint( $book_id ) ), array( '%d' ) );
 }
-add_action( 'before_delete_post', 'mab_on_book_deleted' );
+add_action( 'before_delete_post', 'hsrtech_on_book_deleted' );
 
 /**
  * Clean up a book's sections when the Book post itself is permanently deleted.
  *
  * @param int $post_id Post being deleted.
  */
-function mab_on_book_deleted( $post_id ) {
-	if ( MAB_BOOK_POST_TYPE === get_post_type( $post_id ) ) {
-		mab_delete_book_sections( $post_id );
+function hsrtech_on_book_deleted( $post_id ) {
+	if ( HSRTECH_BOOK_POST_TYPE === get_post_type( $post_id ) ) {
+		hsrtech_delete_book_sections( $post_id );
 	}
 }

@@ -11,8 +11,8 @@
  *
  * Handles two cases on every book/chapter page:
  *
- * 1. `make-a-book/code-snippet` blocks (blocks/code-snippet/render.php) —
- *    these already carry an explicit `data-mab-language` attribute on the
+ * 1. `chapterwright/code-snippet` blocks (blocks/code-snippet/render.php) —
+ *    these already carry an explicit `data-hsrtech-language` attribute on the
  *    <pre>, so the language is exact, not guessed. The frame (language
  *    label + copy button) is already server-rendered; this script only
  *    needs to tokenize the code inside.
@@ -23,8 +23,8 @@
  *    (equivalent to the `text` language), never wrong-but-confident colors,
  *    since an unmatched grammar simply isn't picked. These also get a
  *    language label + copy button added by this script, matching the
- *    code-snippet block's markup exactly (same `.mab-code` classes) so
- *    make-a-book.css's existing frame styles apply with no duplication.
+ *    code-snippet block's markup exactly (same `.hsrtech-code` classes) so
+ *    chapterwright.css's existing frame styles apply with no duplication.
  *
  * Security note: every token is inserted via `textContent`/`createElement`,
  * never via innerHTML string concatenation, so arbitrary code content
@@ -32,7 +32,7 @@
  * markup — the same guarantee `esc_html()` gives server-side, just enforced
  * by the DOM API instead.
  *
- * @package Make_A_Book
+ * @package Chapterwright
  */
 ( function () {
 	'use strict';
@@ -177,7 +177,7 @@
 				return;
 			}
 			var span = document.createElement( 'span' );
-			span.className = 'mab-tok mab-tok--' + token.type;
+			span.className = 'hsrtech-tok hsrtech-tok--' + token.type;
 			span.textContent = token.text;
 			frag.appendChild( span );
 		} );
@@ -236,29 +236,29 @@
 	}
 
 	/**
-	 * Wrap a bare <pre> (no `.mab-code` ancestor — i.e. not already the
+	 * Wrap a bare <pre> (no `.hsrtech-code` ancestor — i.e. not already the
 	 * code-snippet block's own markup) in the same figure/frame structure
-	 * render.php produces, so it picks up make-a-book.css's `.mab-code`
+	 * render.php produces, so it picks up chapterwright.css's `.hsrtech-code`
 	 * frame styles and blocks/code-snippet/view.js's delegated copy-button
-	 * click handler (which just looks for the nearest `.mab-code` ancestor,
+	 * click handler (which just looks for the nearest `.hsrtech-code` ancestor,
 	 * so it works on these synthesized wrappers without any changes).
 	 *
 	 * @param {HTMLElement} pre
 	 * @param {string}      lang
 	 */
 	function wrapPlainBlock( pre, lang ) {
-		var labels = window.makeABookCode || {};
+		var labels = window.hsrtechCode || {};
 		var copyLabel = labels.copyLabel || 'Copy code';
 		var copiedLabel = labels.copiedLabel || 'Copied!';
 
 		var figure = document.createElement( 'figure' );
-		figure.className = 'mab-code mab-code--auto';
+		figure.className = 'hsrtech-code hsrtech-code--auto';
 
 		var frame = document.createElement( 'div' );
-		frame.className = 'mab-code__frame';
+		frame.className = 'hsrtech-code__frame';
 
 		var langLabel = document.createElement( 'span' );
-		langLabel.className = 'mab-code__lang';
+		langLabel.className = 'hsrtech-code__lang';
 		langLabel.setAttribute( 'aria-hidden', 'true' );
 		langLabel.textContent = LANGUAGE_LABELS[ lang ] || LANGUAGE_LABELS.text;
 
@@ -269,13 +269,13 @@
 		// visible text — see view.js's click handler, which both buttons share.
 		var copyButton = document.createElement( 'button' );
 		copyButton.type = 'button';
-		copyButton.className = 'mab-code__copy';
-		copyButton.setAttribute( 'data-mab-copy-label', copyLabel );
-		copyButton.setAttribute( 'data-mab-copied-label', copiedLabel );
+		copyButton.className = 'hsrtech-code__copy';
+		copyButton.setAttribute( 'data-hsrtech-copy-label', copyLabel );
+		copyButton.setAttribute( 'data-hsrtech-copied-label', copiedLabel );
 		copyButton.setAttribute( 'aria-label', copyLabel );
 		copyButton.innerHTML =
-			'<svg class="mab-code__copy-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"></rect><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"></path></svg>' +
-			'<svg class="mab-code__copied-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+			'<svg class="hsrtech-code__copy-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"></rect><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"></path></svg>' +
+			'<svg class="hsrtech-code__copied-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
 
 		pre.parentNode.insertBefore( figure, pre );
 		frame.appendChild( langLabel );
@@ -293,18 +293,18 @@
 			return;
 		}
 
-		var isCodeSnippetBlock = !! pre.closest( '.mab-code' );
+		var isCodeSnippetBlock = !! pre.closest( '.hsrtech-code' );
 		var lang = isCodeSnippetBlock
-			? ( pre.getAttribute( 'data-mab-language' ) || 'text' )
+			? ( pre.getAttribute( 'data-hsrtech-language' ) || 'text' )
 			: guessLanguage( code.textContent );
 
 		if ( ! isCodeSnippetBlock ) {
-			pre.setAttribute( 'data-mab-language', lang );
+			pre.setAttribute( 'data-hsrtech-language', lang );
 			wrapPlainBlock( pre, lang );
 		}
 
 		highlightElement( code, lang );
 	}
 
-	document.querySelectorAll( '.mab-chapter__content pre, .mab-book-intro pre' ).forEach( processCodeBlock );
+	document.querySelectorAll( '.hsrtech-chapter__content pre, .hsrtech-book-intro pre' ).forEach( processCodeBlock );
 } )();

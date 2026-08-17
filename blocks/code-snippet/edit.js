@@ -1,5 +1,5 @@
 /**
- * Editor UI for make-a-book/code-snippet.
+ * Editor UI for chapterwright/code-snippet.
  *
  * Written directly against the `wp.*` globals WordPress already exposes for
  * these script handles (see edit.asset.php) — no build step needed. The
@@ -7,7 +7,7 @@
  * so pasted code keeps its literal whitespace and never gets auto-corrected
  * into rich text.
  *
- * @package Make_A_Book
+ * @package Chapterwright
  */
 ( function ( blocks, element, blockEditor, components, i18n ) {
 	'use strict';
@@ -28,7 +28,7 @@
 		{ label: 'CSS', value: 'css' },
 		{ label: 'HTML', value: 'html' },
 		{ label: 'Shell', value: 'shell' },
-		{ label: __( 'Plain text', 'make-a-book' ), value: 'text' }
+		{ label: __( 'Plain text', 'chapterwright' ), value: 'text' }
 	];
 
 	/**
@@ -53,7 +53,7 @@
 		return tmp.textContent || tmp.innerText || '';
 	}
 
-	blocks.registerBlockType( 'make-a-book/code-snippet', {
+	blocks.registerBlockType( 'chapterwright/code-snippet', {
 		transforms: {
 			from: [
 				{
@@ -64,7 +64,7 @@
 					type: 'block',
 					blocks: [ 'core/code' ],
 					transform: function ( attributes ) {
-						return blocks.createBlock( 'make-a-book/code-snippet', {
+						return blocks.createBlock( 'chapterwright/code-snippet', {
 							code: toPlainText( attributes.content ),
 							language: 'text'
 						} );
@@ -77,7 +77,7 @@
 					type: 'block',
 					blocks: [ 'core/paragraph' ],
 					transform: function ( attributes ) {
-						return blocks.createBlock( 'make-a-book/code-snippet', {
+						return blocks.createBlock( 'chapterwright/code-snippet', {
 							code: toPlainText( attributes.content ),
 							language: 'text'
 						} );
@@ -88,7 +88,7 @@
 		edit: function ( props ) {
 			var attributes = props.attributes;
 			var setAttributes = props.setAttributes;
-			var blockProps = useBlockProps( { className: 'mab-code mab-code--editing' } );
+			var blockProps = useBlockProps( { className: 'hsrtech-code hsrtech-code--editing' } );
 
 			return el(
 				Fragment,
@@ -98,9 +98,9 @@
 					{},
 					el(
 						PanelBody,
-						{ title: __( 'Code snippet settings', 'make-a-book' ) },
+						{ title: __( 'Code snippet settings', 'chapterwright' ) },
 						el( SelectControl, {
-							label: __( 'Language', 'make-a-book' ),
+							label: __( 'Language', 'chapterwright' ),
 							value: attributes.language,
 							options: LANGUAGES,
 							onChange: function ( value ) {
@@ -108,8 +108,8 @@
 							}
 						} ),
 						el( TextControl, {
-							label: __( 'Caption (optional)', 'make-a-book' ),
-							help: __( 'Shown above the code, e.g. a filename or a one-line description.', 'make-a-book' ),
+							label: __( 'Caption (optional)', 'chapterwright' ),
+							help: __( 'Shown above the code, e.g. a filename or a one-line description.', 'chapterwright' ),
 							value: attributes.caption,
 							onChange: function ( value ) {
 								setAttributes( { caption: value } );
@@ -121,27 +121,27 @@
 					'figure',
 					blockProps,
 					el( TextControl, {
-						className: 'mab-code__caption-input',
-						label: __( 'Caption', 'make-a-book' ),
+						className: 'hsrtech-code__caption-input',
+						label: __( 'Caption', 'chapterwright' ),
 						hideLabelFromVision: true,
 						value: attributes.caption,
-						placeholder: __( 'Caption (optional)', 'make-a-book' ),
+						placeholder: __( 'Caption (optional)', 'chapterwright' ),
 						onChange: function ( value ) {
 							setAttributes( { caption: value } );
 						}
 					} ),
 					el(
 						'div',
-						{ className: 'mab-code__frame' },
-						el( 'span', { className: 'mab-code__lang' }, attributes.language.toUpperCase() ),
+						{ className: 'hsrtech-code__frame' },
+						el( 'span', { className: 'hsrtech-code__lang' }, attributes.language.toUpperCase() ),
 						el( PlainText, {
-							className: 'mab-code__editor',
+							className: 'hsrtech-code__editor',
 							value: attributes.code,
 							onChange: function ( value ) {
 								setAttributes( { code: value } );
 							},
-							placeholder: __( 'Paste or write your code…', 'make-a-book' ),
-							'aria-label': __( 'Code', 'make-a-book' )
+							placeholder: __( 'Paste or write your code…', 'chapterwright' ),
+							'aria-label': __( 'Code', 'chapterwright' )
 						} )
 					)
 				)

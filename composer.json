@@ -1,5 +1,5 @@
 {
-    "name": "alokjain/make-a-book",
+    "name": "alokjain/chapterwright",
     "description": "Dev-only dependencies for coding-standards checks and PHPUnit tests. Not required to run the plugin.",
     "type": "wordpress-plugin",
     "license": "GPL-2.0-or-later",

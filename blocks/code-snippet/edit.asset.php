@@ -7,7 +7,7 @@
  * dependencies and a cache-busting version, without requiring @wordpress/scripts
  * or any other build tool.
  *
- * @package Make_A_Book
+ * @package Chapterwright
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -16,5 +16,5 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 return array(
 	'dependencies' => array( 'wp-blocks', 'wp-element', 'wp-block-editor', 'wp-components', 'wp-i18n' ),
-	'version'      => MAKE_A_BOOK_VERSION,
+	'version'      => HSRTECH_VERSION,
 );

@@ -56,14 +56,14 @@ export default function BookDetail( { bookId } ) {
 				setSections( sectionData );
 				setChapters( chapterData );
 			} )
-			.catch( ( err ) => setError( err.message || __( 'This book could not be loaded.', 'make-a-book' ) ) );
+			.catch( ( err ) => setError( err.message || __( 'This book could not be loaded.', 'chapterwright' ) ) );
 	}, [ bookId ] );
 
 	useEffect( load, [ load ] );
 
 	if ( error ) {
 		return (
-			<Notice status="error" isDismissible={ false } className="mab-notice">
+			<Notice status="error" isDismissible={ false } className="hsrtech-notice">
 				{ error }
 			</Notice>
 		);
@@ -71,19 +71,19 @@ export default function BookDetail( { bookId } ) {
 
 	if ( ! book ) {
 		return (
-			<div className="mab-loading">
+			<div className="hsrtech-loading">
 				<Spinner />
 			</div>
 		);
 	}
 
-	const adminUrl = window.makeABookApp?.adminUrl || '/wp-admin/';
+	const adminUrl = window.hsrtechApp?.adminUrl || '/wp-admin/';
 	const editLink = ( postId ) => `${ adminUrl }post.php?post=${ postId }&action=edit`;
 
 	const handleTrashBook = () => {
 		const title = book.title?.raw || book.title?.rendered || '';
 		// eslint-disable-next-line no-alert
-		if ( ! window.confirm( sprintf( __( 'Move "%s" to the trash? Its chapters and sections are not affected — restore the book from Trash to bring it back.', 'make-a-book' ), title ) ) ) {
+		if ( ! window.confirm( sprintf( __( 'Move "%s" to the trash? Its chapters and sections are not affected — restore the book from Trash to bring it back.', 'chapterwright' ), title ) ) ) {
 			return;
 		}
 		setTrashing( true );
@@ -93,31 +93,31 @@ export default function BookDetail( { bookId } ) {
 			} )
 			.catch( ( err ) => {
 				setTrashing( false );
-				setError( err.message || __( 'The book could not be trashed.', 'make-a-book' ) );
+				setError( err.message || __( 'The book could not be trashed.', 'chapterwright' ) );
 			} );
 	};
 
 	return (
-		<div className="mab-book-detail">
-			<a className="mab-back-link" href="#/books">
-				<span aria-hidden="true">&larr;</span> { __( 'All books', 'make-a-book' ) }
+		<div className="hsrtech-book-detail">
+			<a className="hsrtech-back-link" href="#/books">
+				<span aria-hidden="true">&larr;</span> { __( 'All books', 'chapterwright' ) }
 			</a>
 
 			{ notice && (
-				<Notice status="success" className="mab-notice" onRemove={ () => setNotice( '' ) }>
+				<Notice status="success" className="hsrtech-notice" onRemove={ () => setNotice( '' ) }>
 					{ notice }
 				</Notice>
 			) }
 
-			<div className="mab-book-detail__title-row">
+			<div className="hsrtech-book-detail__title-row">
 				<div>
-					<h2 className="mab-book-detail__title">{ book.title?.raw || book.title?.rendered }</h2>
-					<p className="mab-book-detail__hint">
-						{ __( 'Write the introduction, set the cover image, and add an excerpt in the Block Editor.', 'make-a-book' ) }
+					<h2 className="hsrtech-book-detail__title">{ book.title?.raw || book.title?.rendered }</h2>
+					<p className="hsrtech-book-detail__hint">
+						{ __( 'Write the introduction, set the cover image, and add an excerpt in the Block Editor.', 'chapterwright' ) }
 					</p>
 				</div>
 				<Button __next40pxDefaultSize variant="secondary" href={ editLink( book.id ) } target="_blank">
-					{ __( 'Open in Block Editor →', 'make-a-book' ) }
+					{ __( 'Open in Block Editor →', 'chapterwright' ) }
 				</Button>
 			</div>
 
@@ -125,7 +125,7 @@ export default function BookDetail( { bookId } ) {
 				book={ book }
 				onSaved={ ( updated ) => {
 					setBook( updated );
-					setNotice( __( 'Book details saved.', 'make-a-book' ) );
+					setNotice( __( 'Book details saved.', 'chapterwright' ) );
 				} }
 			/>
 
@@ -145,13 +145,13 @@ export default function BookDetail( { bookId } ) {
 				editLink={ editLink }
 			/>
 
-			<Card className="mab-panel mab-panel--danger">
+			<Card className="hsrtech-panel hsrtech-panel--danger">
 				<CardHeader>
-					<h3 className="mab-panel__title">{ __( 'Danger zone', 'make-a-book' ) }</h3>
+					<h3 className="hsrtech-panel__title">{ __( 'Danger zone', 'chapterwright' ) }</h3>
 				</CardHeader>
 				<CardBody>
-					<p className="mab-panel__description">
-						{ __( 'Moves the book to the trash. Its chapters and sections are kept and unaffected — restore the book from Trash to bring it back, or permanently delete it from there.', 'make-a-book' ) }
+					<p className="hsrtech-panel__description">
+						{ __( 'Moves the book to the trash. Its chapters and sections are kept and unaffected — restore the book from Trash to bring it back, or permanently delete it from there.', 'chapterwright' ) }
 					</p>
 					<Button
 						__next40pxDefaultSize
@@ -161,7 +161,7 @@ export default function BookDetail( { bookId } ) {
 						disabled={ trashing }
 						onClick={ handleTrashBook }
 					>
-						{ __( 'Move book to Trash', 'make-a-book' ) }
+						{ __( 'Move book to Trash', 'chapterwright' ) }
 					</Button>
 				</CardBody>
 			</Card>
@@ -173,14 +173,14 @@ export default function BookDetail( { bookId } ) {
  * Subtitle + accent color quick-edit, replacing the old "Book Details" meta box.
  */
 function BookFields( { book, onSaved } ) {
-	const [ subtitle, setSubtitle ] = useState( book.meta?._mab_subtitle || '' );
-	const [ accent, setAccent ] = useState( book.meta?._mab_accent || '#f45d48' );
-	const [ comingSoon, setComingSoon ] = useState( !! book.meta?._mab_coming_soon );
+	const [ subtitle, setSubtitle ] = useState( book.meta?._hsrtech_subtitle || '' );
+	const [ accent, setAccent ] = useState( book.meta?._hsrtech_accent || '#f45d48' );
+	const [ comingSoon, setComingSoon ] = useState( !! book.meta?._hsrtech_coming_soon );
 	const [ saving, setSaving ] = useState( false );
 
 	const save = () => {
 		setSaving( true );
-		const data = { meta: { _mab_subtitle: subtitle, _mab_accent: accent, _mab_coming_soon: comingSoon } };
+		const data = { meta: { _hsrtech_subtitle: subtitle, _hsrtech_accent: accent, _hsrtech_coming_soon: comingSoon } };
 		// Checking "Coming soon" is meant to work as one self-contained action
 		// from this screen — publish the book (if it isn't already) in the
 		// same request, since an unpublished draft would not appear in the
@@ -199,46 +199,46 @@ function BookFields( { book, onSaved } ) {
 	};
 
 	return (
-		<Card className="mab-panel">
+		<Card className="hsrtech-panel">
 			<CardHeader>
-				<h3 className="mab-panel__title">{ __( 'Book details', 'make-a-book' ) }</h3>
+				<h3 className="hsrtech-panel__title">{ __( 'Book details', 'chapterwright' ) }</h3>
 			</CardHeader>
 			<CardBody>
-				<div className="mab-field-row">
+				<div className="hsrtech-field-row">
 					<TextareaControl
 						__nextHasNoMarginBottom
-						label={ __( 'Subtitle', 'make-a-book' ) }
+						label={ __( 'Subtitle', 'chapterwright' ) }
 						value={ subtitle }
 						onChange={ setSubtitle }
 						rows={ 2 }
 					/>
 				</div>
-				<div className="mab-field-row">
+				<div className="hsrtech-field-row">
 					<BaseControl
 						__nextHasNoMarginBottom
-						id="mab-accent-input"
-						label={ __( 'Accent color', 'make-a-book' ) }
-						help={ __( 'Colors links, hover states, blockquote/callout borders, and the reading-progress bar on this book’s pages.', 'make-a-book' ) }
+						id="hsrtech-accent-input"
+						label={ __( 'Accent color', 'chapterwright' ) }
+						help={ __( 'Colors links, hover states, blockquote/callout borders, and the reading-progress bar on this book’s pages.', 'chapterwright' ) }
 					>
 						<input
-							id="mab-accent-input"
-							className="mab-color-input"
+							id="hsrtech-accent-input"
+							className="hsrtech-color-input"
 							type="color"
 							value={ accent }
 							onChange={ ( event ) => setAccent( event.target.value ) }
 						/>
 					</BaseControl>
 				</div>
-				<div className="mab-field-row">
+				<div className="hsrtech-field-row">
 					<CheckboxControl
 						__nextHasNoMarginBottom
-						label={ __( 'Coming soon', 'make-a-book' ) }
+						label={ __( 'Coming soon', 'chapterwright' ) }
 						checked={ comingSoon }
 						onChange={ setComingSoon }
 						help={
 							'publish' === book.status
-								? __( 'Shows a "Coming soon" badge on the library and book page instead of a reading link — for announcing a book before its chapters are ready.', 'make-a-book' )
-								: __( 'Shows a "Coming soon" badge instead of a reading link, and publishes the book so it actually appears in your library.', 'make-a-book' )
+								? __( 'Shows a "Coming soon" badge on the library and book page instead of a reading link — for announcing a book before its chapters are ready.', 'chapterwright' )
+								: __( 'Shows a "Coming soon" badge instead of a reading link, and publishes the book so it actually appears in your library.', 'chapterwright' )
 						}
 					/>
 				</div>
@@ -249,7 +249,7 @@ function BookFields( { book, onSaved } ) {
 					disabled={ saving }
 					onClick={ save }
 				>
-					{ __( 'Save book details', 'make-a-book' ) }
+					{ __( 'Save book details', 'chapterwright' ) }
 				</Button>
 			</CardBody>
 		</Card>
@@ -291,7 +291,7 @@ function SectionsManager( { bookId, sections, onChange, onError } ) {
 
 	const removeSection = ( section ) => {
 		// eslint-disable-next-line no-alert
-		if ( ! window.confirm( sprintf( __( 'Delete "%s"? Its chapters will stay, unassigned.', 'make-a-book' ), section.name ) ) ) {
+		if ( ! window.confirm( sprintf( __( 'Delete "%s"? Its chapters will stay, unassigned.', 'chapterwright' ), section.name ) ) ) {
 			return;
 		}
 		deleteSection( section.id ).then( refresh ).catch( ( err ) => onError( err.message ) );
@@ -310,23 +310,23 @@ function SectionsManager( { bookId, sections, onChange, onError } ) {
 	};
 
 	return (
-		<Card className="mab-panel">
+		<Card className="hsrtech-panel">
 			<CardHeader>
-				<h3 className="mab-panel__title">{ __( 'Sections', 'make-a-book' ) }</h3>
+				<h3 className="hsrtech-panel__title">{ __( 'Sections', 'chapterwright' ) }</h3>
 			</CardHeader>
 			<CardBody>
-				<p className="mab-panel__description">
-					{ __( 'Group chapters under a heading, such as "Part I" or "Getting Started". The description shows under the heading in the table of contents. Optional — chapters with no section appear under a default "Chapters" heading.', 'make-a-book' ) }
+				<p className="hsrtech-panel__description">
+					{ __( 'Group chapters under a heading, such as "Part I" or "Getting Started". The description shows under the heading in the table of contents. Optional — chapters with no section appear under a default "Chapters" heading.', 'chapterwright' ) }
 				</p>
 
 				{ 0 === sections.length && (
-					<p className="mab-empty-state mab-empty-state--inline">
-						{ __( 'No sections yet — chapters will appear under a default "Chapters" heading until you add one.', 'make-a-book' ) }
+					<p className="hsrtech-empty-state hsrtech-empty-state--inline">
+						{ __( 'No sections yet — chapters will appear under a default "Chapters" heading until you add one.', 'chapterwright' ) }
 					</p>
 				) }
 
 				{ sections.length > 0 && (
-					<div className="mab-row-list">
+					<div className="hsrtech-row-list">
 						{ sections.map( ( section, index ) => (
 							<SectionRow
 								key={ section.id }
@@ -340,22 +340,22 @@ function SectionsManager( { bookId, sections, onChange, onError } ) {
 					</div>
 				) }
 
-				<form onSubmit={ addSection } className="mab-inline-form mab-inline-form--section">
+				<form onSubmit={ addSection } className="hsrtech-inline-form hsrtech-inline-form--section">
 					<TextControl
 						__next40pxDefaultSize
 						__nextHasNoMarginBottom
-						label={ __( 'New section name', 'make-a-book' ) }
+						label={ __( 'New section name', 'chapterwright' ) }
 						hideLabelFromVision
-						placeholder={ __( 'e.g. Getting Started', 'make-a-book' ) }
+						placeholder={ __( 'e.g. Getting Started', 'chapterwright' ) }
 						value={ name }
 						onChange={ setName }
 					/>
 					<TextControl
 						__next40pxDefaultSize
 						__nextHasNoMarginBottom
-						label={ __( 'New section description', 'make-a-book' ) }
+						label={ __( 'New section description', 'chapterwright' ) }
 						hideLabelFromVision
-						placeholder={ __( 'Optional description', 'make-a-book' ) }
+						placeholder={ __( 'Optional description', 'chapterwright' ) }
 						value={ description }
 						onChange={ setDescription }
 					/>
@@ -366,7 +366,7 @@ function SectionsManager( { bookId, sections, onChange, onError } ) {
 						isBusy={ busy }
 						disabled={ busy || ! name.trim() }
 					>
-						{ __( 'Add section', 'make-a-book' ) }
+						{ __( 'Add section', 'chapterwright' ) }
 					</Button>
 				</form>
 			</CardBody>
@@ -381,28 +381,28 @@ function SectionRow( { section, onSave, onDelete, onMoveUp, onMoveDown } ) {
 
 	if ( ! editing ) {
 		return (
-			<div className="mab-row">
-				<div className="mab-row__reorder">
-					<Button icon="arrow-up-alt2" label={ __( 'Move up', 'make-a-book' ) } onClick={ onMoveUp } disabled={ ! onMoveUp } size="small" />
-					<Button icon="arrow-down-alt2" label={ __( 'Move down', 'make-a-book' ) } onClick={ onMoveDown } disabled={ ! onMoveDown } size="small" />
+			<div className="hsrtech-row">
+				<div className="hsrtech-row__reorder">
+					<Button icon="arrow-up-alt2" label={ __( 'Move up', 'chapterwright' ) } onClick={ onMoveUp } disabled={ ! onMoveUp } size="small" />
+					<Button icon="arrow-down-alt2" label={ __( 'Move down', 'chapterwright' ) } onClick={ onMoveDown } disabled={ ! onMoveDown } size="small" />
 				</div>
-				<div className="mab-row__text">
+				<div className="hsrtech-row__text">
 					<strong>{ section.name }</strong>
-					{ section.description && <p className="mab-row__meta">{ section.description }</p> }
+					{ section.description && <p className="hsrtech-row__meta">{ section.description }</p> }
 				</div>
-				<div className="mab-row__actions">
-					<Button variant="tertiary" size="small" onClick={ () => setEditing( true ) }>{ __( 'Edit', 'make-a-book' ) }</Button>
-					<Button variant="tertiary" isDestructive size="small" onClick={ onDelete }>{ __( 'Delete', 'make-a-book' ) }</Button>
+				<div className="hsrtech-row__actions">
+					<Button variant="tertiary" size="small" onClick={ () => setEditing( true ) }>{ __( 'Edit', 'chapterwright' ) }</Button>
+					<Button variant="tertiary" isDestructive size="small" onClick={ onDelete }>{ __( 'Delete', 'chapterwright' ) }</Button>
 				</div>
 			</div>
 		);
 	}
 
 	return (
-		<div className="mab-row mab-row--editing">
-			<TextControl __next40pxDefaultSize label={ __( 'Name', 'make-a-book' ) } value={ name } onChange={ setName } />
-			<TextareaControl label={ __( 'Description', 'make-a-book' ) } value={ description } onChange={ setDescription } rows={ 2 } />
-			<div className="mab-row__actions">
+		<div className="hsrtech-row hsrtech-row--editing">
+			<TextControl __next40pxDefaultSize label={ __( 'Name', 'chapterwright' ) } value={ name } onChange={ setName } />
+			<TextareaControl label={ __( 'Description', 'chapterwright' ) } value={ description } onChange={ setDescription } rows={ 2 } />
+			<div className="hsrtech-row__actions">
 				<Button
 					__next40pxDefaultSize
 					variant="primary"
@@ -412,9 +412,9 @@ function SectionRow( { section, onSave, onDelete, onMoveUp, onMoveDown } ) {
 						setEditing( false );
 					} }
 				>
-					{ __( 'Save', 'make-a-book' ) }
+					{ __( 'Save', 'chapterwright' ) }
 				</Button>
-				<Button variant="tertiary" size="small" onClick={ () => setEditing( false ) }>{ __( 'Cancel', 'make-a-book' ) }</Button>
+				<Button variant="tertiary" size="small" onClick={ () => setEditing( false ) }>{ __( 'Cancel', 'chapterwright' ) }</Button>
 			</div>
 		</div>
 	);
@@ -434,7 +434,7 @@ function ChaptersManager( { bookId, sections, chapters, onChange, onError, editL
 	const persist = ( ordered ) => {
 		const payload = ordered.map( ( chapter, index ) => ( {
 			id: chapter.id,
-			sectionId: chapter.meta?._mab_section_id || UNASSIGNED,
+			sectionId: chapter.meta?._hsrtech_section_id || UNASSIGNED,
 			order: index + 1,
 		} ) );
 		reorderChapters( bookId, payload ).then( refresh ).catch( ( err ) => onError( err.message ) );
@@ -453,7 +453,7 @@ function ChaptersManager( { bookId, sections, chapters, onChange, onError, editL
 	const changeSection = ( chapterId, sectionId ) => {
 		const updated = chapters.map( ( chapter ) =>
 			chapter.id === chapterId
-				? { ...chapter, meta: { ...chapter.meta, _mab_section_id: sectionId } }
+				? { ...chapter, meta: { ...chapter.meta, _hsrtech_section_id: sectionId } }
 				: chapter
 		);
 		persist( updated );
@@ -462,7 +462,7 @@ function ChaptersManager( { bookId, sections, chapters, onChange, onError, editL
 	const removeChapter = ( chapter ) => {
 		const chapterTitle = chapter.title?.raw || chapter.title?.rendered || '';
 		// eslint-disable-next-line no-alert
-		if ( ! window.confirm( sprintf( __( 'Move "%s" to the trash?', 'make-a-book' ), chapterTitle ) ) ) {
+		if ( ! window.confirm( sprintf( __( 'Move "%s" to the trash?', 'chapterwright' ), chapterTitle ) ) ) {
 			return;
 		}
 		trashChapter( chapter.id ).then( refresh ).catch( ( err ) => onError( err.message ) );
@@ -493,49 +493,49 @@ function ChaptersManager( { bookId, sections, chapters, onChange, onError, editL
 	};
 
 	const sectionOptions = [
-		{ label: __( 'Chapters (no section)', 'make-a-book' ), value: '' },
+		{ label: __( 'Chapters (no section)', 'chapterwright' ), value: '' },
 		...sections.map( ( section ) => ( { label: section.name, value: String( section.id ) } ) ),
 	];
 
 	return (
-		<Card className="mab-panel">
+		<Card className="hsrtech-panel">
 			<CardHeader>
-				<h3 className="mab-panel__title">{ __( 'Chapters', 'make-a-book' ) }</h3>
+				<h3 className="hsrtech-panel__title">{ __( 'Chapters', 'chapterwright' ) }</h3>
 			</CardHeader>
 			<CardBody>
 				{ 0 === chapters.length && (
-					<p className="mab-empty-state mab-empty-state--inline">
-						{ __( 'No chapters yet. Add the first one below.', 'make-a-book' ) }
+					<p className="hsrtech-empty-state hsrtech-empty-state--inline">
+						{ __( 'No chapters yet. Add the first one below.', 'chapterwright' ) }
 					</p>
 				) }
 
 				{ chapters.length > 0 && (
-					<div className="mab-row-list">
+					<div className="hsrtech-row-list">
 						{ chapters.map( ( chapter, index ) => (
-							<div className="mab-row mab-row--chapter" key={ chapter.id }>
-								<div className="mab-row__reorder">
-									<Button icon="arrow-up-alt2" label={ __( 'Move up', 'make-a-book' ) } size="small" disabled={ 0 === index } onClick={ () => move( index, -1 ) } />
-									<Button icon="arrow-down-alt2" label={ __( 'Move down', 'make-a-book' ) } size="small" disabled={ index === chapters.length - 1 } onClick={ () => move( index, 1 ) } />
+							<div className="hsrtech-row hsrtech-row--chapter" key={ chapter.id }>
+								<div className="hsrtech-row__reorder">
+									<Button icon="arrow-up-alt2" label={ __( 'Move up', 'chapterwright' ) } size="small" disabled={ 0 === index } onClick={ () => move( index, -1 ) } />
+									<Button icon="arrow-down-alt2" label={ __( 'Move down', 'chapterwright' ) } size="small" disabled={ index === chapters.length - 1 } onClick={ () => move( index, 1 ) } />
 								</div>
-								<div className="mab-row__text">
-									<strong>{ chapter.title?.raw || chapter.title?.rendered || __( '(no title)', 'make-a-book' ) }</strong>
-									<span className={ `mab-status-pill mab-status-pill--${ chapter.status }` }>{ chapter.status }</span>
+								<div className="hsrtech-row__text">
+									<strong>{ chapter.title?.raw || chapter.title?.rendered || __( '(no title)', 'chapterwright' ) }</strong>
+									<span className={ `hsrtech-status-pill hsrtech-status-pill--${ chapter.status }` }>{ chapter.status }</span>
 								</div>
 								<SelectControl
 									__next40pxDefaultSize
-									className="mab-row__section-select"
-									label={ __( 'Section', 'make-a-book' ) }
+									className="hsrtech-row__section-select"
+									label={ __( 'Section', 'chapterwright' ) }
 									hideLabelFromVision
-									value={ String( chapter.meta?._mab_section_id || '' ) }
+									value={ String( chapter.meta?._hsrtech_section_id || '' ) }
 									options={ sectionOptions }
 									onChange={ ( value ) => changeSection( chapter.id, value ? Number( value ) : UNASSIGNED ) }
 								/>
-								<div className="mab-row__actions">
+								<div className="hsrtech-row__actions">
 									<Button variant="tertiary" size="small" href={ editLink( chapter.id ) } target="_blank">
-										{ __( 'Edit', 'make-a-book' ) }
+										{ __( 'Edit', 'chapterwright' ) }
 									</Button>
 									<Button variant="tertiary" isDestructive size="small" onClick={ () => removeChapter( chapter ) }>
-										{ __( 'Trash', 'make-a-book' ) }
+										{ __( 'Trash', 'chapterwright' ) }
 									</Button>
 								</div>
 							</div>
@@ -543,19 +543,19 @@ function ChaptersManager( { bookId, sections, chapters, onChange, onError, editL
 					</div>
 				) }
 
-				<form onSubmit={ addChapter } className="mab-inline-form mab-inline-form--chapter">
+				<form onSubmit={ addChapter } className="hsrtech-inline-form hsrtech-inline-form--chapter">
 					<TextControl
 						__next40pxDefaultSize
 						__nextHasNoMarginBottom
-						label={ __( 'New chapter title', 'make-a-book' ) }
+						label={ __( 'New chapter title', 'chapterwright' ) }
 						hideLabelFromVision
-						placeholder={ __( 'New chapter title…', 'make-a-book' ) }
+						placeholder={ __( 'New chapter title…', 'chapterwright' ) }
 						value={ title }
 						onChange={ setTitle }
 					/>
 					<SelectControl
 						__next40pxDefaultSize
-						label={ __( 'Section', 'make-a-book' ) }
+						label={ __( 'Section', 'chapterwright' ) }
 						hideLabelFromVision
 						value={ newChapterSection }
 						options={ sectionOptions }
@@ -568,7 +568,7 @@ function ChaptersManager( { bookId, sections, chapters, onChange, onError, editL
 						isBusy={ busy }
 						disabled={ busy || ! title.trim() }
 					>
-						{ __( '+ Add chapter', 'make-a-book' ) }
+						{ __( '+ Add chapter', 'chapterwright' ) }
 					</Button>
 				</form>
 			</CardBody>

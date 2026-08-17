@@ -17,30 +17,30 @@
  * simply do not exist, these callbacks never run, and nothing else in the
  * plugin depends on them.
  *
- * @package Make_A_Book
+ * @package Chapterwright
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-add_action( 'wp_abilities_api_categories_init', 'mab_register_ability_category' );
-add_action( 'wp_abilities_api_init', 'mab_register_abilities' );
+add_action( 'wp_abilities_api_categories_init', 'hsrtech_register_ability_category' );
+add_action( 'wp_abilities_api_init', 'hsrtech_register_abilities' );
 
 /**
  * Register this plugin's ability category.
  */
-function mab_register_ability_category() {
+function hsrtech_register_ability_category() {
 	if ( ! function_exists( 'wp_register_ability_category' ) ) {
 		return;
 	}
 
 	// phpcs:ignore PluginCheck.CodeAnalysis.WP.WPVersion, WordPress.WP.WordPressVersion -- Guarded above by function_exists( 'wp_register_ability_category' ); never reached on WordPress < 6.9, where this plugin's minimum-supported version stops needing it.
 	wp_register_ability_category(
-		'make-a-book',
+		'chapterwright',
 		array(
-			'label'       => __( 'Make a Book', 'make-a-book' ),
-			'description' => __( 'Create and organize web-native ebooks: books, chapters, and the sections that group them.', 'make-a-book' ),
+			'label'       => __( 'Chapterwright', 'chapterwright' ),
+			'description' => __( 'Create and organize web-native ebooks: books, chapters, and the sections that group them.', 'chapterwright' ),
 		)
 	);
 }
@@ -48,18 +48,18 @@ function mab_register_ability_category() {
 /**
  * Register every ability this plugin exposes.
  */
-function mab_register_abilities() {
+function hsrtech_register_abilities() {
 	if ( ! function_exists( 'wp_register_ability' ) ) {
 		return;
 	}
 
 	// phpcs:ignore PluginCheck.CodeAnalysis.WP.WPVersion, WordPress.WP.WordPressVersion -- Guarded above by function_exists( 'wp_register_ability' ); never reached on WordPress < 6.9.
 	wp_register_ability(
-		'make-a-book/list-books',
+		'chapterwright/list-books',
 		array(
-			'label'               => __( 'List books', 'make-a-book' ),
-			'description'         => __( 'Returns every book, including drafts, with its chapter count.', 'make-a-book' ),
-			'category'            => 'make-a-book',
+			'label'               => __( 'List books', 'chapterwright' ),
+			'description'         => __( 'Returns every book, including drafts, with its chapter count.', 'chapterwright' ),
+			'category'            => 'chapterwright',
 			'input_schema'        => array(),
 			'output_schema'       => array(
 				'type'  => 'array',
@@ -73,11 +73,11 @@ function mab_register_abilities() {
 					),
 				),
 			),
-			'execute_callback'    => 'mab_ability_list_books',
+			'execute_callback'    => 'hsrtech_ability_list_books',
 			'permission_callback' => function () {
-				// 'edit_mab_books' as of 2.2.0 — Books have their own
-				// capability_type now, see mab_register_post_types().
-				return current_user_can( 'edit_mab_books' );
+				// 'edit_hsrtech_books' as of 2.2.0 — Books have their own
+				// capability_type now, see hsrtech_register_post_types().
+				return current_user_can( 'edit_hsrtech_books' );
 			},
 			'meta'                => array(
 				'annotations'  => array( 'readonly' => true ),
@@ -88,23 +88,23 @@ function mab_register_abilities() {
 
 	// phpcs:ignore PluginCheck.CodeAnalysis.WP.WPVersion, WordPress.WP.WordPressVersion -- Guarded above by function_exists( 'wp_register_ability' ); never reached on WordPress < 6.9.
 	wp_register_ability(
-		'make-a-book/get-book-overview',
+		'chapterwright/get-book-overview',
 		array(
-			'label'               => __( 'Get book overview', 'make-a-book' ),
-			'description'         => __( 'Returns a book with its sections and chapters, grouped and ordered exactly as they appear in the table of contents.', 'make-a-book' ),
-			'category'            => 'make-a-book',
+			'label'               => __( 'Get book overview', 'chapterwright' ),
+			'description'         => __( 'Returns a book with its sections and chapters, grouped and ordered exactly as they appear in the table of contents.', 'chapterwright' ),
+			'category'            => 'chapterwright',
 			'input_schema'        => array(
 				'type'       => 'object',
 				'properties' => array(
 					'book_id' => array(
 						'type'        => 'integer',
-						'description' => __( 'Book post ID.', 'make-a-book' ),
+						'description' => __( 'Book post ID.', 'chapterwright' ),
 					),
 				),
 				'required'   => array( 'book_id' ),
 			),
 			'output_schema'       => array( 'type' => 'object' ),
-			'execute_callback'    => 'mab_ability_get_book_overview',
+			'execute_callback'    => 'hsrtech_ability_get_book_overview',
 			'permission_callback' => function ( $input ) {
 				return current_user_can( 'edit_post', (int) $input['book_id'] );
 			},
@@ -117,11 +117,11 @@ function mab_register_abilities() {
 
 	// phpcs:ignore PluginCheck.CodeAnalysis.WP.WPVersion, WordPress.WP.WordPressVersion -- Guarded above by function_exists( 'wp_register_ability' ); never reached on WordPress < 6.9.
 	wp_register_ability(
-		'make-a-book/create-section',
+		'chapterwright/create-section',
 		array(
-			'label'               => __( 'Create a book section', 'make-a-book' ),
-			'description'         => __( 'Adds a named, describable grouping (e.g. "Part I") that chapters can be assigned to within one book.', 'make-a-book' ),
-			'category'            => 'make-a-book',
+			'label'               => __( 'Create a book section', 'chapterwright' ),
+			'description'         => __( 'Adds a named, describable grouping (e.g. "Part I") that chapters can be assigned to within one book.', 'chapterwright' ),
+			'category'            => 'chapterwright',
 			'input_schema'        => array(
 				'type'       => 'object',
 				'properties' => array(
@@ -132,9 +132,19 @@ function mab_register_abilities() {
 				'required'   => array( 'book_id', 'name' ),
 			),
 			'output_schema'       => array( 'type' => 'object' ),
-			'execute_callback'    => 'mab_ability_create_section',
+			'execute_callback'    => 'hsrtech_ability_create_section',
 			'permission_callback' => function ( $input ) {
-				return current_user_can( 'edit_post', (int) $input['book_id'] );
+				$book_id = (int) $input['book_id'];
+
+				// current_user_can( 'edit_post', $book_id ) alone doesn't confirm
+				// $book_id is actually a Book — for a post ID belonging to some
+				// other post type that the same user can edit, map_meta_cap would
+				// still resolve truthy here. Require both.
+				if ( HSRTECH_BOOK_POST_TYPE !== get_post_type( $book_id ) ) {
+					return false;
+				}
+
+				return current_user_can( 'edit_post', $book_id );
 			},
 			'meta'                => array(
 				'annotations'  => array(
@@ -149,11 +159,11 @@ function mab_register_abilities() {
 
 	// phpcs:ignore PluginCheck.CodeAnalysis.WP.WPVersion, WordPress.WP.WordPressVersion -- Guarded above by function_exists( 'wp_register_ability' ); never reached on WordPress < 6.9.
 	wp_register_ability(
-		'make-a-book/create-chapter',
+		'chapterwright/create-chapter',
 		array(
-			'label'               => __( 'Create a chapter', 'make-a-book' ),
-			'description'         => __( 'Creates a new draft chapter assigned to a book, optionally within one of its sections, ready to be written up in the block editor.', 'make-a-book' ),
-			'category'            => 'make-a-book',
+			'label'               => __( 'Create a chapter', 'chapterwright' ),
+			'description'         => __( 'Creates a new draft chapter assigned to a book, optionally within one of its sections, ready to be written up in the block editor.', 'chapterwright' ),
+			'category'            => 'chapterwright',
 			'input_schema'        => array(
 				'type'       => 'object',
 				'properties' => array(
@@ -162,18 +172,18 @@ function mab_register_abilities() {
 					'section_id' => array( 'type' => 'integer' ),
 					'content'    => array(
 						'type'        => 'string',
-						'description' => __( 'Optional starting content, as block markup or plain text.', 'make-a-book' ),
+						'description' => __( 'Optional starting content, as block markup or plain text.', 'chapterwright' ),
 					),
 				),
 				'required'   => array( 'book_id', 'title' ),
 			),
 			'output_schema'       => array( 'type' => 'object' ),
-			'execute_callback'    => 'mab_ability_create_chapter',
+			'execute_callback'    => 'hsrtech_ability_create_chapter',
 			'permission_callback' => function ( $input ) {
 				// Must be able to edit the target book, and to create a new
-				// Chapter at all — 'edit_mab_chapters' as of 2.2.0, replacing
-				// the generic 'edit_posts' (see mab_register_post_types()).
-				return current_user_can( 'edit_post', (int) $input['book_id'] ) && current_user_can( 'edit_mab_chapters' );
+				// Chapter at all — 'edit_hsrtech_chapters' as of 2.2.0, replacing
+				// the generic 'edit_posts' (see hsrtech_register_post_types()).
+				return current_user_can( 'edit_post', (int) $input['book_id'] ) && current_user_can( 'edit_hsrtech_chapters' );
 			},
 			'meta'                => array(
 				'annotations'  => array(
@@ -188,11 +198,11 @@ function mab_register_abilities() {
 
 	// phpcs:ignore PluginCheck.CodeAnalysis.WP.WPVersion, WordPress.WP.WordPressVersion -- Guarded above by function_exists( 'wp_register_ability' ); never reached on WordPress < 6.9.
 	wp_register_ability(
-		'make-a-book/delete-section',
+		'chapterwright/delete-section',
 		array(
-			'label'               => __( 'Delete a book section', 'make-a-book' ),
-			'description'         => __( 'Removes a section. Chapters assigned to it are not deleted — they become unassigned and fall under the default "Chapters" heading.', 'make-a-book' ),
-			'category'            => 'make-a-book',
+			'label'               => __( 'Delete a book section', 'chapterwright' ),
+			'description'         => __( 'Removes a section. Chapters assigned to it are not deleted — they become unassigned and fall under the default "Chapters" heading.', 'chapterwright' ),
+			'category'            => 'chapterwright',
 			'input_schema'        => array(
 				'type'       => 'object',
 				'properties' => array(
@@ -201,10 +211,25 @@ function mab_register_abilities() {
 				'required'   => array( 'section_id' ),
 			),
 			'output_schema'       => array( 'type' => 'object' ),
-			'execute_callback'    => 'mab_ability_delete_section',
+			'execute_callback'    => 'hsrtech_ability_delete_section',
 			'permission_callback' => function ( $input ) {
-				$section = mab_get_section( (int) $input['section_id'] );
-				return $section && current_user_can( 'edit_post', $section['book_id'] );
+				$section = hsrtech_get_section( (int) $input['section_id'] );
+
+				if ( ! $section || ! current_user_can( 'edit_post', $section['book_id'] ) ) {
+					return false;
+				}
+
+				// Deleting a section also strips _hsrtech_section_id from every
+				// chapter assigned to it (see hsrtech_delete_section()) — that's
+				// a write to each of those chapters, so the caller needs edit
+				// rights on all of them too, not just on the parent book.
+				foreach ( hsrtech_get_chapters_in_section( $section['id'] ) as $chapter_id ) {
+					if ( ! current_user_can( 'edit_post', $chapter_id ) ) {
+						return false;
+					}
+				}
+
+				return true;
 			},
 			'meta'                => array(
 				'annotations'  => array(
@@ -219,20 +244,29 @@ function mab_register_abilities() {
 }
 
 /**
- * Execute callback for make-a-book/list-books.
+ * Execute callback for chapterwright/list-books.
  *
  * @return array<int,array<string,mixed>>
  */
-function mab_ability_list_books() {
-	$books = get_posts(
-		array(
-			'post_type'      => MAB_BOOK_POST_TYPE,
-			'post_status'    => array( 'publish', 'draft', 'pending', 'private', 'future' ),
-			'posts_per_page' => -1,
-			'orderby'        => 'title',
-			'order'          => 'ASC',
-		)
+function hsrtech_ability_list_books() {
+	$args = array(
+		'post_type'      => HSRTECH_BOOK_POST_TYPE,
+		'post_status'    => array( 'publish', 'draft', 'pending', 'private', 'future' ),
+		'posts_per_page' => -1,
+		'orderby'        => 'title',
+		'order'          => 'ASC',
 	);
+
+	// The permission_callback only confirms the caller can edit *some*
+	// Books ('edit_hsrtech_books'); it doesn't mean they can see every
+	// author's drafts and private books. Mirror the same restriction the
+	// admin post list table applies for this capability_type: without
+	// 'edit_others_hsrtech_books', only return the caller's own.
+	if ( ! current_user_can( 'edit_others_hsrtech_books' ) ) {
+		$args['author'] = get_current_user_id();
+	}
+
+	$books = get_posts( $args );
 
 	return array_map(
 		function ( $book ) {
@@ -240,7 +274,7 @@ function mab_ability_list_books() {
 				'id'            => $book->ID,
 				'title'         => get_the_title( $book ),
 				'status'        => $book->post_status,
-				'chapter_count' => count( mab_get_all_chapters_for_admin( $book->ID ) ),
+				'chapter_count' => count( hsrtech_get_all_chapters_for_admin( $book->ID ) ),
 			);
 		},
 		$books
@@ -248,34 +282,34 @@ function mab_ability_list_books() {
 }
 
 /**
- * Execute callback for make-a-book/get-book-overview.
+ * Execute callback for chapterwright/get-book-overview.
  *
  * @param array<string,mixed> $input Ability input; only `book_id` is used.
  * @return array<string,mixed>|WP_Error
  */
-function mab_ability_get_book_overview( $input ) {
+function hsrtech_ability_get_book_overview( $input ) {
 	$book_id = (int) $input['book_id'];
 	$book    = get_post( $book_id );
 
-	if ( ! $book || MAB_BOOK_POST_TYPE !== $book->post_type ) {
-		return new WP_Error( 'mab_ability_book_not_found', __( 'That book does not exist.', 'make-a-book' ) );
+	if ( ! $book || HSRTECH_BOOK_POST_TYPE !== $book->post_type ) {
+		return new WP_Error( 'hsrtech_ability_book_not_found', __( 'That book does not exist.', 'chapterwright' ) );
 	}
 
-	$chapters = mab_get_all_chapters_for_admin( $book_id );
+	$chapters = hsrtech_get_all_chapters_for_admin( $book_id );
 
 	return array(
 		'id'       => $book_id,
 		'title'    => get_the_title( $book_id ),
-		'subtitle' => get_post_meta( $book_id, '_mab_subtitle', true ),
-		'sections' => mab_get_book_sections( $book_id ),
+		'subtitle' => get_post_meta( $book_id, '_hsrtech_subtitle', true ),
+		'sections' => hsrtech_get_book_sections( $book_id ),
 		'chapters' => array_map(
 			function ( $chapter ) {
 				return array(
 					'id'         => $chapter->ID,
 					'title'      => get_the_title( $chapter ),
 					'status'     => $chapter->post_status,
-					'section_id' => (int) get_post_meta( $chapter->ID, '_mab_section_id', true ),
-					'order'      => (int) get_post_meta( $chapter->ID, '_mab_order', true ),
+					'section_id' => (int) get_post_meta( $chapter->ID, '_hsrtech_section_id', true ),
+					'order'      => (int) get_post_meta( $chapter->ID, '_hsrtech_order', true ),
 				);
 			},
 			$chapters
@@ -284,13 +318,13 @@ function mab_ability_get_book_overview( $input ) {
 }
 
 /**
- * Execute callback for make-a-book/create-section.
+ * Execute callback for chapterwright/create-section.
  *
  * @param array<string,mixed> $input Ability input.
  * @return array<string,mixed>|WP_Error
  */
-function mab_ability_create_section( $input ) {
-	$section_id = mab_insert_section(
+function hsrtech_ability_create_section( $input ) {
+	$section_id = hsrtech_insert_section(
 		(int) $input['book_id'],
 		array(
 			'name'        => $input['name'],
@@ -302,32 +336,32 @@ function mab_ability_create_section( $input ) {
 		return $section_id;
 	}
 
-	return mab_get_section( $section_id );
+	return hsrtech_get_section( $section_id );
 }
 
 /**
- * Execute callback for make-a-book/create-chapter.
+ * Execute callback for chapterwright/create-chapter.
  *
  * @param array<string,mixed> $input Ability input.
  * @return array<string,mixed>|WP_Error
  */
-function mab_ability_create_chapter( $input ) {
+function hsrtech_ability_create_chapter( $input ) {
 	$book_id = (int) $input['book_id'];
 
-	if ( MAB_BOOK_POST_TYPE !== get_post_type( $book_id ) ) {
-		return new WP_Error( 'mab_ability_book_not_found', __( 'That book does not exist.', 'make-a-book' ) );
+	if ( HSRTECH_BOOK_POST_TYPE !== get_post_type( $book_id ) ) {
+		return new WP_Error( 'hsrtech_ability_book_not_found', __( 'That book does not exist.', 'chapterwright' ) );
 	}
 
 	if ( ! empty( $input['section_id'] ) ) {
-		$section = mab_get_section( (int) $input['section_id'] );
+		$section = hsrtech_get_section( (int) $input['section_id'] );
 		if ( ! $section || $book_id !== (int) $section['book_id'] ) {
-			return new WP_Error( 'mab_ability_section_mismatch', __( 'That section does not belong to this book.', 'make-a-book' ) );
+			return new WP_Error( 'hsrtech_ability_section_mismatch', __( 'That section does not belong to this book.', 'chapterwright' ) );
 		}
 	}
 
 	$chapter_id = wp_insert_post(
 		array(
-			'post_type'    => MAB_CHAPTER_POST_TYPE,
+			'post_type'    => HSRTECH_CHAPTER_POST_TYPE,
 			'post_title'   => sanitize_text_field( $input['title'] ),
 			'post_content' => isset( $input['content'] ) ? wp_kses_post( $input['content'] ) : '',
 			'post_status'  => 'draft',
@@ -339,11 +373,11 @@ function mab_ability_create_chapter( $input ) {
 		return $chapter_id;
 	}
 
-	update_post_meta( $chapter_id, '_mab_book_id', $book_id );
-	update_post_meta( $chapter_id, '_mab_order', mab_get_next_chapter_order( $book_id ) );
+	update_post_meta( $chapter_id, '_hsrtech_book_id', $book_id );
+	update_post_meta( $chapter_id, '_hsrtech_order', hsrtech_get_next_chapter_order( $book_id ) );
 
 	if ( ! empty( $input['section_id'] ) ) {
-		update_post_meta( $chapter_id, '_mab_section_id', absint( $input['section_id'] ) );
+		update_post_meta( $chapter_id, '_hsrtech_section_id', absint( $input['section_id'] ) );
 	}
 
 	return array(
@@ -353,13 +387,13 @@ function mab_ability_create_chapter( $input ) {
 }
 
 /**
- * Execute callback for make-a-book/delete-section.
+ * Execute callback for chapterwright/delete-section.
  *
  * @param array<string,mixed> $input Ability input.
  * @return array<string,mixed>|WP_Error
  */
-function mab_ability_delete_section( $input ) {
-	$result = mab_delete_section( (int) $input['section_id'] );
+function hsrtech_ability_delete_section( $input ) {
+	$result = hsrtech_delete_section( (int) $input['section_id'] );
 
 	if ( is_wp_error( $result ) ) {
 		return $result;

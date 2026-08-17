@@ -1,16 +1,16 @@
 {
-  "name": "make-a-book",
+  "name": "chapterwright",
   "version": "2.5.0",
   "private": true,
-  "description": "Local WordPress test environment and admin-app build for the Make a Book plugin.",
+  "description": "Local WordPress test environment and admin-app build for the Chapterwright plugin.",
   "scripts": {
     "env:start": "wp-env start",
     "env:stop": "wp-env stop",
     "env:clean": "wp-env clean all",
-    "env:seed": "wp-env run cli wp eval-file wp-content/plugins/make-a-book/tests/fixtures/seed-books.php",
+    "env:seed": "wp-env run cli wp eval-file wp-content/plugins/chapterwright/tests/fixtures/seed-books.php",
     "build": "wp-scripts build admin/app/src/index.js admin/app/src/editor-sidebar.js --output-path=admin/app/build",
     "start": "wp-scripts start admin/app/src/index.js admin/app/src/editor-sidebar.js --output-path=admin/app/build",
-    "test:php": "wp-env run tests-cli --env-cwd=wp-content/plugins/make-a-book phpunit"
+    "test:php": "wp-env run tests-cli --env-cwd=wp-content/plugins/chapterwright phpunit"
   },
   "devDependencies": {
     "@wordpress/env": "^11.5.0",

@@ -2,8 +2,8 @@
 /**
  * Uninstall handler.
  *
- * As of 2.0.1, uninstalling Make a Book performs a full clean sweep: every
- * Book and Chapter post (and their post meta), the mab_sections table, and
+ * As of 2.0.1, uninstalling Chapterwright performs a full clean sweep: every
+ * Book and Chapter post (and their post meta), the hsrtech_sections table, and
  * every option the plugin created are all removed. Nothing the plugin added
  * is left behind. This is a deliberate reversal of the plugin's pre-2.0.1
  * "retain content" behavior, made at the project owner's explicit request —
@@ -12,7 +12,7 @@
  * (never on deactivation or update), so it is not something that can happen
  * by accident.
  *
- * @package Make_A_Book
+ * @package Chapterwright
  */
 
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
@@ -20,14 +20,14 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 }
 
 if ( is_multisite() ) {
-	$mab_site_ids = get_sites( array( 'fields' => 'ids' ) );
-	foreach ( $mab_site_ids as $mab_site_id ) {
-		switch_to_blog( $mab_site_id );
-		mab_uninstall_clean_sweep();
+	$hsrtech_site_ids = get_sites( array( 'fields' => 'ids' ) );
+	foreach ( $hsrtech_site_ids as $hsrtech_site_id ) {
+		switch_to_blog( $hsrtech_site_id );
+		hsrtech_uninstall_clean_sweep();
 		restore_current_blog();
 	}
 } else {
-	mab_uninstall_clean_sweep();
+	hsrtech_uninstall_clean_sweep();
 }
 
 /**
@@ -36,14 +36,14 @@ if ( is_multisite() ) {
  * Called once per site — directly on a single-site install, or once per
  * site in the network loop above on multisite.
  */
-function mab_uninstall_clean_sweep() {
-	mab_uninstall_delete_posts( 'mab_book' );
-	mab_uninstall_delete_posts( 'mab_chapter' );
-	mab_uninstall_drop_sections_table();
-	mab_uninstall_remove_capabilities();
+function hsrtech_uninstall_clean_sweep() {
+	hsrtech_uninstall_delete_posts( 'hsrtech_book' );
+	hsrtech_uninstall_delete_posts( 'hsrtech_chapter' );
+	hsrtech_uninstall_drop_sections_table();
+	hsrtech_uninstall_remove_capabilities();
 
-	delete_option( 'mab_settings' );
-	delete_option( 'mab_db_version' );
+	delete_option( 'hsrtech_settings' );
+	delete_option( 'hsrtech_db_version' );
 }
 
 /**
@@ -57,7 +57,7 @@ function mab_uninstall_clean_sweep() {
  *
  * @param string $post_type One of this plugin's post type keys.
  */
-function mab_uninstall_delete_posts( $post_type ) {
+function hsrtech_uninstall_delete_posts( $post_type ) {
 	$post_ids = get_posts(
 		array(
 			'post_type'      => $post_type,
@@ -73,16 +73,16 @@ function mab_uninstall_delete_posts( $post_type ) {
 }
 
 /**
- * Drop the mab_sections custom table.
+ * Drop the hsrtech_sections custom table.
  */
-function mab_uninstall_drop_sections_table() {
+function hsrtech_uninstall_drop_sections_table() {
 	global $wpdb;
 
-	$mab_sections_table = $wpdb->prefix . 'mab_sections';
+	$hsrtech_sections_table = $wpdb->prefix . 'hsrtech_sections';
 	// A single consolidated ignore (rather than splitting across a preceding
 	// standalone comment and a trailing one) — Plugin Check's own scan was
 	// observed to only honor one phpcs:ignore annotation per line.
-	$wpdb->query( "DROP TABLE IF EXISTS {$mab_sections_table}" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Deliberate, one-time schema cleanup on uninstall; table name is a fixed prefix, not user input; no WP API drops a custom table.
+	$wpdb->query( "DROP TABLE IF EXISTS {$hsrtech_sections_table}" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Deliberate, one-time schema cleanup on uninstall; table name is a fixed prefix, not user input; no WP API drops a custom table.
 }
 
 /**
@@ -91,26 +91,26 @@ function mab_uninstall_drop_sections_table() {
  * happens to hold one of these capabilities.
  *
  * As of 2.2.0, Books and Chapters register their own `capability_type`
- * (mab_register_post_types(), includes/content-types.php) instead of using
- * generic 'post' capabilities, and mab_add_capabilities_to_roles() grants
+ * (hsrtech_register_post_types(), includes/content-types.php) instead of using
+ * generic 'post' capabilities, and hsrtech_add_capabilities_to_roles() grants
  * the resulting capability names to the default roles. This is the reverse
  * of that: WordPress never removes a role capability on its own, so without
- * this, an uninstalled site would keep dangling `edit_mab_book`-style
+ * this, an uninstalled site would keep dangling `edit_hsrtech_book`-style
  * capabilities on its roles forever — a small but real violation of "clean
  * sweep." The post types are not registered during uninstall (this file
- * runs in a minimal WordPress environment that never loads make-a-book.php),
+ * runs in a minimal WordPress environment that never loads chapterwright.php),
  * so the capability names are spelled out directly here instead of being
  * read off a live post type object, mirroring get_post_type_capabilities()'s
  * default naming for a `capability_type => array( $singular, $plural )` post
  * type with `map_meta_cap => true`.
  */
-function mab_uninstall_remove_capabilities() {
+function hsrtech_uninstall_remove_capabilities() {
 	$capabilities = array();
 
 	foreach (
 		array(
-			array( 'mab_book', 'mab_books' ),
-			array( 'mab_chapter', 'mab_chapters' ),
+			array( 'hsrtech_book', 'hsrtech_books' ),
+			array( 'hsrtech_chapter', 'hsrtech_chapters' ),
 		) as $names
 	) {
 		list( $singular, $plural ) = $names;

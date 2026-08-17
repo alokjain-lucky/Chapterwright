@@ -3,7 +3,7 @@
  * toggle, and the reading-progress bar.
  *
  * Two independent features sharing one file (both are small, and both are
- * always enqueued together via the `make-a-book-reader` handle in
+ * always enqueued together via the `chapterwright-reader` handle in
  * public/assets.php, so a separate file per feature wasn't worth it) — but
  * each is wrapped in its own IIFE and guards its own DOM lookups, so one
  * being absent from a given page can never take the other down with it.
@@ -11,22 +11,22 @@
  * That used to not be true: everything here, including the reading-progress
  * bar's setup, sat after a single `if ( ! buttons.length ) return;` early
  * return — so turning off the "Color mode toggle" setting (which removes
- * `.mab-mode-toggle` from the page) silently broke the reading-progress bar
+ * `.hsrtech-mode-toggle` from the page) silently broke the reading-progress bar
  * too, an entirely unrelated feature, just because both happened to live in
  * the same top-level scope. Splitting them like this is the actual fix, not
  * just a stylistic reorganization.
  *
- * @package Make_A_Book
+ * @package Chapterwright
  */
 ( function () {
 	'use strict';
 
 	// --- Color mode toggle --------------------------------------------
 	( function () {
-		const storageKey = 'make-a-book-color-mode';
+		const storageKey = 'chapterwright-color-mode';
 		const modes = [ 'auto', 'light', 'dark' ];
-		const labels = window.makeABookReader || {};
-		const buttons = document.querySelectorAll( '.mab-mode-toggle' );
+		const labels = window.hsrtechReader || {};
+		const buttons = document.querySelectorAll( '.hsrtech-mode-toggle' );
 
 		if ( ! buttons.length ) {
 			return;
@@ -38,7 +38,7 @@
 			document.documentElement.dataset.mabMode = validMode;
 
 			buttons.forEach( function ( button ) {
-				const label = button.querySelector( '[data-mab-mode-label]' );
+				const label = button.querySelector( '[data-hsrtech-mode-label]' );
 				const text = validMode === 'dark' ? labels.modeDark : ( validMode === 'light' ? labels.modeLight : labels.modeAuto );
 				button.dataset.mode = validMode;
 				button.setAttribute( 'aria-label', text );
@@ -72,8 +72,8 @@
 
 	// --- Reading progress bar ------------------------------------------
 	( function () {
-		const progress = document.querySelector( '[data-mab-reading-progress]' );
-		const article = document.querySelector( '.mab-chapter' );
+		const progress = document.querySelector( '[data-hsrtech-reading-progress]' );
+		const article = document.querySelector( '.hsrtech-chapter' );
 
 		if ( ! progress || ! article ) {
 			return;

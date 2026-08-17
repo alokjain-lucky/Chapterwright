@@ -1,13 +1,13 @@
 {
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
-	"name": "make-a-book/code-snippet",
+	"name": "chapterwright/code-snippet",
 	"title": "Code Snippet",
 	"category": "text",
 	"icon": "editor-code",
-	"description": "A formatted code example with an optional caption, language label, and copy button, styled to match the Make a Book reader.",
+	"description": "A formatted code example with an optional caption, language label, and copy button, styled to match the Chapterwright reader.",
 	"keywords": [ "code", "snippet", "programming", "syntax" ],
-	"textdomain": "make-a-book",
+	"textdomain": "chapterwright",
 	"attributes": {
 		"code": {
 			"type": "string",

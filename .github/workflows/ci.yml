@@ -46,20 +46,20 @@ jobs:
       # this directory inside the WP container at
       # wp-content/plugins/<folder-name>, and both package.json's test:php
       # script and tests/bootstrap.php hardcode that folder as
-      # "make-a-book". actions/checkout@v4 defaults to a folder matching
-      # this repo's GitHub name, "Make-a-Book" (capitalized) — a case
+      # "chapterwright". actions/checkout@v4 defaults to a folder matching
+      # this repo's GitHub name, "Chapterwright" (capitalized) — a case
       # mismatch that breaks the container mount on Linux's case-sensitive
       # filesystem ("chdir ... no such file or directory"). Pin the
       # checkout path so it matches what every other script expects.
       - uses: actions/checkout@v4
         with:
-          path: make-a-book
+          path: chapterwright
 
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
-          cache-dependency-path: make-a-book/package-lock.json
+          cache-dependency-path: chapterwright/package-lock.json
 
       - uses: shivammathur/setup-php@v2
         with:
@@ -68,20 +68,20 @@ jobs:
           coverage: none
 
       - run: npm ci
-        working-directory: make-a-book
+        working-directory: chapterwright
 
       # The WP core test bootstrap (called from tests/bootstrap.php) requires
       # the PHPUnit Polyfills library — see yoast/phpunit-polyfills in
       # composer.json — to be installed and locatable, or it aborts before
       # any test runs.
       - run: composer install --no-progress --prefer-dist
-        working-directory: make-a-book
+        working-directory: chapterwright
 
       # wp-env spins up WordPress and a dedicated test-database container
       # (Docker, already available on this runner) and provisions the WP
       # core PHPUnit test library — see .wp-env.json's testsPort.
       - run: npx wp-env start
-        working-directory: make-a-book
+        working-directory: chapterwright
 
       - run: npm run test:php
-        working-directory: make-a-book
+        working-directory: chapterwright
