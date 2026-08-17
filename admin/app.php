@@ -31,6 +31,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 add_action( 'admin_menu', 'hsrtech_add_app_page', 5 );
 add_action( 'admin_enqueue_scripts', 'hsrtech_enqueue_app_assets' );
 add_action( 'enqueue_block_editor_assets', 'hsrtech_enqueue_editor_sidebar_assets' );
+add_filter( 'plugin_action_links_' . plugin_basename( HSRTECH_FILE ), 'hsrtech_add_plugin_action_links' );
 
 /**
  * Register the top-level "Chapterwright" admin page.
@@ -83,6 +84,33 @@ function hsrtech_add_app_page() {
  */
 function hsrtech_render_app_page() {
 	echo '<div class="wrap"><div id="chapterwright-app"></div></div>';
+}
+
+/**
+ * Add a "Books & Chapters" link to this plugin's row on the Plugins screen,
+ * next to Deactivate — now that the admin menu sits at position 100 (see
+ * hsrtech_add_app_page()), it's no longer right at the top of the sidebar,
+ * so this gives users a fast way back to it straight from the row where
+ * they just activated the plugin.
+ *
+ * @param array<int,string> $links Existing action links (Deactivate, etc.).
+ * @return array<int,string>
+ */
+function hsrtech_add_plugin_action_links( $links ) {
+	if ( ! current_user_can( 'edit_hsrtech_books' ) ) {
+		return $links;
+	}
+
+	array_unshift(
+		$links,
+		sprintf(
+			'<a href="%1$s">%2$s</a>',
+			esc_url( admin_url( 'admin.php?page=chapterwright' ) ),
+			esc_html__( 'Books & Chapters', 'chapterwright' )
+		)
+	);
+
+	return $links;
 }
 
 /**
