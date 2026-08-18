@@ -321,6 +321,8 @@ The three most recent releases are below. See [CHANGELOG.md](CHANGELOG.md) for t
 
 - Added a "Trashed books" screen to **Books & Chapters**: books moved to the trash can now be restored or permanently deleted from there, instead of being sent out to the classic wp-admin Books list to do it.
 - Chapters in **Books & Chapters** now show their number (1., 2., 3., …) in front of the title, matching their reading order.
+- The table of contents now shows a chapter's excerpt even for a draft chapter (previously excerpt display was published-only, if "Show excerpt in table of contents" is on and the chapter has one), and a draft chapter keeps its real number instead of having "Draft" printed in its place — "Draft" is now a separate label next to the title, still announced to screen readers.
+- Chapters in **Books & Chapters** now show their excerpt below the title too, for drafts and published chapters alike, matching the same "Show excerpt" setting.
 - Fixed a chapter, section, or book occasionally staying missing from its list right after being added successfully — root-caused to a caching layer in front of WordPress on some hosts serving a stale response for a short time afterward, not anything wrong with the save itself. Every GET request the admin app makes now includes a unique value, so it can never be served a cached hit.
 
 ### 2.6.1

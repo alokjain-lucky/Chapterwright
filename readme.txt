@@ -85,6 +85,8 @@ Yes. Every string (PHP and the admin app's JavaScript) is wrapped for translatio
 = 2.7.0 =
 * Added a "Trashed books" screen to Books & Chapters. Trashed books can now be restored or permanently deleted right there, instead of leaving the admin app for the classic Books list.
 * Chapters in Books & Chapters now show their number in front of the title, matching their reading order.
+* The table of contents now shows a chapter's excerpt even for a draft chapter (previously excerpt display was published-only), and a draft chapter keeps showing its real number instead of the word "Draft" in its place — "Draft" is now a separate label next to the title.
+* Chapters in Books & Chapters now show their excerpt too, matching the "Show excerpt in table of contents" setting.
 * Fixed a chapter, section, or book occasionally staying missing from its list after being added, even though it had saved successfully — a caching layer on some hosts could serve a stale list for a short time afterward. Every list request the admin app makes is now unique, so it can't be served a cached response.
 
 = 2.6.1 =
