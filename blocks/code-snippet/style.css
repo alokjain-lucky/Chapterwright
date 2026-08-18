@@ -235,8 +235,13 @@
    token (a long URL or hash) that's still wider than the block on its own,
    which white-space: pre-wrap alone wouldn't break. Same specificity as the
    rule it overrides, again for the same reason: three classes and an
-   element, winning only because it's later in the file. */
-.hsrtech-code .hsrtech-code--wrap pre:not(.hsrtech-code__line-numbers) {
+   element, winning only because it's later in the file.
+
+   .hsrtech-code and .hsrtech-code--wrap with no space between them, not a
+   descendant selector — render.php puts both classes on the same <figure>,
+   not on two nested elements, so ".hsrtech-code .hsrtech-code--wrap" (with
+   a space) would look for one inside the other and never match anything. */
+.hsrtech-code.hsrtech-code--wrap pre:not(.hsrtech-code__line-numbers) {
 	overflow-x: hidden;
 	white-space: pre-wrap;
 	word-break: break-word;
@@ -251,12 +256,16 @@
    down to the button's own ~2.9rem requirement would give back almost
    nothing, so this accepts the copy button visually overlapping the first
    line or two of short snippets instead, the same trade-off plenty of code
-   viewers make for a corner-floating copy button. */
-.hsrtech-code .hsrtech-code--no-lang pre:not(.hsrtech-code__line-numbers) {
+   viewers make for a corner-floating copy button.
+
+   Same compound-selector note as "Wrap long lines" above: .hsrtech-code and
+   .hsrtech-code--no-lang have no space between them because render.php puts
+   both on the same <figure>, not on two nested elements. */
+.hsrtech-code.hsrtech-code--no-lang pre:not(.hsrtech-code__line-numbers) {
 	padding-top: 1.75rem;
 }
 
-.hsrtech-code .hsrtech-code--no-lang .hsrtech-code__line-numbers {
+.hsrtech-code.hsrtech-code--no-lang .hsrtech-code__line-numbers {
 	padding-top: 1.75rem;
 }
 
