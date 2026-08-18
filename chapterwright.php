@@ -3,7 +3,7 @@
  * Plugin Name:       Chapterwright
  * Plugin URI:        https://github.com/alokjain-lucky/Chapterwright
  * Description:       Create and publish multiple, beautifully readable ebooks with chapters, sections, and code-friendly formatting.
- * Version:           2.6.1
+ * Version:           2.7.0
  * Requires at least: 6.4
  * Requires PHP:      7.4
  * Author:            Alok Jain
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'HSRTECH_VERSION', '2.6.1' );
+define( 'HSRTECH_VERSION', '2.7.0' );
 define( 'HSRTECH_FILE', __FILE__ );
 define( 'HSRTECH_PATH', plugin_dir_path( __FILE__ ) );
 define( 'HSRTECH_URL', plugin_dir_url( __FILE__ ) );
@@ -63,6 +63,7 @@ if ( is_admin() ) {
 // so they load unconditionally like admin/settings.php above.
 require_once HSRTECH_PATH . 'admin/rest/sections.php';
 require_once HSRTECH_PATH . 'admin/rest/chapters.php';
+require_once HSRTECH_PATH . 'admin/rest/books.php';
 
 require_once HSRTECH_PATH . 'public/assets.php';
 require_once HSRTECH_PATH . 'public/schema.php';

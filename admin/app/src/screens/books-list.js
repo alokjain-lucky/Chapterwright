@@ -201,7 +201,7 @@ export default function BooksList() {
 					</div>
 
 					<p className="hsrtech-books-list__trash-link">
-						<a href={ `${ window.hsrtechApp?.adminUrl || '/wp-admin/' }edit.php?post_type=hsrtech_book&post_status=trash` }>
+						<a href="#/books/trash">
 							{ __( 'View trashed books →', 'chapterwright' ) }
 						</a>
 					</p>

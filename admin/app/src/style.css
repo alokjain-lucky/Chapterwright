@@ -320,6 +320,11 @@
 	min-width: 0;
 }
 
+.hsrtech-row__number {
+	color: #8c8f94;
+	font-variant-numeric: tabular-nums;
+}
+
 .hsrtech-row__meta {
 	color: #646970;
 	font-size: 13px;

@@ -9,7 +9,7 @@ Publish multiple web-native ebooks in WordPress, with book landing pages, groupe
 | WordPress | 6.4 or newer |
 | PHP | 7.4 or newer |
 | Tested through | WordPress 7.0 |
-| Plugin version | 2.6.1 |
+| Plugin version | 2.7.0 |
 
 Chapterwright adds two content types to WordPress: **Books** and **Chapters**. Each book can have its own cover, subtitle, accent color, introduction, and table of contents. Chapters can be grouped into sections — each with its own name and description — and receive automatic previous/next navigation.
 
@@ -317,6 +317,12 @@ Both run automatically on every push and pull request via GitHub Actions (`.gith
 
 The three most recent releases are below. See [CHANGELOG.md](CHANGELOG.md) for the full history back to 1.0.0.
 
+### 2.7.0
+
+- Added a "Trashed books" screen to **Books & Chapters**: books moved to the trash can now be restored or permanently deleted from there, instead of being sent out to the classic wp-admin Books list to do it.
+- Chapters in **Books & Chapters** now show their number (1., 2., 3., …) in front of the title, matching their reading order.
+- Fixed a chapter, section, or book occasionally staying missing from its list right after being added successfully — root-caused to a caching layer in front of WordPress on some hosts serving a stale response for a short time afterward, not anything wrong with the save itself. Every GET request the admin app makes now includes a unique value, so it can never be served a cached hit.
+
 ### 2.6.1
 
 - Fixed a book, section, or chapter that had already been deleted or changed server-side (e.g. by a request that actually succeeded despite looking like it failed) staying stuck in the admin app's list — every retry just repeated the same error with nothing visibly changing. Delete, save, and reorder actions in **Books & Chapters** now re-sync their list from the server after a failure, not just after success.
@@ -332,17 +338,6 @@ The three most recent releases are below. See [CHANGELOG.md](CHANGELOG.md) for t
 - Fixed a background-color regression on book and chapter pages.
 - Hardened the Books & Chapters admin app's error handling: a failed save, add, or reorder now shows a clear message at the top of the page instead of failing without any explanation.
 - Tightened REST API and Abilities API permission checks.
-
-### 2.5.0
-
-- Chapters now show an estimated reading time next to the chapter number.
-- The Code Snippet block can now be created by transforming an existing Code block or paragraph into it, via the block toolbar's "Transform to" option.
-- Fixed the mobile menu not opening on book, chapter, and library pages.
-- Fixed several mobile layout issues: the book title and chapter counter no longer collide, and there's more breathing room below the site header.
-- Fixed the reading-progress bar at the top of the page always using a default color instead of the book's own accent color.
-- Chapters now preload the previous/next chapter in the background for faster navigation between them.
-- Accessibility improvements: the library page now has a skip link and a heading for screen readers, and the table of contents properly announces draft chapters instead of silently hiding that information.
-- Fixed the book cover image on the library page growing oversized when there's only one or two books.
 
 ## License
 

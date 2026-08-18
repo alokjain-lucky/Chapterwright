@@ -12,6 +12,7 @@ import { __ } from '@wordpress/i18n';
 import { Notice } from '@wordpress/components';
 import BooksList from './screens/books-list';
 import BookDetail from './screens/book-detail';
+import TrashedBooks from './screens/trash';
 
 /**
  * Last-resort safety net around each screen.
@@ -71,6 +72,14 @@ function parseHash() {
 	const hash = window.location.hash.replace( /^#\/?/, '' );
 	const [ segment, id ] = hash.split( '/' );
 
+	// Checked before the generic `books/{id}` case below, since 'trash' isn't
+	// a numeric book id — Number( 'trash' ) is NaN, which would otherwise
+	// route here as a book detail screen for a nonexistent book instead of
+	// the trash screen.
+	if ( 'books' === segment && 'trash' === id ) {
+		return { screen: 'trash', bookId: null };
+	}
+
 	if ( 'books' === segment && id ) {
 		return { screen: 'book', bookId: Number( id ) };
 	}
@@ -106,6 +115,8 @@ export default function App() {
 				<ScreenErrorBoundary key={ route.screen + route.bookId }>
 					{ 'book' === route.screen ? (
 						<BookDetail bookId={ route.bookId } />
+					) : 'trash' === route.screen ? (
+						<TrashedBooks />
 					) : (
 						<BooksList />
 					) }

@@ -4,7 +4,7 @@ Tags: ebook, books, publishing, reading, chapters
 Requires at least: 6.4
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 2.6.1
+Stable tag: 2.7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -81,6 +81,11 @@ Yes. Every string (PHP and the admin app's JavaScript) is wrapped for translatio
 5. The **Code Snippet** block with syntax coloring and a copy button.
 
 == Changelog ==
+
+= 2.7.0 =
+* Added a "Trashed books" screen to Books & Chapters. Trashed books can now be restored or permanently deleted right there, instead of leaving the admin app for the classic Books list.
+* Chapters in Books & Chapters now show their number in front of the title, matching their reading order.
+* Fixed a chapter, section, or book occasionally staying missing from its list after being added, even though it had saved successfully — a caching layer on some hosts could serve a stale list for a short time afterward. Every list request the admin app makes is now unique, so it can't be served a cached response.
 
 = 2.6.1 =
 * Fixed a book, section, or chapter that had already been removed or changed on the server staying stuck in the admin app's list — retrying the same action just repeated the same error with no visible change. Lists now re-sync with the server after any failed save, delete, or reorder, not only after a successful one.

@@ -679,7 +679,15 @@ function ChaptersManager( { bookId, sections, chapters, onChange, onError, editL
 									<Button icon="arrow-down-alt2" label={ __( 'Move down', 'chapterwright' ) } size="small" disabled={ index === chapters.length - 1 } onClick={ () => move( index, 1 ) } />
 								</div>
 								<div className="hsrtech-row__text">
-									<strong>{ chapter.title?.raw || chapter.title?.rendered || __( '(no title)', 'chapterwright' ) }</strong>
+									<strong>
+										{ /* Reflects this chapter's position in the list as shown, not the
+										     saved _hsrtech_order meta directly — the two only ever differ for
+										     the moment between a reorder request being sent and its response
+										     landing, since persist() (above) already applies the new order to
+										     local state immediately either way. */ }
+										<span className="hsrtech-row__number">{ sprintf( '%d.', index + 1 ) }</span>{ ' ' }
+										{ chapter.title?.raw || chapter.title?.rendered || __( '(no title)', 'chapterwright' ) }
+									</strong>
 									<span className={ `hsrtech-status-pill hsrtech-status-pill--${ chapter.status }` }>{ chapter.status }</span>
 								</div>
 								<SelectControl

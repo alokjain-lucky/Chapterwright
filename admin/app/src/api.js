@@ -122,6 +122,48 @@ export function trashBook( bookId ) {
 }
 
 /**
+ * Fetch every trashed book the current user can see (their own, or every
+ * author's with 'edit_others_hsrtech_books' — see admin/rest/books.php).
+ *
+ * Goes through the chapterwright/v1 namespace rather than the core
+ * `/wp/v2/hsrtech_book` collection endpoint with `status=trash` — core has
+ * no dedicated "list the trash" contract this plugin can rely on the same
+ * way it already avoided relying on multi-status collection queries for
+ * chapters (see getBookChapters() above); a small, purpose-built route is
+ * one door instead of a guess about how the core one behaves for this
+ * status.
+ *
+ * @return {Promise<Array>} Trashed book objects: `{ id, title, trashed }`.
+ */
+export function getTrashedBooks() {
+	return apiFetch( { path: addQueryArgs( '/chapterwright/v1/books/trash', { _ts: bustCache() } ) } );
+}
+
+/**
+ * Restore a trashed book. Core's REST posts controller has no "untrash"
+ * verb of its own (DELETE either trashes or, with `force`, permanently
+ * deletes) — this is the one custom route admin/rest/books.php adds.
+ *
+ * @param {number} bookId Book post ID.
+ * @return {Promise<Object>} The restored book: `{ id, title, status }`.
+ */
+export function restoreBook( bookId ) {
+	return apiFetch( { path: `/chapterwright/v1/books/${ bookId }/restore`, method: 'POST' } );
+}
+
+/**
+ * Permanently delete a trashed book — bypasses the trash entirely, no
+ * custom route needed: core's own DELETE handler already supports this via
+ * `force`, gated on the same `delete_post` capability restoring is.
+ *
+ * @param {number} bookId Book post ID.
+ * @return {Promise<Object>}
+ */
+export function deleteBookPermanently( bookId ) {
+	return apiFetch( { path: addQueryArgs( `/wp/v2/hsrtech_book/${ bookId }`, { force: true } ), method: 'DELETE' } );
+}
+
+/**
  * Fetch every chapter belonging to one book, in `_hsrtech_order` order,
  * regardless of status (draft, pending, private, future, or published).
  *
