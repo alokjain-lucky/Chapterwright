@@ -25,6 +25,30 @@ import { addQueryArgs } from '@wordpress/url';
 const EDITABLE_STATUSES = [ 'publish', 'draft', 'pending', 'private', 'future' ];
 
 /**
+ * A throwaway value appended as a `_ts` query arg to every GET below.
+ *
+ * Confirmed live: what earlier looked like brief read-after-write replication
+ * lag on the host (a chapter's create request came back 201 with the right
+ * data, but the very next GET of the chapter list didn't have it yet) was
+ * actually a page/edge cache in front of WordPress caching that GET request's
+ * URL — clearing the server-side cache made the missing chapter reappear
+ * immediately, with no other change. WordPress core does send
+ * `Cache-Control: no-cache` on REST responses for logged-in requests, but a
+ * cache sitting in front of PHP can still key purely on the request URL and
+ * ignore that response header entirely. The book-detail/books-list screens
+ * already avoid re-fetching right after a write they made themselves — this
+ * covers every other GET (initial load, focus-triggered re-sync, and any
+ * refresh-on-failure) by making each of those requests a distinct URL the
+ * cache has never seen before, so it can't serve a stale hit no matter how
+ * long its TTL is.
+ *
+ * @return {number} Current timestamp, unique enough for this purpose.
+ */
+function bustCache() {
+	return Date.now();
+}
+
+/**
  * Fetch every book, newest-edited first isn't useful here — alphabetical is
  * easier to scan in a management list.
  *
@@ -39,6 +63,7 @@ export function getBooks() {
 			order: 'asc',
 			context: 'edit',
 			_embed: 'wp:featuredmedia',
+			_ts: bustCache(),
 		} ),
 	} );
 }
@@ -54,6 +79,7 @@ export function getBook( bookId ) {
 		path: addQueryArgs( `/wp/v2/hsrtech_book/${ bookId }`, {
 			context: 'edit',
 			_embed: 'wp:featuredmedia',
+			_ts: bustCache(),
 		} ),
 	} );
 }
@@ -115,7 +141,7 @@ export function trashBook( bookId ) {
  * @return {Promise<Array>} Chapter post objects belonging to this book, already ordered.
  */
 export function getBookChapters( bookId ) {
-	return apiFetch( { path: `/chapterwright/v1/books/${ bookId }/chapters` } );
+	return apiFetch( { path: addQueryArgs( `/chapterwright/v1/books/${ bookId }/chapters`, { _ts: bustCache() } ) } );
 }
 
 /**
@@ -206,7 +232,7 @@ export function reorderChapters( bookId, chapters ) {
  * @return {Promise<Array>} Section rows.
  */
 export function getSections( bookId ) {
-	return apiFetch( { path: `/chapterwright/v1/books/${ bookId }/sections` } );
+	return apiFetch( { path: addQueryArgs( `/chapterwright/v1/books/${ bookId }/sections`, { _ts: bustCache() } ) } );
 }
 
 /**
