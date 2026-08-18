@@ -3,12 +3,53 @@
  *
  * Reuses the --hsrtech-code / --hsrtech-code-ink variables defined in
  * assets/css/chapterwright.css so a snippet matches the surrounding
- * chapter's <pre>/<code> look in both light and dark reading mode, even
- * though this stylesheet loads independently (block.json's "style" field
- * is enqueued only on pages that actually contain the block).
+ * chapter's <pre>/<code> look in both light and dark reading mode, when
+ * that stylesheet happens to also be loaded (book/chapter pages — see
+ * hsrtech_enqueue_public_assets(), public/assets.php). Every var() has a
+ * literal fallback, though, so this stylesheet — which, unlike
+ * chapterwright.css, auto-loads on *any* page containing the block, via
+ * block.json's own "style" registration — never depends on that other
+ * stylesheet actually being present. A code block in an ordinary blog post
+ * looks the same as one in a chapter for exactly that reason.
+ *
+ * The --hsrtech-tok-* variables and .hsrtech-tok--* rules below (applied by
+ * assets/js/code-highlight.js, to this block and to plain core Code blocks
+ * it auto-wraps on book/chapter pages) used to live in chapterwright.css
+ * instead — moved here so they're available everywhere this block is,
+ * not only where chapterwright.css happens to also be loaded. Token colors
+ * are fixed regardless of reading mode (a code block's background is always
+ * dark, in both this plugin's light and dark mode), so — unlike
+ * --hsrtech-code/--hsrtech-code-ink above — there's no mode-reactive
+ * variant of these to keep in sync with chapterwright.css's own.
  *
  * @package Chapterwright
  */
+
+:root {
+	--hsrtech-tok-comment: #9099ab;
+	--hsrtech-tok-string: #9ece6a;
+	--hsrtech-tok-number: #ff9e64;
+	--hsrtech-tok-keyword: #c586c0;
+	--hsrtech-tok-function: #61afef;
+	--hsrtech-tok-variable: #e5c07b;
+	--hsrtech-tok-tag: #e06c75;
+	--hsrtech-tok-attr-name: #d19a66;
+	--hsrtech-tok-attr-value: #98c379;
+	--hsrtech-tok-property: #56b6c2;
+	--hsrtech-tok-punctuation: rgba(245, 242, 234, 0.55);
+}
+
+.hsrtech-tok--comment { color: var(--hsrtech-tok-comment); font-style: italic; }
+.hsrtech-tok--string { color: var(--hsrtech-tok-string); }
+.hsrtech-tok--attr-value { color: var(--hsrtech-tok-attr-value); }
+.hsrtech-tok--number, .hsrtech-tok--boolean { color: var(--hsrtech-tok-number); }
+.hsrtech-tok--keyword { color: var(--hsrtech-tok-keyword); }
+.hsrtech-tok--function { color: var(--hsrtech-tok-function); }
+.hsrtech-tok--variable { color: var(--hsrtech-tok-variable); }
+.hsrtech-tok--tag { color: var(--hsrtech-tok-tag); }
+.hsrtech-tok--attr-name { color: var(--hsrtech-tok-attr-name); }
+.hsrtech-tok--property { color: var(--hsrtech-tok-property); }
+.hsrtech-tok--punctuation, .hsrtech-tok--operator { color: var(--hsrtech-tok-punctuation); }
 
 .hsrtech-code {
 	margin: 2rem 0;
@@ -82,15 +123,28 @@
 .hsrtech-code__copy.is-copied .hsrtech-code__copy-icon { display: none; }
 .hsrtech-code__copy.is-copied .hsrtech-code__copied-icon { display: block; }
 
+/* Shared by both <pre> elements .hsrtech-code can contain — the code itself
+   and, when the "Show line numbers" option is on, the numbers gutter next to
+   it (added below) — so their text lines up at exactly the same height
+   whether or not line numbers are showing. The parts that differ between the
+   two (padding, overflow, whether the text wraps) are set separately below,
+   scoped with :not(.hsrtech-code__line-numbers) rather than a positive class
+   on the code <pre> itself, so this keeps applying to both the code-snippet
+   block's own markup (render.php) and the plain-<pre>-in-chapter-content
+   markup assets/js/code-highlight.js's wrapPlainBlock() synthesizes, neither
+   of which needs to know about that class. */
 .hsrtech-code pre {
 	font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 	font-size: 0.88rem;
 	line-height: 1.65;
 	margin: 0;
+	tab-size: 4;
+}
+
+.hsrtech-code pre:not(.hsrtech-code__line-numbers) {
 	max-width: 100%;
 	overflow-x: auto;
 	padding: 2.75rem 1.5rem 1.5rem;
-	tab-size: 4;
 	white-space: pre;
 }
 
@@ -99,6 +153,65 @@
 	color: inherit;
 	font-size: inherit;
 	padding: 0;
+}
+
+/* Holds the code <pre> and, when present, the line-numbers gutter next to
+   it — a plain flex row so the two sit side by side and stretch to the same
+   height regardless of which one has more visual content. */
+.hsrtech-code__body {
+	display: flex;
+}
+
+/* The numbers gutter itself: a second, independent <pre> (render.php),
+   listing "1\n2\n3…" — not CSS counters on a per-line wrapper around the
+   actual code, which would require assets/js/code-highlight.js to tokenize
+   each line separately instead of the whole block at once. A plain sibling
+   <pre> needs no changes there, at the cost of one known trade-off: if
+   "Wrap long lines" is also on and a single source line wraps to two visual
+   rows, the numbers stop lining up with that row onward. Most snippets don't
+   need both at once, and this is the same trade-off simpler code viewers
+   elsewhere make. flex: none keeps this column a fixed width driven by its
+   own content (the digits) rather than sharing the row's available space
+   with the code. */
+.hsrtech-code__line-numbers {
+	border-right: 1px solid rgba(255, 255, 255, 0.12);
+	color: var(--hsrtech-code-ink, #f5f2ea);
+	flex: none;
+	opacity: 0.4;
+	padding: 2.75rem 0.9rem 1.5rem 1.5rem;
+	text-align: right;
+	user-select: none;
+}
+
+/* The code <pre> is the flexible column — full width on its own, sharing
+   the row with the numbers gutter (fixed-width, above) when one's present.
+   min-width: 0 is required alongside flex: 1 1 auto for overflow-x: auto to
+   actually kick in here instead of the flex item refusing to shrink below
+   its content's natural width (a flex item's default min-width is auto, not
+   0). The adjacent-sibling rule trims the code's own left inset only when a
+   numbers gutter precedes it, so the two don't add up to a doubled gap. */
+.hsrtech-code__body pre:not(.hsrtech-code__line-numbers) {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+/* Same specificity as the padding shorthand it overrides (.hsrtech-code
+   pre:not(...), above) — two classes and an element either way — so this
+   only wins because it comes later in the file. Bumped from a bare
+   ".hsrtech-code__line-numbers + pre" (one class, one element) once, which
+   the earlier rule's higher specificity silently beat regardless of order. */
+.hsrtech-code .hsrtech-code__line-numbers + pre {
+	padding-left: 0.9rem;
+}
+
+/* "Wrap long lines" option: overrides the horizontal-scroll default above
+   with normal text wrapping instead. word-break covers a single unbroken
+   token (a long URL or hash) that's still wider than the block on its own,
+   which white-space: pre-wrap alone wouldn't break. */
+.hsrtech-code--wrap pre:not(.hsrtech-code__line-numbers) {
+	overflow-x: hidden;
+	white-space: pre-wrap;
+	word-break: break-word;
 }
 
 /* Editor-only: the block appears while it's being edited, not saved markup. */

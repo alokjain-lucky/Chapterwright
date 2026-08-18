@@ -4,7 +4,7 @@ Tags: ebook, books, publishing, reading, chapters
 Requires at least: 6.4
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 2.7.0
+Stable tag: 2.8.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -81,6 +81,11 @@ Yes. Every string (PHP and the admin app's JavaScript) is wrapped for translatio
 5. The **Code Snippet** block with syntax coloring and a copy button.
 
 == Changelog ==
+
+= 2.8.0 =
+* Fixed the Code Snippet block not showing colored syntax or a working copy button outside of book and chapter pages — for example, when used in an ordinary blog post. It always looked right, but the highlighting only ever ran on book/chapter pages.
+* The Code Snippet block can now highlight JSON, in addition to PHP, JavaScript, CSS, HTML, and Shell.
+* Added three new options to the Code Snippet block: wrap long lines instead of scrolling, show line numbers, and hide the language label.
 
 = 2.7.0 =
 * Added a "Trashed books" screen to Books & Chapters. Trashed books can now be restored or permanently deleted right there, instead of leaving the admin app for the classic Books list.

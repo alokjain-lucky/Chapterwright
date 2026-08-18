@@ -16,42 +16,55 @@ add_action( 'wp_enqueue_scripts', 'hsrtech_enqueue_public_assets' );
  * the library shortcode, so the CSS/JS never loads on unrelated pages.
  */
 function hsrtech_enqueue_public_assets() {
-	$queried_id = get_queried_object_id();
-	$content    = $queried_id ? get_post_field( 'post_content', $queried_id ) : '';
-	$is_view    = is_singular( array( HSRTECH_BOOK_POST_TYPE, HSRTECH_CHAPTER_POST_TYPE ) )
+	$queried_id            = get_queried_object_id();
+	$content               = $queried_id ? get_post_field( 'post_content', $queried_id ) : '';
+	$is_view               = is_singular( array( HSRTECH_BOOK_POST_TYPE, HSRTECH_CHAPTER_POST_TYPE ) )
 		|| is_post_type_archive( HSRTECH_BOOK_POST_TYPE );
+	$has_library_shortcode = $content && has_shortcode( $content, 'hsrtech_books' );
 
-	if ( ! $is_view && ! ( $content && has_shortcode( $content, 'hsrtech_books' ) ) ) {
-		return;
+	if ( $is_view || $has_library_shortcode ) {
+		wp_enqueue_style( 'chapterwright', HSRTECH_URL . 'assets/css/chapterwright.css', array(), HSRTECH_VERSION );
+		wp_enqueue_script( 'chapterwright-reader', HSRTECH_URL . 'assets/js/chapterwright-reader.js', array(), HSRTECH_VERSION, true );
+		wp_localize_script(
+			'chapterwright-reader',
+			'hsrtechReader',
+			array(
+				'modeAuto'  => __( 'Use system color mode', 'chapterwright' ),
+				'modeLight' => __( 'Use light color mode', 'chapterwright' ),
+				'modeDark'  => __( 'Use dark color mode', 'chapterwright' ),
+			)
+		);
 	}
 
-	wp_enqueue_style( 'chapterwright', HSRTECH_URL . 'assets/css/chapterwright.css', array(), HSRTECH_VERSION );
-	wp_enqueue_script( 'chapterwright-reader', HSRTECH_URL . 'assets/js/chapterwright-reader.js', array(), HSRTECH_VERSION, true );
-	wp_localize_script(
-		'chapterwright-reader',
-		'hsrtechReader',
-		array(
-			'modeAuto'  => __( 'Use system color mode', 'chapterwright' ),
-			'modeLight' => __( 'Use light color mode', 'chapterwright' ),
-			'modeDark'  => __( 'Use dark color mode', 'chapterwright' ),
-		)
-	);
+	// The code-snippet block's highlighting script used to load only
+	// alongside the rest of the reader experience above (book/chapter/
+	// archive/shortcode pages) — which meant a Code Snippet block used in an
+	// ordinary post or page got the frame (language label, copy button; that
+	// part is block.json's own "style" registration, and always loads
+	// wherever the block does) but never the colored tokens or working copy
+	// button, since the script that adds those simply hadn't run. Loading it
+	// here too, whenever the current post actually contains the block,
+	// fixes that without pulling in the rest of the book-reading experience
+	// (chapterwright.css's book hero/TOC/etc. styles, the mode toggle) on a
+	// page that has nothing to do with any of that.
+	$has_code_snippet_block = $queried_id && has_block( 'chapterwright/code-snippet', $queried_id );
 
-	// The code-snippet block's own frame chrome (language label, copy
-	// button) is normally only enqueued on pages that use that block — but
-	// assets/js/code-highlight.js synthesizes the same markup around any
-	// bare code block, on every book/chapter page, so the styles for it
-	// need to be available everywhere too, not just where the block is used.
-	wp_enqueue_style( 'chapterwright-code', HSRTECH_URL . 'blocks/code-snippet/style.css', array( 'chapterwright' ), HSRTECH_VERSION );
-	wp_enqueue_script( 'chapterwright-code-highlight', HSRTECH_URL . 'assets/js/code-highlight.js', array(), HSRTECH_VERSION, true );
-	wp_localize_script(
-		'chapterwright-code-highlight',
-		'hsrtechCode',
-		array(
-			'copyLabel'   => __( 'Copy code', 'chapterwright' ),
-			'copiedLabel' => __( 'Copied!', 'chapterwright' ),
-		)
-	);
+	if ( $is_view || $has_library_shortcode || $has_code_snippet_block ) {
+		// No dependency on the 'chapterwright' handle above: every custom
+		// property this stylesheet reads has a literal fallback (see its own
+		// docblock), specifically so it never needs that other stylesheet to
+		// also be loaded, on a page where it might not be (like this one).
+		wp_enqueue_style( 'chapterwright-code', HSRTECH_URL . 'blocks/code-snippet/style.css', array(), HSRTECH_VERSION );
+		wp_enqueue_script( 'chapterwright-code-highlight', HSRTECH_URL . 'assets/js/code-highlight.js', array(), HSRTECH_VERSION, true );
+		wp_localize_script(
+			'chapterwright-code-highlight',
+			'hsrtechCode',
+			array(
+				'copyLabel'   => __( 'Copy code', 'chapterwright' ),
+				'copiedLabel' => __( 'Copied!', 'chapterwright' ),
+			)
+		);
+	}
 
 	// The table-of-contents drawer only exists on the chapter template
 	// (templates/single-hsrtech_chapter.php) — no reason to load its script on

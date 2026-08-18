@@ -5,11 +5,13 @@
  * front-end JavaScript (see blocks/code-snippet/view.js) — vendoring a
  * library like Prism.js was considered but skipped, both to stay consistent
  * with that existing no-build-step, no-external-dependency approach and
- * because this is only ever asked to color five simple languages (PHP, JS,
- * CSS, HTML, Shell), which a small regex tokenizer handles well enough
+ * because this is only ever asked to color six simple languages (PHP, JS,
+ * CSS, HTML, Shell, JSON), which a small regex tokenizer handles well enough
  * without pulling in ~20KB+ of a general-purpose highlighter.
  *
- * Handles two cases on every book/chapter page:
+ * Handles two cases, wherever this script is loaded — every book/chapter
+ * page, and (as of the fix described below) any other post or page that
+ * uses the chapterwright/code-snippet block:
  *
  * 1. `chapterwright/code-snippet` blocks (blocks/code-snippet/render.php) —
  *    these already carry an explicit `data-hsrtech-language` attribute on the
@@ -94,6 +96,18 @@
 			{ type: 'keyword', re: /\b(?:if|then|else|elif|fi|for|while|until|do|done|case|esac|function|return|export|local|in|select|break|continue)\b/y },
 			{ type: 'attr-name', re: /(?:^|\s)--?[a-zA-Z][a-zA-Z0-9-]*/y },
 			{ type: 'punctuation', re: /[|&;()<>]/y }
+		],
+		json: [
+			// A quoted string immediately followed by ':' is an object key,
+			// not a value — colored as 'property' instead of 'string' the
+			// same way a real JSON viewer distinguishes them. Tried before
+			// the general string rule below, since that would otherwise
+			// match first and every key would come out colored as a string.
+			{ type: 'property', re: /"(?:\\.|[^"\\])*"(?=\s*:)/y },
+			{ type: 'string', re: /"(?:\\.|[^"\\])*"/y },
+			{ type: 'number', re: /-?\b\d+\.?\d*(?:[eE][+-]?\d+)?\b/y },
+			{ type: 'keyword', re: /\b(?:true|false|null)\b/y },
+			{ type: 'punctuation', re: /[{}\[\]:,]/y }
 		]
 	};
 
@@ -103,6 +117,7 @@
 		css: 'CSS',
 		html: 'HTML',
 		shell: 'SHELL',
+		json: 'JSON',
 		text: 'TEXT'
 	};
 
@@ -306,5 +321,15 @@
 		highlightElement( code, lang );
 	}
 
-	document.querySelectorAll( '.hsrtech-chapter__content pre, .hsrtech-book-intro pre' ).forEach( processCodeBlock );
+	// The third clause is what makes a chapterwright/code-snippet block work
+	// outside a book/chapter page at all — see hsrtech_enqueue_public_assets()
+	// (public/assets.php) for the enqueue-side half of this fix. It's scoped
+	// to .hsrtech-code specifically (the block's own wrapper, render.php)
+	// rather than every <pre> on the page, so an unrelated code block placed
+	// somewhere else on the same page (a sidebar widget, for instance) isn't
+	// swept up along with it. :not(.hsrtech-code__line-numbers) excludes the
+	// line-numbers gutter <pre> render.php adds when that option is on —
+	// it's plain digits, not code, and re-tokenizing it would both do
+	// nothing useful and fight with its own dedicated muted styling.
+	document.querySelectorAll( '.hsrtech-chapter__content pre, .hsrtech-book-intro pre, .hsrtech-code pre:not(.hsrtech-code__line-numbers)' ).forEach( processCodeBlock );
 } )();

@@ -20,6 +20,18 @@
 		"caption": {
 			"type": "string",
 			"default": ""
+		},
+		"wrapLines": {
+			"type": "boolean",
+			"default": false
+		},
+		"showLineNumbers": {
+			"type": "boolean",
+			"default": false
+		},
+		"hideLanguageLabel": {
+			"type": "boolean",
+			"default": false
 		}
 	},
 	"supports": {

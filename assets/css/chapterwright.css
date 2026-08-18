@@ -23,22 +23,22 @@
 	--hsrtech-line: rgba(23, 23, 22, 0.14);
 	--hsrtech-code: #202124;
 	--hsrtech-code-ink: #f5f2ea;
-
-	/* Code token colors: fixed regardless of reading mode, since --hsrtech-code
-	   stays a dark background in both light and dark mode (see below) — a
-	   code block never needs a separate light-mode token palette. */
-	--hsrtech-tok-comment: #9099ab;
-	--hsrtech-tok-string: #9ece6a;
-	--hsrtech-tok-number: #ff9e64;
-	--hsrtech-tok-keyword: #c586c0;
-	--hsrtech-tok-function: #61afef;
-	--hsrtech-tok-variable: #e5c07b;
-	--hsrtech-tok-tag: #e06c75;
-	--hsrtech-tok-attr-name: #d19a66;
-	--hsrtech-tok-attr-value: #98c379;
-	--hsrtech-tok-property: #56b6c2;
-	--hsrtech-tok-punctuation: rgba(245, 242, 234, 0.55);
 }
+
+/* Code token colors (--hsrtech-tok-*) and the .hsrtech-tok--* rules that use
+   them used to live here. Moved to blocks/code-snippet/style.css so the Code
+   Snippet block is fully self-styled wherever it's used — that file already
+   auto-loads on any page containing the block (block.json's own "style"
+   registration), unlike this stylesheet, which only loads on book/chapter/
+   archive/shortcode pages (see hsrtech_enqueue_public_assets(),
+   public/assets.php). A code block dropped into an ordinary post had a
+   correctly framed/colored background (blocks/code-snippet/style.css's own
+   var()s already had literal fallbacks) but plain, uncolored tokens, since
+   --hsrtech-tok-* was only ever defined in this file. They didn't need to be
+   here in the first place — unlike --hsrtech-code/--hsrtech-code-ink, token
+   colors are fixed regardless of reading mode (see the comment that used to
+   sit above them), so there was never a reason for them to live in this
+   mode-reactive stylesheet instead of the block's own. */
 
 @media (prefers-color-scheme: dark) {
 	:root:not([data-hsrtech-mode="light"]) {
@@ -330,22 +330,6 @@
 .hsrtech-chapter__content pre { background: var(--hsrtech-code); border-radius: .8rem; color: var(--hsrtech-code-ink); font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; font-size: .85rem; line-height: 1.55; margin: 1.5rem 0; max-width: 100%; overflow-x: auto; padding: 1.5rem; tab-size: 4; white-space: pre; }
 .hsrtech-chapter__content pre code { background: none; border: 0; border-radius: 0; color: inherit; font-size: inherit; font-weight: inherit; padding: 0; }
 
-/* Token colors applied by assets/js/code-highlight.js to both the
-   chapterwright/code-snippet block and plain core Code blocks. Not scoped to
-   a specific container — the "hsrtech-tok--" prefix is specific enough on its
-   own, and these need to apply equally inside .hsrtech-chapter__content pre
-   and inside the code-snippet block's own .hsrtech-code pre. */
-.hsrtech-tok--comment { color: var(--hsrtech-tok-comment); font-style: italic; }
-.hsrtech-tok--string { color: var(--hsrtech-tok-string); }
-.hsrtech-tok--attr-value { color: var(--hsrtech-tok-attr-value); }
-.hsrtech-tok--number, .hsrtech-tok--boolean { color: var(--hsrtech-tok-number); }
-.hsrtech-tok--keyword { color: var(--hsrtech-tok-keyword); }
-.hsrtech-tok--function { color: var(--hsrtech-tok-function); }
-.hsrtech-tok--variable { color: var(--hsrtech-tok-variable); }
-.hsrtech-tok--tag { color: var(--hsrtech-tok-tag); }
-.hsrtech-tok--attr-name { color: var(--hsrtech-tok-attr-name); }
-.hsrtech-tok--property { color: var(--hsrtech-tok-property); }
-.hsrtech-tok--punctuation, .hsrtech-tok--operator { color: var(--hsrtech-tok-punctuation); }
 .hsrtech-chapter__content .hsrtech-callout { background: var(--hsrtech-paper); border-left: 4px solid var(--hsrtech-accent); border-radius: 0 .5rem .5rem 0; font-family: inherit; font-size: .9rem; line-height: 1.55; margin: 1.5rem 0; padding: 1.1rem 1.4rem; }
 .hsrtech-chapter__content .hsrtech-callout > :first-child { margin-top: 0; }
 .hsrtech-chapter__content .hsrtech-callout > :last-child { margin-bottom: 0; }

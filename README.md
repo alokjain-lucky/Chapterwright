@@ -13,7 +13,7 @@ Opens a temporary WordPress site in your browser with Chapterwright already inst
 | WordPress | 6.4 or newer |
 | PHP | 7.4 or newer |
 | Tested through | WordPress 7.0 |
-| Plugin version | 2.7.0 |
+| Plugin version | 2.8.0 |
 
 Chapterwright adds two content types to WordPress: **Books** and **Chapters**. Each book can have its own cover, subtitle, accent color, introduction, and table of contents. Chapters can be grouped into sections — each with its own name and description — and receive automatic previous/next navigation.
 
@@ -321,6 +321,12 @@ Both run automatically on every push and pull request via GitHub Actions (`.gith
 
 The three most recent releases are below. See [CHANGELOG.md](CHANGELOG.md) for the full history back to 1.0.0.
 
+### 2.8.0
+
+- Fixed the Code Snippet block not showing colored syntax or a working copy button outside of book and chapter pages — the highlighting script only ever loaded there; the block's own frame (language label, copy button chrome) always looked right since it loads independently, but the coloring and copy behavior never ran anywhere else.
+- The Code Snippet block can now highlight JSON, alongside PHP, JavaScript, CSS, HTML, and Shell.
+- Added three new Code Snippet block options: wrap long lines instead of showing a horizontal scrollbar, show line numbers, and hide the language label.
+
 ### 2.7.0
 
 - Added a "Trashed books" screen to **Books & Chapters**: books moved to the trash can now be restored or permanently deleted from there, instead of being sent out to the classic wp-admin Books list to do it.
@@ -333,17 +339,6 @@ The three most recent releases are below. See [CHANGELOG.md](CHANGELOG.md) for t
 
 - Fixed a book, section, or chapter that had already been deleted or changed server-side (e.g. by a request that actually succeeded despite looking like it failed) staying stuck in the admin app's list — every retry just repeated the same error with nothing visibly changing. Delete, save, and reorder actions in **Books & Chapters** now re-sync their list from the server after a failure, not just after success.
 - Fixed a newly added chapter or section sometimes not appearing right after being added, with no error shown — an immediate re-fetch after creating one could occasionally lag behind on some hosts. **Books & Chapters** now shows what was just created directly, instead of relying on that re-fetch.
-
-### 2.6.0
-
-- Added a "Books & Chapters" link to the plugin's entry on the Plugins screen.
-- The Code Snippet block now ships with more language options by default, and site owners can customize the list with the `hsrtech_code_snippet_languages` filter.
-- Fixed the Code Snippet block's caption field placeholder being unreadable (dark-on-dark) in the block editor.
-- Fixed book cover images not filling the full height of the book's hero section, in both the editor and on the front end.
-- Fixed the reader's light/dark mode toggle silently not changing colors; it's now off by default in Settings.
-- Fixed a background-color regression on book and chapter pages.
-- Hardened the Books & Chapters admin app's error handling: a failed save, add, or reorder now shows a clear message at the top of the page instead of failing without any explanation.
-- Tightened REST API and Abilities API permission checks.
 
 ## License
 

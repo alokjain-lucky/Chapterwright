@@ -20,6 +20,7 @@
 	var PanelBody = components.PanelBody;
 	var SelectControl = components.SelectControl;
 	var TextControl = components.TextControl;
+	var ToggleControl = components.ToggleControl;
 	var __ = i18n.__;
 
 	// hsrtechCodeSnippetLanguages is localized from PHP by
@@ -122,6 +123,32 @@
 							onChange: function ( value ) {
 								setAttributes( { caption: value } );
 							}
+						} ),
+						el( ToggleControl, {
+							__nextHasNoMarginBottom: true,
+							label: __( 'Wrap long lines', 'chapterwright' ),
+							help: __( 'Off wraps a horizontal scrollbar under long lines instead of wrapping them onto a second line.', 'chapterwright' ),
+							checked: !! attributes.wrapLines,
+							onChange: function ( value ) {
+								setAttributes( { wrapLines: value } );
+							}
+						} ),
+						el( ToggleControl, {
+							__nextHasNoMarginBottom: true,
+							label: __( 'Show line numbers', 'chapterwright' ),
+							checked: !! attributes.showLineNumbers,
+							onChange: function ( value ) {
+								setAttributes( { showLineNumbers: value } );
+							}
+						} ),
+						el( ToggleControl, {
+							__nextHasNoMarginBottom: true,
+							label: __( 'Show language label', 'chapterwright' ),
+							help: __( 'The small label in the top-left corner of the code block, e.g. "PHP".', 'chapterwright' ),
+							checked: ! attributes.hideLanguageLabel,
+							onChange: function ( value ) {
+								setAttributes( { hideLanguageLabel: ! value } );
+							}
 						} )
 					)
 				),
@@ -141,7 +168,9 @@
 					el(
 						'div',
 						{ className: 'hsrtech-code__frame' },
-						el( 'span', { className: 'hsrtech-code__lang' }, attributes.language.toUpperCase() ),
+						attributes.hideLanguageLabel
+							? null
+							: el( 'span', { className: 'hsrtech-code__lang' }, attributes.language.toUpperCase() ),
 						el( PlainText, {
 							className: 'hsrtech-code__editor',
 							value: attributes.code,

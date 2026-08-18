@@ -30,7 +30,7 @@ function hsrtech_register_code_snippet_block() {
  * Pass the Language dropdown's options to edit.js as JSON, built from a
  * filterable default list rather than hardcoded in JavaScript.
  *
- * Only PHP, JavaScript, CSS, HTML, and Shell get real syntax-highlighting
+ * Only PHP, JavaScript, CSS, HTML, Shell, and JSON get real syntax-highlighting
  * grammars on the front end (assets/js/code-highlight.js's GRAMMARS) — every
  * other language here still renders correctly (labeled frame, copy button,
  * monospace block) just without token coloring, the same graceful fallback
