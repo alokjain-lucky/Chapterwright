@@ -319,7 +319,7 @@ The three most recent releases are below. See [CHANGELOG.md](CHANGELOG.md) for t
 
 ### 2.6.1
 
-- Fixed a section or chapter that had already been deleted or changed server-side (e.g. by a request that actually succeeded despite looking like it failed) staying stuck in the admin app's list — every retry just repeated the same error with nothing visibly changing. Delete, save, and reorder actions in **Books & Chapters** now re-sync the list from the server after a failure, not just after success.
+- Fixed a book, section, or chapter that had already been deleted or changed server-side (e.g. by a request that actually succeeded despite looking like it failed) staying stuck in the admin app's list — every retry just repeated the same error with nothing visibly changing. Delete, save, and reorder actions in **Books & Chapters** now re-sync their list from the server after a failure, not just after success.
 
 ### 2.6.0
 

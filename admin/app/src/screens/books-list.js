@@ -22,6 +22,14 @@ export default function BooksList() {
 
 	useEffect( loadBooks, [ loadBooks ] );
 
+	// Re-fetch the list without clearing whatever error is already showing —
+	// loadBooks() itself starts with setError(''), which would immediately
+	// wipe out a trash failure's message the instant this runs. Used below
+	// to sync the list to the server after a failed trash, silently, since
+	// there's already a more specific error on screen explaining what
+	// happened.
+	const refreshBooksQuietly = () => getBooks().then( setBooks ).catch( () => {} );
+
 	const handleTrash = ( book ) => {
 		const title = book.title?.raw || book.title?.rendered || '';
 		// eslint-disable-next-line no-alert
@@ -30,7 +38,15 @@ export default function BooksList() {
 		}
 		trashBook( book.id )
 			.then( loadBooks )
-			.catch( ( err ) => setError( err.message || __( 'The book could not be trashed.', 'chapterwright' ) ) );
+			.catch( ( err ) => {
+				setError( err.message || __( 'The book could not be trashed.', 'chapterwright' ) );
+				// Same fix as book-detail.js's section/chapter actions: a
+				// book that's already gone server-side (deleted elsewhere,
+				// already trashed) would otherwise stay stuck in this list
+				// forever, with every retry hitting the same error and
+				// nothing visibly changing.
+				refreshBooksQuietly();
+			} );
 	};
 
 	const handleCreate = ( event ) => {
