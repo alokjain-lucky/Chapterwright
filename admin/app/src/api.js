@@ -143,8 +143,14 @@ export function getBookChapters( bookId ) {
  * @return {Promise<Object>} The new chapter post object, with meta set.
  */
 export function createChapter( { bookId, title, sectionId, siblings } ) {
+	// Guard against a non-array `siblings` (e.g. a chapter list that failed to
+	// load, or hasn't finished loading yet) throwing synchronously here. That
+	// throw would happen before this function returns a Promise at all, so
+	// the caller's `.catch()` never sees it — the "Add chapter" button would
+	// just silently stop working with nothing in the UI to explain why.
+	const chapterList = Array.isArray( siblings ) ? siblings : [];
 	const nextOrder =
-		1 + siblings.reduce( ( max, chapter ) => Math.max( max, Number( chapter.meta?._hsrtech_order || 0 ) ), 0 );
+		1 + chapterList.reduce( ( max, chapter ) => Math.max( max, Number( chapter.meta?._hsrtech_order || 0 ) ), 0 );
 
 	return apiFetch( {
 		path: '/wp/v2/hsrtech_chapter',

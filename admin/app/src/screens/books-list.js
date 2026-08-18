@@ -54,7 +54,7 @@ export default function BooksList() {
 	return (
 		<div className="hsrtech-books-list">
 			{ error && (
-				<Notice status="error" isDismissible={ false } className="hsrtech-notice">
+				<Notice status="error" className="hsrtech-notice" onRemove={ () => setError( '' ) }>
 					{ error }
 				</Notice>
 			) }

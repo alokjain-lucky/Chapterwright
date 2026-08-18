@@ -61,7 +61,13 @@ export default function BookDetail( { bookId } ) {
 
 	useEffect( load, [ load ] );
 
-	if ( error ) {
+	// Only replace the whole screen with the error when there's nothing else
+	// to show (the initial load itself failed, so there's no book/sections/
+	// chapters to render around it). Once a book has loaded, a later action
+	// failing (save, add section, add chapter, reorder, trash, …) surfaces as
+	// a dismissible banner above the existing UI instead — see the render
+	// below — so one failed request doesn't hide everything else on the page.
+	if ( error && ! book ) {
 		return (
 			<Notice status="error" isDismissible={ false } className="hsrtech-notice">
 				{ error }
@@ -103,6 +109,12 @@ export default function BookDetail( { bookId } ) {
 				<span aria-hidden="true">&larr;</span> { __( 'All books', 'chapterwright' ) }
 			</a>
 
+			{ error && (
+				<Notice status="error" className="hsrtech-notice" onRemove={ () => setError( '' ) }>
+					{ error }
+				</Notice>
+			) }
+
 			{ notice && (
 				<Notice status="success" className="hsrtech-notice" onRemove={ () => setNotice( '' ) }>
 					{ notice }
@@ -127,6 +139,7 @@ export default function BookDetail( { bookId } ) {
 					setBook( updated );
 					setNotice( __( 'Book details saved.', 'chapterwright' ) );
 				} }
+				onError={ setError }
 			/>
 
 			<SectionsManager
@@ -172,7 +185,7 @@ export default function BookDetail( { bookId } ) {
 /**
  * Subtitle + accent color quick-edit, replacing the old "Book Details" meta box.
  */
-function BookFields( { book, onSaved } ) {
+function BookFields( { book, onSaved, onError } ) {
 	const [ subtitle, setSubtitle ] = useState( book.meta?._hsrtech_subtitle || '' );
 	const [ accent, setAccent ] = useState( book.meta?._hsrtech_accent || '#f45d48' );
 	const [ comingSoon, setComingSoon ] = useState( !! book.meta?._hsrtech_coming_soon );
@@ -195,7 +208,14 @@ function BookFields( { book, onSaved } ) {
 				setSaving( false );
 				onSaved( updated );
 			} )
-			.catch( () => setSaving( false ) );
+			.catch( ( err ) => {
+				setSaving( false );
+				// This used to just stop the spinner with no explanation at all
+				// when the save failed — the button would look like it did
+				// nothing, with no clue why. Surface it the same way every
+				// other action on this screen does.
+				onError( err.message || __( 'Book details could not be saved.', 'chapterwright' ) );
+			} );
 	};
 
 	return (

@@ -7,10 +7,60 @@
  * or keep updated.
  */
 
-import { useState, useEffect } from '@wordpress/element';
+import { Component, useState, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import { Notice } from '@wordpress/components';
 import BooksList from './screens/books-list';
 import BookDetail from './screens/book-detail';
+
+/**
+ * Last-resort safety net around each screen.
+ *
+ * Every action already reachable through the UI (save, add, reorder, trash…)
+ * catches its own request failures and shows a Notice — see books-list.js and
+ * book-detail.js. But a bug that throws synchronously, outside of a request
+ * (a bad assumption about a shape of data, for instance), isn't a request
+ * failure at all, so none of that per-action handling can catch it. Without
+ * an error boundary, React unmounts the whole screen on an error like that
+ * and the page just goes blank with nothing in the UI to explain why —
+ * exactly the "silent failure" this hardening pass is meant to close off.
+ * This can't recover the screen (React doesn't allow that once render has
+ * thrown), but it does turn a blank page into a legible, WordPress-standard
+ * error notice with a way back.
+ */
+class ScreenErrorBoundary extends Component {
+	constructor( props ) {
+		super( props );
+		this.state = { error: null };
+	}
+
+	static getDerivedStateFromError( error ) {
+		return { error };
+	}
+
+	componentDidCatch( error ) {
+		// eslint-disable-next-line no-console
+		console.error( 'Chapterwright admin app error:', error );
+	}
+
+	render() {
+		if ( this.state.error ) {
+			return (
+				<Notice status="error" isDismissible={ false } className="hsrtech-notice">
+					{ __( 'Something went wrong loading this screen.', 'chapterwright' ) }
+					{ ' ' }
+					{ this.state.error.message || '' }
+					{ ' ' }
+					<a href="#/books" onClick={ () => this.setState( { error: null } ) }>
+						{ __( 'Go back to all books.', 'chapterwright' ) }
+					</a>
+				</Notice>
+			);
+		}
+
+		return this.props.children;
+	}
+}
 
 /**
  * Parse the current URL hash into a route.
@@ -53,11 +103,13 @@ export default function App() {
 				) }
 			</header>
 			<div className="hsrtech-app__body">
-				{ 'book' === route.screen ? (
-					<BookDetail bookId={ route.bookId } />
-				) : (
-					<BooksList />
-				) }
+				<ScreenErrorBoundary key={ route.screen + route.bookId }>
+					{ 'book' === route.screen ? (
+						<BookDetail bookId={ route.bookId } />
+					) : (
+						<BooksList />
+					) }
+				</ScreenErrorBoundary>
 			</div>
 		</div>
 	);
