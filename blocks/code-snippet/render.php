@@ -34,6 +34,11 @@ if ( $hsrtech_wrap_lines ) {
 	// for why this and "Show line numbers" don't fully agree with each other.
 	$hsrtech_figure_classes[] = 'hsrtech-code--wrap';
 }
+if ( $hsrtech_hide_language_label ) {
+	// Lets the .hsrtech-code--no-lang rule, blocks/code-snippet/style.css,
+	// give back some of the top padding reserved for the now-absent label.
+	$hsrtech_figure_classes[] = 'hsrtech-code--no-lang';
+}
 
 $hsrtech_wrapper_attributes = get_block_wrapper_attributes( array( 'class' => implode( ' ', $hsrtech_figure_classes ) ) );
 ?>

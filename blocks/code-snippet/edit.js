@@ -97,7 +97,12 @@
 		edit: function ( props ) {
 			var attributes = props.attributes;
 			var setAttributes = props.setAttributes;
-			var blockProps = useBlockProps( { className: 'hsrtech-code hsrtech-code--editing' } );
+			var figureClassName = 'hsrtech-code hsrtech-code--editing';
+			if ( attributes.hideLanguageLabel ) {
+				// See the matching .hsrtech-code--no-lang rule, style.css.
+				figureClassName += ' hsrtech-code--no-lang';
+			}
+			var blockProps = useBlockProps( { className: figureClassName } );
 
 			return el(
 				Fragment,
