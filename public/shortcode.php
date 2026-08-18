@@ -20,8 +20,8 @@ add_shortcode( 'hsrtech_books', 'hsrtech_library_shortcode' );
  * @return string Escaped library HTML rendered by the book-grid template.
  */
 function hsrtech_library_shortcode( $atts ) {
-	$atts  = shortcode_atts( array( 'limit' => 12 ), (array) $atts, 'hsrtech_books' );
-	$limit = max( 1, min( 100, absint( $atts['limit'] ) ) );
+	$atts          = shortcode_atts( array( 'limit' => 12 ), (array) $atts, 'hsrtech_books' );
+	$limit         = max( 1, min( 100, absint( $atts['limit'] ) ) );
 	$hsrtech_query = new WP_Query(
 		array(
 			'post_type'      => HSRTECH_BOOK_POST_TYPE,
