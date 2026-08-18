@@ -320,6 +320,7 @@ The three most recent releases are below. See [CHANGELOG.md](CHANGELOG.md) for t
 ### 2.6.1
 
 - Fixed a book, section, or chapter that had already been deleted or changed server-side (e.g. by a request that actually succeeded despite looking like it failed) staying stuck in the admin app's list — every retry just repeated the same error with nothing visibly changing. Delete, save, and reorder actions in **Books & Chapters** now re-sync their list from the server after a failure, not just after success.
+- Fixed a newly added chapter or section sometimes not appearing right after being added, with no error shown — an immediate re-fetch after creating one could occasionally lag behind on some hosts. **Books & Chapters** now shows what was just created directly, instead of relying on that re-fetch.
 
 ### 2.6.0
 

@@ -293,11 +293,21 @@ function SectionsManager( { bookId, sections, onChange, onError } ) {
 		}
 		setBusy( true );
 		createSection( bookId, name.trim(), description.trim() )
-			.then( () => {
+			.then( ( section ) => {
 				setName( '' );
 				setDescription( '' );
 				setBusy( false );
-				refresh();
+				// Append the section the create request already handed
+				// back, rather than immediately re-fetching the list. A
+				// live-site report showed a newly created chapter not
+				// showing up right after an otherwise-successful create —
+				// the re-fetch that followed simply hadn't caught up yet
+				// (most likely brief read-after-write lag on the host, not
+				// anything wrong with what was actually saved). The create
+				// response already has everything the list needs to show
+				// the new row, so use that directly instead of trusting an
+				// immediate re-read to already reflect it.
+				onChange( ( previous ) => [ ...previous, section ] );
 			} )
 			.catch( ( err ) => {
 				setBusy( false );
@@ -525,11 +535,22 @@ function ChaptersManager( { bookId, sections, chapters, onChange, onError, editL
 			sectionId: newChapterSection ? Number( newChapterSection ) : undefined,
 			siblings: chapters,
 		} )
-			.then( () => {
+			.then( ( chapter ) => {
 				setTitle( '' );
 				setNewChapterSection( '' );
 				setBusy( false );
-				refresh();
+				// Append the chapter the create request already handed
+				// back, rather than immediately re-fetching the list.
+				// Reported live: a chapter's create request succeeded
+				// (201, correct id and meta in the response) but the
+				// re-fetch that immediately followed it came back without
+				// that chapter — most likely brief read-after-write lag on
+				// the host, not anything wrong with what was actually
+				// saved. The create response already has everything the
+				// list needs to show the new row, so use that directly
+				// instead of trusting an immediate re-read to already
+				// reflect it.
+				onChange( ( previous ) => [ ...previous, chapter ] );
 			} )
 			.catch( ( err ) => {
 				setBusy( false );

@@ -84,6 +84,7 @@ Yes. Every string (PHP and the admin app's JavaScript) is wrapped for translatio
 
 = 2.6.1 =
 * Fixed a book, section, or chapter that had already been removed or changed on the server staying stuck in the admin app's list — retrying the same action just repeated the same error with no visible change. Lists now re-sync with the server after any failed save, delete, or reorder, not only after a successful one.
+* Fixed a newly added chapter or section sometimes not appearing right after being added, with no error shown. The admin app now shows what was just created directly, instead of relying on an immediate re-fetch that could occasionally lag behind on some hosts.
 
 = 2.6.0 =
 * Added a "Books & Chapters" link to the plugin's entry on the Plugins screen, for quicker access.
