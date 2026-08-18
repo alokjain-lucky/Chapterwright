@@ -4,7 +4,7 @@ Tags: ebook, books, publishing, reading, chapters
 Requires at least: 6.4
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 2.5.0
+Stable tag: 2.6.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -81,6 +81,16 @@ Yes. Every string (PHP and the admin app's JavaScript) is wrapped for translatio
 5. The **Code Snippet** block with syntax coloring and a copy button.
 
 == Changelog ==
+
+= 2.6.0 =
+* Added a "Books & Chapters" link to the plugin's entry on the Plugins screen, for quicker access.
+* The Code Snippet block now ships with more language options, and site owners can customize the list with a filter.
+* Fixed the Code Snippet block's caption field being unreadable (dark text on a dark background) in the block editor.
+* Fixed book cover images not filling the full height of the book's hero section, in both the editor and on the front end.
+* Fixed the reader's light/dark mode toggle not actually changing colors; it's now off by default in Settings.
+* Fixed a background-color regression on book and chapter pages.
+* Hardened the Books & Chapters admin app's error handling: a failed save, add, or reorder now shows a clear message at the top of the page instead of failing silently.
+* Tightened REST API and Abilities API permission checks.
 
 = 2.5.0 =
 * Added estimated reading time next to each chapter's number.

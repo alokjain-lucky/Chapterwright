@@ -9,7 +9,7 @@ Publish multiple web-native ebooks in WordPress, with book landing pages, groupe
 | WordPress | 6.4 or newer |
 | PHP | 7.4 or newer |
 | Tested through | WordPress 7.0 |
-| Plugin version | 2.5.0 |
+| Plugin version | 2.6.0 |
 
 Chapterwright adds two content types to WordPress: **Books** and **Chapters**. Each book can have its own cover, subtitle, accent color, introduction, and table of contents. Chapters can be grouped into sections — each with its own name and description — and receive automatic previous/next navigation.
 
@@ -317,6 +317,17 @@ Both run automatically on every push and pull request via GitHub Actions (`.gith
 
 The three most recent releases are below. See [CHANGELOG.md](CHANGELOG.md) for the full history back to 1.0.0.
 
+### 2.6.0
+
+- Added a "Books & Chapters" link to the plugin's entry on the Plugins screen.
+- The Code Snippet block now ships with more language options by default, and site owners can customize the list with the `hsrtech_code_snippet_languages` filter.
+- Fixed the Code Snippet block's caption field placeholder being unreadable (dark-on-dark) in the block editor.
+- Fixed book cover images not filling the full height of the book's hero section, in both the editor and on the front end.
+- Fixed the reader's light/dark mode toggle silently not changing colors; it's now off by default in Settings.
+- Fixed a background-color regression on book and chapter pages.
+- Hardened the Books & Chapters admin app's error handling: a failed save, add, or reorder now shows a clear message at the top of the page instead of failing without any explanation.
+- Tightened REST API and Abilities API permission checks.
+
 ### 2.5.0
 
 - Chapters now show an estimated reading time next to the chapter number.
@@ -336,12 +347,6 @@ The three most recent releases are below. See [CHANGELOG.md](CHANGELOG.md) for t
 - Added a "Coming soon" flag for books that aren't ready to read yet, and an optional setting to show draft chapter titles (grayed out, not clickable) in the table of contents.
 - Added a progress bar showing how far a reader is through the whole book, alongside the existing per-chapter reading progress bar.
 - Fixed a few visual bugs: invisible "Coming soon" badges, an invisible table-of-contents icon in light mode, and unreadable code text in light mode on the site's theme.
-
-### 2.3.2
-
-- Fixed newly created chapters sometimes not appearing in a book's chapter list. The admin app used to fetch every chapter the user could edit and filter it client-side for this book; it now calls a dedicated endpoint that queries this book's chapters directly, the same trusted query used elsewhere in the plugin.
-- Chapter rows in **Books & Chapters** now match section rows: an always-visible status pill (draft, published, etc.), and explicit **Edit** / **Trash** buttons instead of the title itself being the only way in. Adding a chapter no longer opens the Block Editor in a new tab automatically — it's added to the list like a section is, and you open it to write when you're ready.
-- The block-editor sidebar's Chapter Details panel now shows the chapter's book, section, and order as read-only information with a link back to the admin app, instead of a second, editable copy of the same fields — reassigning those is book-wide work the admin app already does well, and an editable copy here looked like an empty "make a selection" control even when everything was already set correctly.
 
 ## License
 
