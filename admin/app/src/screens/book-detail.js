@@ -8,7 +8,7 @@
  * boxes. "Edit content" links open post.php in a new tab for that reason.
  */
 
-import { useState, useEffect, useCallback } from '@wordpress/element';
+import { useState, useEffect, useCallback, useRef } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import {
 	BaseControl,
@@ -61,6 +61,27 @@ export default function BookDetail( { bookId } ) {
 
 	useEffect( load, [ load ] );
 
+	// Timestamp of the most recent local change (add/save/reorder/trash),
+	// via markSections()/markChapters()/markBook() below — used to skip a
+	// focus-triggered re-sync for a few seconds after one, so it can't
+	// clobber a just-added row with a stale read. See the focus effect
+	// further down for why that race is real, not hypothetical.
+	const lastMutatedAtRef = useRef( 0 );
+	const REFRESH_COOLDOWN_MS = 8000;
+
+	const markBook = useCallback( ( updater ) => {
+		lastMutatedAtRef.current = Date.now();
+		setBook( updater );
+	}, [] );
+	const markSections = useCallback( ( updater ) => {
+		lastMutatedAtRef.current = Date.now();
+		setSections( updater );
+	}, [] );
+	const markChapters = useCallback( ( updater ) => {
+		lastMutatedAtRef.current = Date.now();
+		setChapters( updater );
+	}, [] );
+
 	// Re-sync whenever this tab regains focus. "Edit" (on a book, section
 	// header, or chapter row) opens the Block Editor in a new tab for the
 	// actual content/title — renaming a chapter there, for instance — and
@@ -68,9 +89,25 @@ export default function BookDetail( { bookId } ) {
 	// this, the rename is real and saved, but this list keeps showing the
 	// old title until the whole admin app page is manually reloaded, which
 	// looks exactly like the rename silently not working.
+	//
+	// The cooldown guards a real interaction with that fix: addChapter()/
+	// addSection() below append the row the create request already handed
+	// back, specifically because an immediate re-fetch right after a create
+	// can come back without it yet (read-after-write lag on this host — see
+	// their comments). A focus event landing in that same short window would
+	// otherwise call load(), overwrite the correctly-updated local list with
+	// that stale, lagging fetch, and make the just-added row flash and
+	// disappear — reported live as "I added a new chapter, it appeared for a
+	// second, and disappeared after that."
 	useEffect( () => {
-		window.addEventListener( 'focus', load );
-		return () => window.removeEventListener( 'focus', load );
+		const onFocus = () => {
+			if ( Date.now() - lastMutatedAtRef.current < REFRESH_COOLDOWN_MS ) {
+				return;
+			}
+			load();
+		};
+		window.addEventListener( 'focus', onFocus );
+		return () => window.removeEventListener( 'focus', onFocus );
 	}, [ load ] );
 
 	// Only replace the whole screen with the error when there's nothing else
@@ -148,7 +185,7 @@ export default function BookDetail( { bookId } ) {
 			<BookFields
 				book={ book }
 				onSaved={ ( updated ) => {
-					setBook( updated );
+					markBook( updated );
 					setNotice( __( 'Book details saved.', 'chapterwright' ) );
 				} }
 				onError={ setError }
@@ -157,7 +194,7 @@ export default function BookDetail( { bookId } ) {
 			<SectionsManager
 				bookId={ bookId }
 				sections={ sections }
-				onChange={ setSections }
+				onChange={ markSections }
 				onError={ setError }
 			/>
 
@@ -165,7 +202,7 @@ export default function BookDetail( { bookId } ) {
 				bookId={ bookId }
 				sections={ sections }
 				chapters={ chapters }
-				onChange={ setChapters }
+				onChange={ markChapters }
 				onError={ setError }
 				editLink={ editLink }
 			/>
