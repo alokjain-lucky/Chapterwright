@@ -461,6 +461,18 @@
 	   sizing. */
 	.hsrtech-book-hero__cover { aspect-ratio: 4 / 5; margin-inline: auto; max-width: 70vw; order: 1; }
 	.hsrtech-toc { border-radius: 1rem; padding: 1.5rem; }
+	/* A long chapter title otherwise overflows the row on a narrow screen:
+	   .hsrtech-toc-row__title has flex-shrink: 0 (desktop rule, above) so it
+	   keeps its single-line intrinsic width no matter how little room is
+	   left, pushing the dot leader and the number/"Draft" label off the edge
+	   of the card instead of making room for them. Letting the title shrink
+	   and wrap here (min-width: 0 is needed alongside flex-shrink: 1 — a flex
+	   item's default min-width is auto, which still refuses to shrink below
+	   its content's single-line width even with shrinking allowed) keeps
+	   everything on the card: the title wraps to a second line, and the
+	   leader + label stay aligned with its first line's baseline, the same
+	   way a long entry wraps in a printed book's table of contents. */
+	.hsrtech-toc-row__title { flex-shrink: 1; min-width: 0; }
 	.hsrtech-reader__next { grid-template-columns: 1fr; }
 	.hsrtech-reader__next .is-next { text-align: left; }
 	.hsrtech-toc-jump { bottom: 1.25rem; font-size: 1.1rem; height: 2.85rem; right: 1.25rem; width: 2.85rem; }
