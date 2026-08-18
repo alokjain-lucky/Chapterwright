@@ -61,6 +61,18 @@ export default function BookDetail( { bookId } ) {
 
 	useEffect( load, [ load ] );
 
+	// Re-sync whenever this tab regains focus. "Edit" (on a book, section
+	// header, or chapter row) opens the Block Editor in a new tab for the
+	// actual content/title — renaming a chapter there, for instance — and
+	// this screen had no way to notice a change made somewhere else. Without
+	// this, the rename is real and saved, but this list keeps showing the
+	// old title until the whole admin app page is manually reloaded, which
+	// looks exactly like the rename silently not working.
+	useEffect( () => {
+		window.addEventListener( 'focus', load );
+		return () => window.removeEventListener( 'focus', load );
+	}, [ load ] );
+
 	// Only replace the whole screen with the error when there's nothing else
 	// to show (the initial load itself failed, so there's no book/sections/
 	// chapters to render around it). Once a book has loaded, a later action

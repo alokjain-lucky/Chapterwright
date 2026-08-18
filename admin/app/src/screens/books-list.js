@@ -22,6 +22,15 @@ export default function BooksList() {
 
 	useEffect( loadBooks, [ loadBooks ] );
 
+	// Re-sync whenever this tab regains focus, so a book renamed via "Open in
+	// Block Editor →" (book-detail.js) in another tab shows its new title
+	// here without a manual reload — same reasoning as the identical effect
+	// in book-detail.js.
+	useEffect( () => {
+		window.addEventListener( 'focus', loadBooks );
+		return () => window.removeEventListener( 'focus', loadBooks );
+	}, [ loadBooks ] );
+
 	// Re-fetch the list without clearing whatever error is already showing —
 	// loadBooks() itself starts with setError(''), which would immediately
 	// wipe out a trash failure's message the instant this runs. Used below
