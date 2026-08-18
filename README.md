@@ -2,6 +2,10 @@
 
 Publish multiple web-native ebooks in WordPress, with book landing pages, grouped tables of contents, ordered chapters, and a focused reading experience.
 
+[![Try Chapterwright on WordPress Playground](https://img.shields.io/badge/-Try%20it%20on%20WordPress%20Playground-3858E9?style=for-the-badge&logo=wordpress&logoColor=white)](https://playground.wordpress.net/#%7B%22landingPage%22%3A%22%2Fwp-admin%2Fadmin.php%3Fpage%3Dchapterwright%22%2C%22preferredVersions%22%3A%7B%22php%22%3A%228.3%22%2C%22wp%22%3A%22latest%22%7D%2C%22features%22%3A%7B%22networking%22%3Atrue%7D%2C%22steps%22%3A%5B%7B%22step%22%3A%22login%22%2C%22username%22%3A%22admin%22%2C%22password%22%3A%22password%22%7D%2C%7B%22step%22%3A%22installPlugin%22%2C%22pluginData%22%3A%7B%22resource%22%3A%22url%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2Falokjain-lucky%2FChapterwright%2Freleases%2Flatest%2Fdownload%2Fchapterwright.zip%22%7D%2C%22options%22%3A%7B%22activate%22%3Atrue%7D%7D%5D%7D)
+
+Opens a temporary WordPress site in your browser with Chapterwright already installed and activated — no download or install needed. Uses [WordPress Playground](https://playground.wordpress.net/); the site and any changes you make disappear when you close the tab. The button always pulls the latest GitHub release, since the link points at GitHub's `releases/latest` redirect rather than a specific version.
+
 ## Requirements
 
 | Requirement | Version |
