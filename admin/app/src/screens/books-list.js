@@ -2,16 +2,30 @@
  * Books overview screen: every book as a card, plus a quick "Add Book" form.
  */
 
-import { useState, useEffect, useCallback } from '@wordpress/element';
+import { useState, useEffect, useCallback, useRef } from '@wordpress/element';
 import { __, sprintf, _n } from '@wordpress/i18n';
 import { Button, Card, CardBody, CardFooter, TextControl, Spinner, Notice } from '@wordpress/components';
 import { getBooks, createBook, trashBook } from '../api';
+
+const REFRESH_COOLDOWN_MS = 8000;
 
 export default function BooksList() {
 	const [ books, setBooks ] = useState( null );
 	const [ error, setError ] = useState( '' );
 	const [ newTitle, setNewTitle ] = useState( '' );
 	const [ creating, setCreating ] = useState( false );
+
+	// Timestamp of the most recent local change (currently just trashing a
+	// book), via markBooks() below — used to skip a focus-triggered re-sync
+	// for a few seconds afterward. Same reasoning as book-detail.js's
+	// identical guard: an immediate re-fetch right after a write can lag
+	// behind on this host, and a focus event landing in that window would
+	// otherwise clobber a correct optimistic update with a stale read.
+	const lastMutatedAtRef = useRef( 0 );
+	const markBooks = useCallback( ( updater ) => {
+		lastMutatedAtRef.current = Date.now();
+		setBooks( updater );
+	}, [] );
 
 	const loadBooks = useCallback( () => {
 		setError( '' );
@@ -25,10 +39,17 @@ export default function BooksList() {
 	// Re-sync whenever this tab regains focus, so a book renamed via "Open in
 	// Block Editor →" (book-detail.js) in another tab shows its new title
 	// here without a manual reload — same reasoning as the identical effect
-	// in book-detail.js.
+	// in book-detail.js. Gated by the cooldown above for the same reason
+	// book-detail.js's version is.
 	useEffect( () => {
-		window.addEventListener( 'focus', loadBooks );
-		return () => window.removeEventListener( 'focus', loadBooks );
+		const onFocus = () => {
+			if ( Date.now() - lastMutatedAtRef.current < REFRESH_COOLDOWN_MS ) {
+				return;
+			}
+			loadBooks();
+		};
+		window.addEventListener( 'focus', onFocus );
+		return () => window.removeEventListener( 'focus', onFocus );
 	}, [ loadBooks ] );
 
 	// Re-fetch the list without clearing whatever error is already showing —
@@ -46,7 +67,13 @@ export default function BooksList() {
 			return;
 		}
 		trashBook( book.id )
-			.then( loadBooks )
+			.then( () => {
+				// Remove it locally rather than refreshing — an immediate
+				// re-fetch right after the write can lag behind on this
+				// host and show the just-trashed book for a moment longer,
+				// which reads as "trash didn't work."
+				markBooks( ( previous ) => ( previous || [] ).filter( ( b ) => b.id !== book.id ) );
+			} )
 			.catch( ( err ) => {
 				setError( err.message || __( 'The book could not be trashed.', 'chapterwright' ) );
 				// Same fix as book-detail.js's section/chapter actions: a

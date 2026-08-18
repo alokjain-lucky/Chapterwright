@@ -366,16 +366,24 @@ function SectionsManager( { bookId, sections, onChange, onError } ) {
 
 	const saveSection = ( section, fields ) => {
 		updateSection( section.id, fields )
-			.catch( ( err ) => onError( err.message || __( 'The section could not be saved.', 'chapterwright' ) ) )
-			// Refresh either way, not just on success. If this section was
-			// already deleted elsewhere (another tab, a previous request that
-			// actually went through despite looking like it failed), the
-			// server correctly rejects the edit — but the old code left the
-			// stale section sitting in the list afterward with no way to
-			// notice it was gone, so "Save" (or "Delete", just below) would
-			// silently repeat the exact same failure forever. Refreshing
-			// syncs the list to what the server actually has either way.
-			.then( refresh );
+			.then( ( updated ) => {
+				// Apply the update response directly instead of refreshing
+				// the whole list — same reasoning as addSection()/
+				// addChapter() above: an immediate re-fetch right after a
+				// write can lag behind on this host and show the pre-edit
+				// name/description for a moment (or longer). The update
+				// response already has the saved fields.
+				onChange( ( previous ) => previous.map( ( s ) => ( s.id === updated.id ? updated : s ) ) );
+			} )
+			.catch( ( err ) => {
+				onError( err.message || __( 'The section could not be saved.', 'chapterwright' ) );
+				// Still refresh on failure — if this section was already
+				// deleted elsewhere (another tab, a previous request that
+				// actually went through despite looking like it failed),
+				// the stale section would otherwise sit in the list forever
+				// with every retry hitting the same error.
+				refresh();
+			} );
 	};
 
 	const removeSection = ( section ) => {
@@ -384,8 +392,17 @@ function SectionsManager( { bookId, sections, onChange, onError } ) {
 			return;
 		}
 		deleteSection( section.id )
-			.catch( ( err ) => onError( err.message || __( 'The section could not be deleted.', 'chapterwright' ) ) )
-			.then( refresh );
+			.then( () => {
+				// Remove it locally rather than refreshing — the same
+				// read-after-write lag that can hide a newly created row can
+				// just as easily show a just-deleted one for a moment
+				// longer, which reads as "delete didn't work."
+				onChange( ( previous ) => previous.filter( ( s ) => s.id !== section.id ) );
+			} )
+			.catch( ( err ) => {
+				onError( err.message || __( 'The section could not be deleted.', 'chapterwright' ) );
+				refresh();
+			} );
 	};
 
 	const move = ( index, direction ) => {
@@ -533,9 +550,27 @@ function ChaptersManager( { bookId, sections, chapters, onChange, onError, editL
 			sectionId: chapter.meta?._hsrtech_section_id || UNASSIGNED,
 			order: index + 1,
 		} ) );
+
+		// Apply the same section/order values locally that are being sent,
+		// instead of trusting an immediate re-fetch after the request
+		// succeeds — the reorder endpoint only returns the list of changed
+		// ids, not full chapter objects, but this is already exactly what
+		// the server is about to be told to set, so there's nothing an
+		// extra round trip would add except a chance to show a stale order
+		// for a moment (or longer, on this host).
+		const updated = ordered.map( ( chapter, index ) => ( {
+			...chapter,
+			meta: { ...chapter.meta, _hsrtech_section_id: chapter.meta?._hsrtech_section_id || UNASSIGNED, _hsrtech_order: index + 1 },
+		} ) );
+
 		reorderChapters( bookId, payload )
-			.catch( ( err ) => onError( err.message || __( 'The chapter order could not be saved.', 'chapterwright' ) ) )
-			.then( refresh );
+			.then( () => onChange( updated ) )
+			.catch( ( err ) => {
+				onError( err.message || __( 'The chapter order could not be saved.', 'chapterwright' ) );
+				// Re-sync from the server rather than leaving the optimistic
+				// (already-reordered) list on screen when the save failed.
+				refresh();
+			} );
 	};
 
 	const move = ( index, direction ) => {
@@ -564,12 +599,23 @@ function ChaptersManager( { bookId, sections, chapters, onChange, onError, editL
 			return;
 		}
 		trashChapter( chapter.id )
-			.catch( ( err ) => onError( err.message || __( 'The chapter could not be trashed.', 'chapterwright' ) ) )
-			// Same reasoning as SectionsManager's removeSection/saveSection:
-			// refresh regardless of outcome, so a chapter that's already
-			// gone server-side doesn't stay stuck in the list looking
-			// trashable when trying again would just repeat the same error.
-			.then( refresh );
+			.then( () => {
+				// Remove it locally rather than refreshing — same reasoning
+				// as SectionsManager's removeSection: an immediate re-fetch
+				// can lag behind a write on this host, and could show the
+				// just-trashed chapter for a moment longer, reading as
+				// "trash didn't work."
+				onChange( ( previous ) => previous.filter( ( c ) => c.id !== chapter.id ) );
+			} )
+			.catch( ( err ) => {
+				onError( err.message || __( 'The chapter could not be trashed.', 'chapterwright' ) );
+				// Still refresh on failure — same reasoning as
+				// SectionsManager's removeSection/saveSection: a chapter
+				// that's already gone server-side would otherwise stay
+				// stuck in the list looking trashable, with every retry
+				// just repeating the same error.
+				refresh();
+			} );
 	};
 
 	const addChapter = ( event ) => {
