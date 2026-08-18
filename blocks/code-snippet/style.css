@@ -134,21 +134,32 @@
    markup assets/js/code-highlight.js's wrapPlainBlock() synthesizes, neither
    of which needs to know about that class.
 
-   Selectors below are scoped through .hsrtech-code__frame (not just
-   .hsrtech-code) on purpose: a plain "<pre>" is exactly the kind of element
-   themes often style generically for their own content areas (e.g. a theme
-   rule like ".entry-content pre { background: ...; margin: 1.5rem 0; }").
-   That's one class + one element — the same specificity a bare ".hsrtech-code
-   pre" would have — so on a specificity tie, whichever stylesheet the browser
-   happens to cascade later wins, and a theme's own background/margin could
-   silently win over ours depending on load order. Going through the frame
-   class adds a second class, which reliably outranks a theme's single-class
-   content-area selector regardless of order. background: none is set
-   explicitly here too, for the same reason — without it, nothing here
-   competes for that property at all, so a theme's own pre { background: ... }
-   applies completely unopposed and shows through as a different shade than
-   .hsrtech-code__frame's own background, right behind it. */
-.hsrtech-code__frame pre {
+   Selectors below are scoped through both .hsrtech-code and
+   .hsrtech-code__frame (not just one of the two) on purpose: a plain "<pre>"
+   is exactly the kind of element themes often style generically for their
+   own content areas (e.g. a theme rule like ".entry-content pre {
+   background: ...; margin: 1.5rem 0; }"). A single-class selector like that
+   has the same specificity as a single-class selector of ours — one class,
+   one element either way — so on a tie, whichever stylesheet the browser
+   happens to cascade later wins, and a theme's own background/margin can
+   silently win over ours depending on load order (an earlier version of this
+   rule went through .hsrtech-code__frame alone for exactly this reason, but
+   that's still only one class — it never actually fixed anything). Requiring
+   both ancestor classes adds a second class, which reliably outranks a
+   theme's single-class content-area selector regardless of order.
+   background: none is set explicitly here too, for the same reason —
+   without it, nothing here competes for that property at all, so a theme's
+   own pre { background: ... } applies completely unopposed and shows
+   through as a different shade than .hsrtech-code__frame's own background,
+   right behind it.
+
+   Every other rule below that overrides one of these three properties for a
+   specific case (the line-numbers gutter, "Wrap long lines", "Hide language
+   label") is deliberately bumped by the same one extra class, so the ties
+   between them and these three rules — and which one wins by coming later in
+   the file — stay exactly as they were before this file went from one
+   ancestor class to two. */
+.hsrtech-code .hsrtech-code__frame pre {
 	background: none;
 	font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 	font-size: 0.88rem;
@@ -157,14 +168,14 @@
 	tab-size: 4;
 }
 
-.hsrtech-code__frame pre:not(.hsrtech-code__line-numbers) {
+.hsrtech-code .hsrtech-code__frame pre:not(.hsrtech-code__line-numbers) {
 	max-width: 100%;
 	overflow-x: auto;
 	padding: 2.75rem 1.5rem 1.5rem;
 	white-space: pre;
 }
 
-.hsrtech-code__frame pre code {
+.hsrtech-code .hsrtech-code__frame pre code {
 	background: none;
 	color: inherit;
 	font-size: inherit;
@@ -189,7 +200,7 @@
    elsewhere make. flex: none keeps this column a fixed width driven by its
    own content (the digits) rather than sharing the row's available space
    with the code. */
-.hsrtech-code__frame .hsrtech-code__line-numbers {
+.hsrtech-code .hsrtech-code__frame .hsrtech-code__line-numbers {
 	background: none;
 	border-right: 1px solid rgba(255, 255, 255, 0.12);
 	color: var(--hsrtech-code-ink, #f5f2ea);
@@ -212,20 +223,20 @@
 	min-width: 0;
 }
 
-/* Same specificity as the padding shorthand it overrides (.hsrtech-code__frame
-   pre:not(...), above) — two classes and an element either way — so this
-   only wins because it comes later in the file. Bumped from a bare
-   ".hsrtech-code__line-numbers + pre" (one class, one element) once, which
-   the earlier rule's higher specificity silently beat regardless of order. */
-.hsrtech-code .hsrtech-code__line-numbers + pre {
+/* Same specificity as the padding shorthand it overrides (.hsrtech-code
+   .hsrtech-code__frame pre:not(...), above) — three classes and an element
+   either way — so this only wins because it comes later in the file. */
+.hsrtech-code .hsrtech-code__frame .hsrtech-code__line-numbers + pre {
 	padding-left: 0.9rem;
 }
 
 /* "Wrap long lines" option: overrides the horizontal-scroll default above
    with normal text wrapping instead. word-break covers a single unbroken
    token (a long URL or hash) that's still wider than the block on its own,
-   which white-space: pre-wrap alone wouldn't break. */
-.hsrtech-code--wrap pre:not(.hsrtech-code__line-numbers) {
+   which white-space: pre-wrap alone wouldn't break. Same specificity as the
+   rule it overrides, again for the same reason: three classes and an
+   element, winning only because it's later in the file. */
+.hsrtech-code .hsrtech-code--wrap pre:not(.hsrtech-code__line-numbers) {
 	overflow-x: hidden;
 	white-space: pre-wrap;
 	word-break: break-word;
@@ -241,11 +252,11 @@
    nothing, so this accepts the copy button visually overlapping the first
    line or two of short snippets instead, the same trade-off plenty of code
    viewers make for a corner-floating copy button. */
-.hsrtech-code--no-lang pre:not(.hsrtech-code__line-numbers) {
+.hsrtech-code .hsrtech-code--no-lang pre:not(.hsrtech-code__line-numbers) {
 	padding-top: 1.75rem;
 }
 
-.hsrtech-code--no-lang .hsrtech-code__line-numbers {
+.hsrtech-code .hsrtech-code--no-lang .hsrtech-code__line-numbers {
 	padding-top: 1.75rem;
 }
 
