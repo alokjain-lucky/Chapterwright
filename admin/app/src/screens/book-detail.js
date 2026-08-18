@@ -689,6 +689,17 @@ function ChaptersManager( { bookId, sections, chapters, onChange, onError, editL
 										{ chapter.title?.raw || chapter.title?.rendered || __( '(no title)', 'chapterwright' ) }
 									</strong>
 									<span className={ `hsrtech-status-pill hsrtech-status-pill--${ chapter.status }` }>{ chapter.status }</span>
+									{ /* Mirrors the front-end table of contents' own "Show excerpt"
+									     setting (window.hsrtechApp.showTocExcerpt, localized from
+									     hsrtech_show_toc_excerpt() in admin/app.php) rather than always
+									     showing it or adding a second, separate toggle for the same
+									     thing — and unlike the front end, shown for a draft chapter too:
+									     there's no reason to hide it here just because a chapter isn't
+									     published yet, since this screen already manages every chapter
+									     regardless of status. */ }
+									{ window.hsrtechApp?.showTocExcerpt && chapter.excerpt && (
+										<p className="hsrtech-row__meta">{ chapter.excerpt }</p>
+									) }
 								</div>
 								<SelectControl
 									__next40pxDefaultSize

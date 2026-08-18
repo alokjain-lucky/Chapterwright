@@ -201,9 +201,13 @@
    a broken/dead link. cursor: default (not not-allowed) since this isn't an
    error state, just not open yet. */
 .hsrtech-toc-row-link--draft { cursor: default; opacity: .48; }
-.hsrtech-toc-row-link--draft b { font-style: italic; text-transform: none; }
 .hsrtech-toc-row { align-items: baseline; display: flex; gap: .6rem; }
 .hsrtech-toc-row__title { flex-shrink: 0; }
+/* The order number (<b>, below) is a plain numeral on a draft row too, same
+   as a published one — "Draft" gets its own element instead of replacing the
+   number (see templates/partials/toc-list.php), styled the same italic way
+   the replaced number text used to be. */
+.hsrtech-toc-row__draft-flag { color: var(--hsrtech-muted); font-size: .72rem; font-style: italic; font-weight: 700; }
 /* Dot leader connecting chapter title to its number, like a printed book's
    table of contents — fills whatever space is left on the line instead of a
    fixed width, so it still works with short and long chapter titles alike.
@@ -464,8 +468,8 @@
 	/* A long chapter title otherwise overflows the row on a narrow screen:
 	   .hsrtech-toc-row__title has flex-shrink: 0 (desktop rule, above) so it
 	   keeps its single-line intrinsic width no matter how little room is
-	   left, pushing the dot leader and the number/"Draft" label off the edge
-	   of the card instead of making room for them. Letting the title shrink
+	   left, pushing the "Draft" flag, dot leader, and number off the edge of
+	   the card instead of making room for them. Letting the title shrink
 	   and wrap here (min-width: 0 is needed alongside flex-shrink: 1 — a flex
 	   item's default min-width is auto, which still refuses to shrink below
 	   its content's single-line width even with shrinking allowed) keeps

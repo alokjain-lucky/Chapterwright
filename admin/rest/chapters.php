@@ -124,13 +124,26 @@ function hsrtech_rest_get_book_chapters( $request ) {
  */
 function hsrtech_prepare_chapter_for_response( $chapter ) {
 	return array(
-		'id'     => $chapter->ID,
-		'title'  => array(
+		'id'      => $chapter->ID,
+		'title'   => array(
 			'raw'      => $chapter->post_title,
 			'rendered' => get_the_title( $chapter ),
 		),
-		'status' => $chapter->post_status,
-		'meta'   => array(
+		'status'  => $chapter->post_status,
+		// Same call the front-end table of contents uses (see
+		// templates/partials/toc-list.php) — falls back to an
+		// auto-generated excerpt from the chapter's content when no manual
+		// excerpt has been set, exactly like the front end does, so what
+		// the admin app shows here matches what a reader would actually
+		// see. Included regardless of the "Show excerpt in table of
+		// contents" setting (hsrtech_show_toc_excerpt(), admin/settings.php)
+		// — that setting only controls whether the front end *displays*
+		// this; whether to show it here is up to the admin app's own UI,
+		// which reads the same setting via window.hsrtechApp.showTocExcerpt
+		// (hsrtech_enqueue_app_assets(), admin/app.php) rather than this
+		// response omitting the field entirely.
+		'excerpt' => get_the_excerpt( $chapter ),
+		'meta'    => array(
 			'_hsrtech_book_id'    => absint( get_post_meta( $chapter->ID, '_hsrtech_book_id', true ) ),
 			'_hsrtech_order'      => absint( get_post_meta( $chapter->ID, '_hsrtech_order', true ) ),
 			'_hsrtech_section_id' => absint( get_post_meta( $chapter->ID, '_hsrtech_section_id', true ) ),

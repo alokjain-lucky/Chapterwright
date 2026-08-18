@@ -55,23 +55,36 @@ $hsrtech_current_chapter_id = isset( $hsrtech_current_chapter_id ) ? (int) $hsrt
 						<?php endif; ?>
 							<span class="hsrtech-toc-row">
 								<span class="hsrtech-toc-row__title"><?php echo esc_html( get_the_title( $hsrtech_chapter ) ); ?></span>
-								<span class="hsrtech-toc-row__leader" aria-hidden="true"></span>
 								<?php
 								/*
-								 * aria-hidden only for the order number — it's purely
-								 * decorative/redundant with the chapter's position in
-								 * this <ol> (already conveyed to assistive tech via list
-								 * semantics). "Draft" is the opposite: it's the ONLY
-								 * signal that this row isn't a working link, so hiding
-								 * it here (as this element used to do unconditionally)
-								 * silently dropped that information for screen reader
-								 * users, who'd hear a normal-sounding chapter title with
-								 * no indication it wasn't actually available yet.
+								 * A separate element from the order number below, not a
+								 * replacement for it — a draft chapter keeps its real
+								 * place in the numbered list instead of having "Draft"
+								 * printed where its number would be, so the numbering
+								 * stays consistent whether or not draft chapters are
+								 * visible at all (hsrtech_show_draft_chapters(),
+								 * admin/settings.php). Not aria-hidden: this is the one
+								 * signal that this row isn't a working link, so hiding it
+								 * would silently drop that information for screen reader
+								 * users, who'd otherwise hear a normal-sounding chapter
+								 * title with no indication it wasn't actually available
+								 * yet.
 								 */
 								?>
-								<b<?php echo $hsrtech_is_draft ? '' : ' aria-hidden="true"'; ?>><?php echo $hsrtech_is_draft ? esc_html__( 'Draft', 'chapterwright' ) : esc_html( get_post_meta( $hsrtech_chapter->ID, '_hsrtech_order', true ) ); ?></b>
+								<?php if ( $hsrtech_is_draft ) : ?>
+									<span class="hsrtech-toc-row__draft-flag"><?php esc_html_e( 'Draft', 'chapterwright' ); ?></span>
+								<?php endif; ?>
+								<span class="hsrtech-toc-row__leader" aria-hidden="true"></span>
+								<?php
+								// Always the order number now (never replaced by "Draft" —
+								// see above) and always aria-hidden, same as a published
+								// row: purely decorative/redundant with the chapter's
+								// position in this <ol>, already conveyed to assistive
+								// tech via list semantics.
+								?>
+								<b aria-hidden="true"><?php echo esc_html( get_post_meta( $hsrtech_chapter->ID, '_hsrtech_order', true ) ); ?></b>
 							</span>
-							<?php if ( $hsrtech_show_toc_excerpt && ! $hsrtech_is_draft && get_the_excerpt( $hsrtech_chapter ) ) : ?>
+							<?php if ( $hsrtech_show_toc_excerpt && get_the_excerpt( $hsrtech_chapter ) ) : ?>
 								<small><?php echo esc_html( get_the_excerpt( $hsrtech_chapter ) ); ?></small>
 							<?php endif; ?>
 						<?php echo $hsrtech_is_draft ? '</span>' : '</a>'; ?>

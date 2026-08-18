@@ -158,7 +158,13 @@ function hsrtech_enqueue_app_assets( $hook_suffix ) {
 		'chapterwright-app',
 		'hsrtechApp',
 		array(
-			'adminUrl' => admin_url(),
+			'adminUrl'       => admin_url(),
+			// Lets the chapter list show/hide each chapter's excerpt to
+			// match the front-end table of contents' own "Show excerpt in
+			// table of contents" setting (Settings → Chapterwright), rather
+			// than the admin app always showing it or needing its own,
+			// separate toggle for the same thing.
+			'showTocExcerpt' => hsrtech_show_toc_excerpt(),
 		)
 	);
 }
