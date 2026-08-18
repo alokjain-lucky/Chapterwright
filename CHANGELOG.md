@@ -2,6 +2,10 @@
 
 All notable changes to Chapterwright. See [README.md](README.md#changelog) for the most recent entries — this file is the full history.
 
+### 2.6.1
+
+- **Fixed a section or chapter that had already changed or been deleted server-side staying stuck in the admin app's list, with every retry repeating the same error and nothing visibly changing.** Root-caused live via a WordPress.org user report + browser DevTools: deleting a section returned a 404 from `hsrtech_rest_can_edit_section()` — `hsrtech_get_section()` found nothing for that ID, meaning the section no longer existed in the `wp_hsrtech_sections` table even though it was still showing in the admin app's list (state had drifted out of sync with the server, most likely from an earlier request that actually succeeded despite the UI not reflecting it). The 2.6.0 hardening pass made that failure visible as an error banner instead of nothing at all, but didn't fix the underlying staleness — the same ghost row stayed clickable and every retry hit the identical 404. `SectionsManager`'s `saveSection`/`removeSection`/`move` and `ChaptersManager`'s `removeChapter`/`persist` (`admin/app/src/screens/book-detail.js`) now all re-fetch and re-render the list after a failed request, not only after a successful one, so a stale row disappears (or a stale order snaps back to what the server actually has) the moment an action against it fails, instead of staying stuck indefinitely.
+
 ### 2.6.0
 
 - **Added a "Books & Chapters" link to the plugin's row on the Plugins screen** (`hsrtech_add_plugin_action_links()`, `admin/app.php`), gated on `current_user_can( 'edit_hsrtech_books' )`, so finding the admin app doesn't require already knowing it lives under a top-level menu item.

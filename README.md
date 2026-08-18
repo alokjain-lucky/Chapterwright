@@ -9,7 +9,7 @@ Publish multiple web-native ebooks in WordPress, with book landing pages, groupe
 | WordPress | 6.4 or newer |
 | PHP | 7.4 or newer |
 | Tested through | WordPress 7.0 |
-| Plugin version | 2.6.0 |
+| Plugin version | 2.6.1 |
 
 Chapterwright adds two content types to WordPress: **Books** and **Chapters**. Each book can have its own cover, subtitle, accent color, introduction, and table of contents. Chapters can be grouped into sections — each with its own name and description — and receive automatic previous/next navigation.
 
@@ -317,6 +317,10 @@ Both run automatically on every push and pull request via GitHub Actions (`.gith
 
 The three most recent releases are below. See [CHANGELOG.md](CHANGELOG.md) for the full history back to 1.0.0.
 
+### 2.6.1
+
+- Fixed a section or chapter that had already been deleted or changed server-side (e.g. by a request that actually succeeded despite looking like it failed) staying stuck in the admin app's list — every retry just repeated the same error with nothing visibly changing. Delete, save, and reorder actions in **Books & Chapters** now re-sync the list from the server after a failure, not just after success.
+
 ### 2.6.0
 
 - Added a "Books & Chapters" link to the plugin's entry on the Plugins screen.
@@ -338,15 +342,6 @@ The three most recent releases are below. See [CHANGELOG.md](CHANGELOG.md) for t
 - Chapters now preload the previous/next chapter in the background for faster navigation between them.
 - Accessibility improvements: the library page now has a skip link and a heading for screen readers, and the table of contents properly announces draft chapters instead of silently hiding that information.
 - Fixed the book cover image on the library page growing oversized when there's only one or two books.
-
-### 2.4.0
-
-- Fixed a bug where book and chapter details (accent color, subtitle, book/section assignment, and more) could silently fail to save. This is now fixed for good — any books or chapters affected before the fix will save correctly going forward.
-- Code blocks now have real syntax highlighting, and chapters have a floating button that jumps to the table of contents, which now opens as a slide-in drawer instead of navigating away.
-- Refined the reading typography throughout — tighter, more readable body text, headings, and lists on both chapter pages and book/archive pages.
-- Added a "Coming soon" flag for books that aren't ready to read yet, and an optional setting to show draft chapter titles (grayed out, not clickable) in the table of contents.
-- Added a progress bar showing how far a reader is through the whole book, alongside the existing per-chapter reading progress bar.
-- Fixed a few visual bugs: invisible "Coming soon" badges, an invisible table-of-contents icon in light mode, and unreadable code text in light mode on the site's theme.
 
 ## License
 

@@ -306,7 +306,17 @@ function SectionsManager( { bookId, sections, onChange, onError } ) {
 	};
 
 	const saveSection = ( section, fields ) => {
-		updateSection( section.id, fields ).then( refresh ).catch( ( err ) => onError( err.message ) );
+		updateSection( section.id, fields )
+			.catch( ( err ) => onError( err.message || __( 'The section could not be saved.', 'chapterwright' ) ) )
+			// Refresh either way, not just on success. If this section was
+			// already deleted elsewhere (another tab, a previous request that
+			// actually went through despite looking like it failed), the
+			// server correctly rejects the edit — but the old code left the
+			// stale section sitting in the list afterward with no way to
+			// notice it was gone, so "Save" (or "Delete", just below) would
+			// silently repeat the exact same failure forever. Refreshing
+			// syncs the list to what the server actually has either way.
+			.then( refresh );
 	};
 
 	const removeSection = ( section ) => {
@@ -314,7 +324,9 @@ function SectionsManager( { bookId, sections, onChange, onError } ) {
 		if ( ! window.confirm( sprintf( __( 'Delete "%s"? Its chapters will stay, unassigned.', 'chapterwright' ), section.name ) ) ) {
 			return;
 		}
-		deleteSection( section.id ).then( refresh ).catch( ( err ) => onError( err.message ) );
+		deleteSection( section.id )
+			.catch( ( err ) => onError( err.message || __( 'The section could not be deleted.', 'chapterwright' ) ) )
+			.then( refresh );
 	};
 
 	const move = ( index, direction ) => {
@@ -326,7 +338,12 @@ function SectionsManager( { bookId, sections, onChange, onError } ) {
 		[ reordered[ index ], reordered[ target ] ] = [ reordered[ target ], reordered[ index ] ];
 		reorderSections( bookId, reordered.map( ( section ) => section.id ) )
 			.then( onChange )
-			.catch( ( err ) => onError( err.message ) );
+			.catch( ( err ) => {
+				onError( err.message || __( 'The section order could not be saved.', 'chapterwright' ) );
+				// Re-sync from the server rather than leaving the optimistic
+				// (already-swapped) order on screen when the save failed.
+				refresh();
+			} );
 	};
 
 	return (
@@ -457,7 +474,9 @@ function ChaptersManager( { bookId, sections, chapters, onChange, onError, editL
 			sectionId: chapter.meta?._hsrtech_section_id || UNASSIGNED,
 			order: index + 1,
 		} ) );
-		reorderChapters( bookId, payload ).then( refresh ).catch( ( err ) => onError( err.message ) );
+		reorderChapters( bookId, payload )
+			.catch( ( err ) => onError( err.message || __( 'The chapter order could not be saved.', 'chapterwright' ) ) )
+			.then( refresh );
 	};
 
 	const move = ( index, direction ) => {
@@ -485,7 +504,13 @@ function ChaptersManager( { bookId, sections, chapters, onChange, onError, editL
 		if ( ! window.confirm( sprintf( __( 'Move "%s" to the trash?', 'chapterwright' ), chapterTitle ) ) ) {
 			return;
 		}
-		trashChapter( chapter.id ).then( refresh ).catch( ( err ) => onError( err.message ) );
+		trashChapter( chapter.id )
+			.catch( ( err ) => onError( err.message || __( 'The chapter could not be trashed.', 'chapterwright' ) ) )
+			// Same reasoning as SectionsManager's removeSection/saveSection:
+			// refresh regardless of outcome, so a chapter that's already
+			// gone server-side doesn't stay stuck in the list looking
+			// trashable when trying again would just repeat the same error.
+			.then( refresh );
 	};
 
 	const addChapter = ( event ) => {

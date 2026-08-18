@@ -4,7 +4,7 @@ Tags: ebook, books, publishing, reading, chapters
 Requires at least: 6.4
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 2.6.0
+Stable tag: 2.6.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -81,6 +81,9 @@ Yes. Every string (PHP and the admin app's JavaScript) is wrapped for translatio
 5. The **Code Snippet** block with syntax coloring and a copy button.
 
 == Changelog ==
+
+= 2.6.1 =
+* Fixed a deleted or edited section/chapter that had already been removed on the server staying stuck in the admin app's list — retrying the same action just repeated the same error with no visible change. The list now re-syncs with the server after any failed save, delete, or reorder.
 
 = 2.6.0 =
 * Added a "Books & Chapters" link to the plugin's entry on the Plugins screen, for quicker access.
