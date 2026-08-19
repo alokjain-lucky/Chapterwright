@@ -423,8 +423,22 @@
 	width: 100%;
 }
 
+/* Accessibility: the browser's own default text-input focus ring reads
+   poorly against this frame's dark background and, worse, tends to hug the
+   textarea's actual edges — which sit flush against the frame's own edges
+   here (padding lives on .hsrtech-code__frame, not this element, see
+   above), so it can look like it's outlining the whole block rather than
+   this specific field. Replaced, not just removed, with the same
+   accent-color treatment the front end's own :focus-visible rule uses
+   (see .hsrtech-page :focus-visible, chapterwright.css) so a keyboard user
+   tabbing into this field from elsewhere in the post — where WordPress's
+   own block-selection border only indicates the BLOCK is selected, not
+   that this particular field currently has keyboard focus for typing —
+   still gets a clearly visible indicator of exactly that. */
 .hsrtech-code--editing .hsrtech-code__editor:focus {
-	outline: none;
+	border-radius: 0.2rem;
+	outline: 2px solid var(--hsrtech-accent, #f45d48);
+	outline-offset: 2px;
 }
 
 @media (prefers-reduced-motion: reduce) {
