@@ -15,6 +15,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 return array(
-	'dependencies' => array( 'wp-blocks', 'wp-element', 'wp-block-editor', 'wp-components', 'wp-i18n' ),
+	// chapterwright-code-highlight (assets/js/code-highlight.js, registered by
+	// hsrtech_register_code_highlight_script(), code-snippet.php) is listed
+	// as a dependency purely so WordPress loads it before this script runs —
+	// edit.js's buildPreviewElement() reads window.hsrtechCodeHighlight
+	// (that file's tokenizer + language rules) to color its own read-only
+	// preview the same way the front end does.
+	'dependencies' => array( 'wp-blocks', 'wp-element', 'wp-block-editor', 'wp-components', 'wp-i18n', 'chapterwright-code-highlight' ),
 	'version'      => HSRTECH_VERSION,
 );

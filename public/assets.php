@@ -55,7 +55,13 @@ function hsrtech_enqueue_public_assets() {
 		// docblock), specifically so it never needs that other stylesheet to
 		// also be loaded, on a page where it might not be (like this one).
 		wp_enqueue_style( 'chapterwright-code', HSRTECH_URL . 'blocks/code-snippet/style.css', array(), HSRTECH_VERSION );
-		wp_enqueue_script( 'chapterwright-code-highlight', HSRTECH_URL . 'assets/js/code-highlight.js', array(), HSRTECH_VERSION, true );
+		// Registered (not just enqueued outright) via the same shared function
+		// the block editor's own dependency graph uses — see
+		// hsrtech_register_code_highlight_script(), blocks/code-snippet/code-snippet.php
+		// — so there's one URL/version for this script, not two copies that
+		// could drift apart.
+		hsrtech_register_code_highlight_script();
+		wp_enqueue_script( 'chapterwright-code-highlight' );
 		wp_localize_script(
 			'chapterwright-code-highlight',
 			'hsrtechCode',

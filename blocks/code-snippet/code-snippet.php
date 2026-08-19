@@ -23,7 +23,40 @@ add_action( 'enqueue_block_editor_assets', 'hsrtech_localize_code_snippet_langua
  * Register the Code Snippet block from its block.json.
  */
 function hsrtech_register_code_snippet_block() {
+	// Must be registered before register_block_type() below, so
+	// blocks/code-snippet/edit.asset.php's dependency on this handle
+	// resolves to something real — see hsrtech_register_code_highlight_script()
+	// for why the editor needs this script at all.
+	hsrtech_register_code_highlight_script();
 	register_block_type( __DIR__ );
+}
+
+/**
+ * Register (but don't necessarily enqueue) the front-end code-highlighting
+ * script under one shared handle, so both its actual conditional front-end
+ * enqueuing (hsrtech_enqueue_public_assets(), public/assets.php) and its use
+ * here as an editorScript dependency (edit.asset.php) point at the same
+ * single registration — one URL/version to keep in sync, not two.
+ *
+ * The editor needs this script loaded (not just as a nice-to-have) so the
+ * block's own read-only preview (edit.js's buildPreviewElement(), shown
+ * whenever the block isn't selected — including the Inserter's hover
+ * preview) can show real syntax coloring by calling the exact same
+ * tokenize()/GRAMMARS this file's docblock already promises the front end
+ * uses, via window.hsrtechCodeHighlight (see that file's own comment on
+ * this), rather than a third hand-maintained copy of every language's
+ * rules. That file guards its own auto-processing behavior (which walks
+ * the page's real DOM) so it never runs inside wp-admin, only reusing its
+ * plain functions there — see the check at the very bottom of that file.
+ */
+function hsrtech_register_code_highlight_script() {
+	wp_register_script(
+		'chapterwright-code-highlight',
+		HSRTECH_URL . 'assets/js/code-highlight.js',
+		array(),
+		HSRTECH_VERSION,
+		true
+	);
 }
 
 /**

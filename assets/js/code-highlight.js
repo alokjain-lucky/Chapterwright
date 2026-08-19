@@ -305,6 +305,25 @@
 		return lines;
 	}
 
+	// Exposed so the block editor's own read-only preview (edit.js's
+	// buildPreviewElement(), loaded as an editorScript dependency declared
+	// in blocks/code-snippet/edit.asset.php — see
+	// hsrtech_register_code_highlight_script(), code-snippet.php) can reuse
+	// the exact same tokenizer and language rules the front end colors code
+	// with, instead of a third hand-maintained copy of every language's
+	// regexes. Deliberately narrow — only the pure, DOM-independent pieces
+	// are exposed, not anything that touches the real DOM (buildTokenFragment,
+	// highlightElement, wrapPlainBlock, etc.), since the editor's own preview
+	// is built as React elements (wp.element.createElement), not real DOM
+	// nodes — mixing the two would fight React for control of the same
+	// elements, which is also why this file's own DOM-walking auto-run at
+	// the very bottom is skipped entirely in wp-admin (see that check).
+	window.hsrtechCodeHighlight = {
+		tokenize: tokenize,
+		GRAMMARS: GRAMMARS,
+		splitTokensIntoLines: splitTokensIntoLines
+	};
+
 	/**
 	 * Parse a "Highlight lines" field (e.g. "3-5, 8, 12-14") into a lookup
 	 * set of 1-based line numbers, counted from the top of the snippet —
@@ -587,15 +606,31 @@
 		highlightElement( code, lang );
 	}
 
-	// The third and fourth clauses are what makes a chapterwright/code-snippet
-	// block work outside a book/chapter page at all — see
-	// hsrtech_enqueue_public_assets() (public/assets.php) for the enqueue-side
-	// half of this fix. Both are scoped to .hsrtech-code specifically (the
-	// block's own wrapper, render.php) rather than every <pre>/row on the
-	// page, so an unrelated code block placed somewhere else on the same page
-	// (a sidebar widget, for instance) isn't swept up along with it. The
-	// fourth clause, .hsrtech-code__lines, is render.php's row-based markup —
-	// "Show line numbers" and/or "Highlight lines" active — processCodeBlock()
-	// branches on which shape it got (see that function).
-	document.querySelectorAll( '.hsrtech-chapter__content pre, .hsrtech-book-intro pre, .hsrtech-code pre, .hsrtech-code__lines' ).forEach( processCodeBlock );
+	// This script also loads in wp-admin now (as an editorScript dependency,
+	// blocks/code-snippet/edit.asset.php) purely so the block editor's own
+	// preview can call window.hsrtechCodeHighlight's tokenizer directly —
+	// see the comment on that assignment above. It must NOT also run its own
+	// DOM-walking auto-processing there: the block editor's preview markup
+	// (edit.js's buildPreviewElement()) is React-managed, and this function
+	// mutates matching elements' real DOM directly (processLineRows()
+	// clears and rebuilds a .hsrtech-code__lines container's children) —
+	// doing that to a node React still thinks it owns corrupts React's own
+	// bookkeeping for it, surfacing as broken re-renders or thrown
+	// removeChild errors later. `wp-admin` on <body> is set server-side in
+	// the initial admin HTML, well before this (footer) script runs, so
+	// it's a reliable, Gutenberg-internals-independent signal that this is
+	// an editor screen rather than a reader's own page.
+	if ( ! ( document.body && document.body.classList.contains( 'wp-admin' ) ) ) {
+		// The third and fourth clauses are what makes a chapterwright/code-snippet
+		// block work outside a book/chapter page at all — see
+		// hsrtech_enqueue_public_assets() (public/assets.php) for the enqueue-side
+		// half of this fix. Both are scoped to .hsrtech-code specifically (the
+		// block's own wrapper, render.php) rather than every <pre>/row on the
+		// page, so an unrelated code block placed somewhere else on the same page
+		// (a sidebar widget, for instance) isn't swept up along with it. The
+		// fourth clause, .hsrtech-code__lines, is render.php's row-based markup —
+		// "Show line numbers" and/or "Highlight lines" active — processCodeBlock()
+		// branches on which shape it got (see that function).
+		document.querySelectorAll( '.hsrtech-chapter__content pre, .hsrtech-book-intro pre, .hsrtech-code pre, .hsrtech-code__lines' ).forEach( processCodeBlock );
+	}
 } )();

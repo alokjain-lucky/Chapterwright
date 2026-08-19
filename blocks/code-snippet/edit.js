@@ -104,6 +104,35 @@
 	}
 
 	/**
+	 * React-element equivalent of buildTokenFragment() (assets/js/code-highlight.js)
+	 * — same idea (wrap each colored token in a <span class="hsrtech-tok
+	 * hsrtech-tok--TYPE">, leave 'plain' runs as bare text) but returning an
+	 * array of React children instead of appending real DOM nodes, since
+	 * this preview is built with wp.element.createElement() into React's
+	 * own virtual tree, not real DOM the way that file's own copy is. Reuses
+	 * its .hsrtech-tok--* CSS (style.css) completely unchanged — same class
+	 * names, same token `type` strings, since both this and the front end
+	 * tokenize with the exact same tokenize()/GRAMMARS (window.hsrtechCodeHighlight
+	 * — see that file's own comment on that assignment).
+	 *
+	 * @param {Array<{type: string, text: string}>} tokens
+	 * @param {string} keyPrefix Unique-enough React key prefix for this call
+	 *                           (a line index, or 'flat' for the ungrouped case).
+	 * @return {Array} React children (a mix of plain strings and <span> elements).
+	 */
+	function buildTokenElements( tokens, keyPrefix ) {
+		return tokens.map( function ( token, index ) {
+			if ( 'plain' === token.type ) {
+				return token.text;
+			}
+			return el( 'span', {
+				key: keyPrefix + '-' + index,
+				className: 'hsrtech-tok hsrtech-tok--' + token.type
+			}, token.text );
+		} );
+	}
+
+	/**
 	 * A read-only stand-in for what render.php actually outputs, shown
 	 * instead of the editable PlainText field whenever the block isn't
 	 * selected — which is also exactly the state the block Inserter's hover
@@ -115,14 +144,14 @@
 	 * every existing style.css rule for numbers/highlighting/wrapping
 	 * already applies with no new CSS needed.
 	 *
-	 * Not syntax-colored — unlike the front end (assets/js/code-highlight.js)
-	 * and unlike render.php's own no-JS fallback, there's no tokenizer
-	 * running in the block editor at all, so this only reproduces the
-	 * layout (frame, numbers, highlight tint), not token colors. The same
-	 * "still renders correctly, just without coloring" trade-off already
-	 * documented for lesser-supported languages (code-snippet.php) — not
-	 * worth pulling the GRAMMARS tokenizer into the editor bundle purely
-	 * for a preview that's never the code an author actually reads closely.
+	 * Syntax-colored via window.hsrtechCodeHighlight (assets/js/code-highlight.js,
+	 * loaded as an editorScript dependency purely to expose that — see
+	 * hsrtech_register_code_highlight_script(), code-snippet.php) when the
+	 * block's language has a real grammar there; falls back to plain
+	 * uncolored text otherwise (or if that script somehow hasn't loaded),
+	 * the same graceful "still renders correctly, just without coloring"
+	 * trade-off already documented for lesser-supported languages
+	 * (code-snippet.php's own docblock).
 	 *
 	 * @param {Object} attributes Block attributes.
 	 * @return {*} A React element.
@@ -134,10 +163,19 @@
 		var highlightSet = parsePreviewLineRanges( attributes.highlightLines );
 		var needsRows = showNumbers || Object.keys( highlightSet ).length > 0;
 
+		var hl = window.hsrtechCodeHighlight;
+		var rules = hl && hl.GRAMMARS ? hl.GRAMMARS[ attributes.language ] : null;
+
 		if ( ! needsRows ) {
-			return el( 'pre', {}, el( 'code', {}, code ) );
+			var flatChildren = rules
+				? buildTokenElements( hl.tokenize( code, rules ), 'flat' )
+				: code;
+			return el( 'pre', {}, el( 'code', {}, flatChildren ) );
 		}
 
+		var linesOfTokens = rules
+			? hl.splitTokensIntoLines( hl.tokenize( code, rules ) )
+			: null;
 		var lines = code.split( '\n' );
 		var lineDigits = String( startLine + lines.length - 1 ).length;
 
@@ -152,11 +190,14 @@
 				if ( highlightSet[ index + 1 ] ) {
 					rowClassName += ' hsrtech-code__line--highlighted';
 				}
+				var codeChildren = linesOfTokens
+					? buildTokenElements( linesOfTokens[ index ] || [], String( index ) )
+					: lineText;
 				return el(
 					'div',
 					{ className: rowClassName, key: index },
 					showNumbers ? el( 'span', { className: 'hsrtech-code__line-number' }, String( startLine + index ) ) : null,
-					el( 'span', { className: 'hsrtech-code__line-code' }, lineText )
+					el( 'span', { className: 'hsrtech-code__line-code' }, codeChildren )
 				);
 			} )
 		);
