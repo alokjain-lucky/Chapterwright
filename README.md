@@ -13,7 +13,7 @@ Opens a temporary WordPress site in your browser with Chapterwright already inst
 | WordPress | 6.4 or newer |
 | PHP | 7.4 or newer |
 | Tested through | WordPress 7.0 |
-| Plugin version | 2.8.1 |
+| Plugin version | 2.8.2 |
 
 Chapterwright adds two content types to WordPress: **Books** and **Chapters**. Each book can have its own cover, subtitle, accent color, introduction, and table of contents. Chapters can be grouped into sections — each with its own name and description — and receive automatic previous/next navigation.
 
@@ -321,6 +321,10 @@ Both run automatically on every push and pull request via GitHub Actions (`.gith
 
 The three most recent releases are below. See [CHANGELOG.md](CHANGELOG.md) for the full history back to 1.0.0.
 
+### 2.8.2
+
+- Fixed the chapter-page table-of-contents drawer showing long chapter titles that overflowed sideways, forcing an ugly, hard-to-use horizontal scroll to read them. The drawer reuses the same table-of-contents markup as the book page's own full-width list, which only wraps a long title on narrow browser windows — the drawer is a fixed, narrow panel regardless of window width, so that wrapping never kicked in there. Long titles now always wrap inside the drawer.
+
 ### 2.8.1
 
 - Fixed the Code Snippet block's frame and code background rendering as two visibly different shades, with unwanted top/bottom margin, when the block is used outside a book or chapter page on some themes — the block's own CSS never explicitly set a background on the code itself, so a theme's own generic styling for `<pre>` elements could win.
@@ -333,14 +337,6 @@ The three most recent releases are below. See [CHANGELOG.md](CHANGELOG.md) for t
 - Fixed the Code Snippet block not showing colored syntax or a working copy button outside of book and chapter pages — the highlighting script only ever loaded there; the block's own frame (language label, copy button chrome) always looked right since it loads independently, but the coloring and copy behavior never ran anywhere else.
 - The Code Snippet block can now highlight JSON, alongside PHP, JavaScript, CSS, HTML, and Shell.
 - Added three new Code Snippet block options: wrap long lines instead of showing a horizontal scrollbar, show line numbers, and hide the language label.
-
-### 2.7.0
-
-- Added a "Trashed books" screen to **Books & Chapters**: books moved to the trash can now be restored or permanently deleted from there, instead of being sent out to the classic wp-admin Books list to do it.
-- Chapters in **Books & Chapters** now show their number (1., 2., 3., …) in front of the title, matching their reading order.
-- The table of contents now shows a chapter's excerpt even for a draft chapter (previously excerpt display was published-only, if "Show excerpt in table of contents" is on and the chapter has one), and a draft chapter keeps its real number instead of having "Draft" printed in its place — "Draft" is now a separate label next to the title, still announced to screen readers.
-- Chapters in **Books & Chapters** now show their excerpt below the title too, for drafts and published chapters alike, matching the same "Show excerpt" setting.
-- Fixed a chapter, section, or book occasionally staying missing from its list right after being added successfully — root-caused to a caching layer in front of WordPress on some hosts serving a stale response for a short time afterward, not anything wrong with the save itself. Every GET request the admin app makes now includes a unique value, so it can never be served a cached hit.
 
 ## License
 

@@ -203,6 +203,22 @@
 .hsrtech-toc-row-link--draft { cursor: default; opacity: .48; }
 .hsrtech-toc-row { align-items: baseline; display: flex; gap: .6rem; }
 .hsrtech-toc-row__title { flex-shrink: 0; }
+/* The chapter-page TOC drawer (.hsrtech-toc-drawer, below) reuses this exact
+   markup/CSS unchanged — templates/partials/toc-list.php is the one shared
+   partial both it and the book page's own full-width .hsrtech-toc section
+   render — but the drawer is a fixed ~26rem-wide slide-in panel regardless
+   of how wide the actual browser window is, so the @media (max-width: 720px)
+   fix just below (same flex-shrink: 1 + min-width: 0, see the long comment
+   there for why both are needed together) never applies to it on an
+   ordinary desktop-width browser: the viewport itself is nowhere near
+   720px, only this one narrow panel is. A long chapter title kept its
+   single-line intrinsic width regardless, pushing the leader/number off
+   the edge and forcing the whole drawer to scroll horizontally to read it —
+   scoped to the drawer specifically (rather than widening that media query
+   itself, which exists for an unrelated reason — the whole page's own
+   layout) so the book page's own inline TOC keeps its normal desktop
+   behavior untouched. */
+.hsrtech-toc-drawer .hsrtech-toc-row__title { flex-shrink: 1; min-width: 0; }
 /* The order number (<b>, below) is a plain numeral on a draft row too, same
    as a published one — "Draft" gets its own element instead of replacing the
    number (see templates/partials/toc-list.php), styled the same italic way
