@@ -411,7 +411,20 @@
 .hsrtech-toc-drawer { background: var(--hsrtech-surface); bottom: 0; box-shadow: -1.5rem 0 3rem rgba(0, 0, 0, .2); max-width: 26rem; overflow-y: auto; position: fixed; right: 0; top: 0; transform: translateX(100%); transition: transform .3s ease; width: 88vw; z-index: 201; }
 .hsrtech-toc-drawer.is-open { transform: translateX(0); }
 
-.hsrtech-toc-drawer__header { align-items: center; background: var(--hsrtech-surface); border-bottom: 1px solid var(--hsrtech-line); display: flex; justify-content: space-between; padding: 1.5rem clamp(1.5rem, 4vw, 2.5rem); position: sticky; top: 0; }
+/* z-index (plus transform, below) is required here, not just position:
+   sticky with a solid background. This only ever showed up with draft
+   chapter rows scrolled underneath, never published ones — the difference
+   is .hsrtech-toc-row-link--draft's own opacity: .48 (below), which forces
+   that row onto its own GPU compositing layer. Safari has a long-standing
+   bug where a position: sticky element with z-index: auto doesn't reliably
+   composite above a scrolled sibling that has its own layer (created by
+   opacity/transform/filter), so the draft row's layer could paint on top
+   of the sticky header instead of staying behind it — published rows have
+   no such layer, so they never triggered it. z-index: 1 gives the header
+   its own real stacking context, and transform: translateZ(0) forces it
+   onto its own GPU layer too, so Safari's compositor has an unambiguous
+   order to follow instead of guessing between two layers. */
+.hsrtech-toc-drawer__header { align-items: center; background: var(--hsrtech-surface); border-bottom: 1px solid var(--hsrtech-line); display: flex; justify-content: space-between; padding: 1.5rem clamp(1.5rem, 4vw, 2.5rem); position: sticky; top: 0; transform: translateZ(0); z-index: 1; }
 .hsrtech-toc-drawer__header p { margin: 0; }
 .hsrtech-toc-drawer__close { background: none; border: 0; border-radius: 999px; color: var(--hsrtech-ink); cursor: pointer; font-size: 1.5rem; height: 2.25rem; line-height: 1; width: 2.25rem; }
 .hsrtech-toc-drawer__close:hover { background: var(--hsrtech-paper); }
