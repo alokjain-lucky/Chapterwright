@@ -350,13 +350,39 @@
 	padding-top: 1.5rem;
 }
 
-/* The editor's own version of the block has no copy button at all (the code
-   field is a plain editable PlainText, not the rendered <pre>/button pair
-   render.php produces) — so with the label hidden there's nothing left to
-   clear, and this can drop all the way down to the same padding used on the
-   other three sides. */
+/* The editor's own version of the block — in either its plain editable-field
+   mode or its read-only preview mode, see the two override rules just below
+   — never shows the copy/wrap-toggle buttons at all; those only ever render
+   in render.php's front-end markup. So unlike the front end's own default
+   (2.75rem, clearing both the language label and the taller of those two
+   buttons), this only ever needs to clear the label — 1.75rem, the same
+   amount the front end's own .hsrtech-code--no-actions falls back to for
+   the equivalent "nothing in the corner" case. */
+.hsrtech-code--editing .hsrtech-code__frame {
+	padding: 1.75rem 1.5rem 1.5rem;
+}
+
+/* Label also hidden (hideLanguageLabel): nothing left in the frame's top
+   edge to clear at all, so this drops all the way down to the same padding
+   used on the other three sides. */
 .hsrtech-code--no-lang.hsrtech-code--editing .hsrtech-code__frame {
 	padding-top: 1.5rem;
+}
+
+/* Preview mode (showPreview true in edit.js, including the block Inserter's
+   hover preview): the read-only preview's own content — .hsrtech-code__lines
+   or a flat <pre>, buildPreviewElement() — carries its own matching top
+   padding already, the exact same rules the front end uses (correctly sized
+   for "no buttons" via the always-on .hsrtech-code--no-actions class edit.js
+   adds — see that file). Without this override, the frame's own padding
+   just above would stack on top of that, roughly doubling the gap above the
+   code — the frame needs zero padding of its own here, entirely. Same
+   specificity as the no-lang rule above (three classes each), so this must
+   stay declared after it to still win when both apply at once: preview
+   mode's "zero" is correct regardless of the label being shown or hidden,
+   since the child underneath already accounts for that on its own. */
+.hsrtech-code--editing.hsrtech-code--preview .hsrtech-code__frame {
+	padding: 0;
 }
 
 /* Editor-only: the block appears while it's being edited, not saved markup. */
@@ -380,10 +406,6 @@
 .hsrtech-code--editing .hsrtech-code__caption-input input::placeholder {
 	color: var(--hsrtech-code-ink, #f5f2ea);
 	opacity: 0.5;
-}
-
-.hsrtech-code--editing .hsrtech-code__frame {
-	padding: 2.75rem 1.5rem 1.5rem;
 }
 
 .hsrtech-code--editing .hsrtech-code__editor {

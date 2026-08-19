@@ -239,6 +239,17 @@
 			var attributes = props.attributes;
 			var setAttributes = props.setAttributes;
 			var isSelected = props.isSelected;
+			// The editable PlainText field is best for actually writing code
+			// (no risk of a click landing on a token span instead of placing
+			// the cursor), but doesn't show numbers, highlighting, or wrapping
+			// at all — so swap to the read-only formatted preview
+			// (buildPreviewElement() above) whenever the block isn't selected,
+			// which is also exactly the state the block Inserter's hover
+			// preview renders in (see block.json's "example"). Clicking the
+			// preview selects the block same as clicking any other block
+			// content, switching straight back to the editable field.
+			var showPreview = ! isSelected && !! ( attributes.code && attributes.code.trim() );
+
 			var figureClassName = 'hsrtech-code hsrtech-code--editing';
 			if ( attributes.hideLanguageLabel ) {
 				// See the matching .hsrtech-code--no-lang rule, style.css.
@@ -250,18 +261,23 @@
 				// end will.
 				figureClassName += ' hsrtech-code--wrap';
 			}
+			// The editor never renders the copy/wrap-toggle buttons at all —
+			// those only exist in render.php's front-end markup, regardless of
+			// hideCopyButton/hideWrapToggle (which only ever hide them there) —
+			// so .hsrtech-code--no-actions (style.css) always applies here,
+			// reclaiming the padding every front-end block reserves to clear
+			// them, whichever attributes this particular block has.
+			figureClassName += ' hsrtech-code--no-actions';
+			if ( showPreview ) {
+				// See the matching .hsrtech-code--editing.hsrtech-code--preview
+				// rule, style.css: the read-only preview's own content
+				// (.hsrtech-code__lines or <pre>) carries its own top padding,
+				// same as the front end — without this class the frame ALSO
+				// keeps its own editing-mode padding (needed only for the
+				// zero-padding PlainText field, showPreview false), doubling up.
+				figureClassName += ' hsrtech-code--preview';
+			}
 			var blockProps = useBlockProps( { className: figureClassName } );
-
-			// The editable PlainText field is best for actually writing code
-			// (no risk of a click landing on a token span instead of placing
-			// the cursor), but doesn't show numbers, highlighting, or wrapping
-			// at all — so swap to the read-only formatted preview
-			// (buildPreviewElement() above) whenever the block isn't selected,
-			// which is also exactly the state the block Inserter's hover
-			// preview renders in (see block.json's "example"). Clicking the
-			// preview selects the block same as clicking any other block
-			// content, switching straight back to the editable field.
-			var showPreview = ! isSelected && !! ( attributes.code && attributes.code.trim() );
 
 			return el(
 				Fragment,

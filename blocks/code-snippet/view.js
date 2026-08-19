@@ -34,6 +34,11 @@
 
 		toggle.setAttribute( 'aria-pressed', isWrapped ? 'true' : 'false' );
 		toggle.setAttribute( 'aria-label', isWrapped ? unwrapLabel : wrapLabel );
+		// Keeps the native hover tooltip (render.php's own title="…") in sync
+		// with aria-label above rather than leaving it stuck on the button's
+		// original server-rendered state — same reasoning as showCopied()'s
+		// own title update below.
+		toggle.setAttribute( 'title', isWrapped ? unwrapLabel : wrapLabel );
 	} );
 
 	document.addEventListener( 'click', function ( event ) {
@@ -71,12 +76,18 @@
 
 		// Icon-only button: the visible state change is a swapped icon (via
 		// the .is-copied class, see style.css), with the accessible name
-		// carried by aria-label rather than by textContent.
+		// carried by aria-label rather than by textContent. title mirrors
+		// aria-label so the native hover tooltip (sighted mouse users) reads
+		// "Copied!" too, not just screen readers — set on both here rather
+		// than relying on the static title render.php already writes, which
+		// would otherwise never change from "Copy code".
 		function showCopied() {
 			button.setAttribute( 'aria-label', copiedLabel );
+			button.setAttribute( 'title', copiedLabel );
 			button.classList.add( 'is-copied' );
 			window.setTimeout( function () {
 				button.setAttribute( 'aria-label', defaultLabel );
+				button.setAttribute( 'title', defaultLabel );
 				button.classList.remove( 'is-copied' );
 			}, 2000 );
 		}

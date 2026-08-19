@@ -507,13 +507,16 @@
 		// exactly (same classes, same two-SVG swap driven by .is-copied) so a
 		// synthesized plain-code-block button is indistinguishable from the
 		// custom block's own. The accessible name lives in aria-label, not
-		// visible text — see view.js's click handler, which both buttons share.
+		// visible text — see view.js's click handler, which both buttons
+		// share, and which also keeps title (the native hover tooltip) in
+		// sync with aria-label as the copy state changes.
 		var copyButton = document.createElement( 'button' );
 		copyButton.type = 'button';
 		copyButton.className = 'hsrtech-code__copy';
 		copyButton.setAttribute( 'data-hsrtech-copy-label', copyLabel );
 		copyButton.setAttribute( 'data-hsrtech-copied-label', copiedLabel );
 		copyButton.setAttribute( 'aria-label', copyLabel );
+		copyButton.setAttribute( 'title', copyLabel );
 		copyButton.innerHTML =
 			'<svg class="hsrtech-code__copy-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"></rect><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"></path></svg>' +
 			'<svg class="hsrtech-code__copied-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
