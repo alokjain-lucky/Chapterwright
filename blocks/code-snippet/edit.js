@@ -146,6 +146,25 @@
 								setAttributes( { showLineNumbers: value } );
 							}
 						} ),
+						el( TextControl, {
+							label: __( 'Start line', 'chapterwright' ),
+							help: __( 'What number the gutter shows next to the snippet\'s first line. Doesn\'t change which lines "Highlight lines" refers to.', 'chapterwright' ),
+							type: 'number',
+							min: 1,
+							value: attributes.startLine,
+							onChange: function ( value ) {
+								var parsed = parseInt( value, 10 );
+								setAttributes( { startLine: ( parsed && parsed > 0 ) ? parsed : 1 } );
+							}
+						} ),
+						el( TextControl, {
+							label: __( 'Highlight lines (optional)', 'chapterwright' ),
+							help: __( 'e.g. 3-5, 8. Counted from the top of the snippet, regardless of "Start line".', 'chapterwright' ),
+							value: attributes.highlightLines,
+							onChange: function ( value ) {
+								setAttributes( { highlightLines: value } );
+							}
+						} ),
 						el( ToggleControl, {
 							__nextHasNoMarginBottom: true,
 							label: __( 'Show language label', 'chapterwright' ),

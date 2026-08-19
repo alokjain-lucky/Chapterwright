@@ -1,5 +1,6 @@
 /**
- * Front-end copy-to-clipboard behavior for chapterwright/code-snippet.
+ * Front-end copy-to-clipboard and wrap-toggle behavior for
+ * chapterwright/code-snippet.
  *
  * Dependency-free and loaded only on pages that actually contain the block
  * (block.json's viewScript is enqueued automatically and only then), matching
@@ -9,6 +10,31 @@
  */
 ( function () {
 	'use strict';
+
+	// Reader-facing "Wrap long lines" toggle: independent of the author's own
+	// saved wrapLines attribute (which only sets the *initial* state render.php
+	// outputs) — a visitor can flip it per block, per page view. Deliberately
+	// not persisted (no localStorage): resets to the author's default on the
+	// next page load, keeping this simple rather than remembering a per-block
+	// preference across visits.
+	document.addEventListener( 'click', function ( event ) {
+		var toggle = event.target.closest( '.hsrtech-code__wrap-toggle' );
+		if ( ! toggle ) {
+			return;
+		}
+
+		var figure = toggle.closest( '.hsrtech-code' );
+		if ( ! figure ) {
+			return;
+		}
+
+		var isWrapped = figure.classList.toggle( 'hsrtech-code--wrap' );
+		var wrapLabel = toggle.getAttribute( 'data-hsrtech-wrap-label' ) || 'Wrap long lines';
+		var unwrapLabel = toggle.getAttribute( 'data-hsrtech-unwrap-label' ) || 'Scroll long lines';
+
+		toggle.setAttribute( 'aria-pressed', isWrapped ? 'true' : 'false' );
+		toggle.setAttribute( 'aria-label', isWrapped ? unwrapLabel : wrapLabel );
+	} );
 
 	document.addEventListener( 'click', function ( event ) {
 		var button = event.target.closest( '.hsrtech-code__copy' );

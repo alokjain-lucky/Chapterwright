@@ -32,6 +32,14 @@
 		"hideLanguageLabel": {
 			"type": "boolean",
 			"default": false
+		},
+		"highlightLines": {
+			"type": "string",
+			"default": ""
+		},
+		"startLine": {
+			"type": "number",
+			"default": 1
 		}
 	},
 	"supports": {

@@ -22,6 +22,14 @@ $hsrtech_caption             = isset( $attributes['caption'] ) ? (string) $attri
 $hsrtech_wrap_lines          = ! empty( $attributes['wrapLines'] );
 $hsrtech_show_line_numbers   = ! empty( $attributes['showLineNumbers'] );
 $hsrtech_hide_language_label = ! empty( $attributes['hideLanguageLabel'] );
+$hsrtech_highlight_lines_raw = isset( $attributes['highlightLines'] ) ? (string) $attributes['highlightLines'] : '';
+$hsrtech_start_line          = isset( $attributes['startLine'] ) ? (int) $attributes['startLine'] : 1;
+
+if ( $hsrtech_start_line < 1 ) {
+	$hsrtech_start_line = 1;
+}
+
+$hsrtech_highlight_set = hsrtech_parse_code_snippet_line_ranges( $hsrtech_highlight_lines_raw );
 
 // Nothing to show yet (e.g. a freshly inserted, still-empty block).
 if ( '' === trim( $hsrtech_code ) ) {
@@ -41,6 +49,20 @@ if ( $hsrtech_hide_language_label ) {
 }
 
 $hsrtech_wrapper_attributes = get_block_wrapper_attributes( array( 'class' => implode( ' ', $hsrtech_figure_classes ) ) );
+
+// One <div> per source line — with an optional number and/or highlight tint
+// — is only worth the extra markup when something actually needs a per-line
+// hook. Anything else stays the simpler flat <pre><code>, exactly as before
+// "Show line numbers" and "Highlight lines" existed. Either shape is what a
+// visitor with JavaScript disabled actually sees; assets/js/code-highlight.js
+// discards and rebuilds whichever one rendered, from the raw code and the
+// data-hsrtech-* attributes below, so it always ends up correct regardless
+// of how a line wraps — see that file's buildLineRows() for why the two
+// need to agree on markup shape but not on exact content.
+$hsrtech_needs_rows = $hsrtech_show_line_numbers || ! empty( $hsrtech_highlight_set );
+
+$hsrtech_code_lines = explode( "\n", $hsrtech_code );
+$hsrtech_line_digits = strlen( (string) ( $hsrtech_start_line + count( $hsrtech_code_lines ) - 1 ) );
 ?>
 <figure <?php echo $hsrtech_wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() escapes its own output. ?>>
 	<?php if ( $hsrtech_caption ) : ?>
@@ -51,6 +73,17 @@ $hsrtech_wrapper_attributes = get_block_wrapper_attributes( array( 'class' => im
 			<span class="hsrtech-code__lang" aria-hidden="true"><?php echo esc_html( strtoupper( $hsrtech_language ) ); ?></span>
 		<?php endif; ?>
 		<button
+			class="hsrtech-code__wrap-toggle"
+			type="button"
+			data-hsrtech-wrap-label="<?php esc_attr_e( 'Wrap long lines', 'chapterwright' ); ?>"
+			data-hsrtech-unwrap-label="<?php esc_attr_e( 'Scroll long lines', 'chapterwright' ); ?>"
+			aria-label="<?php echo esc_attr( $hsrtech_wrap_lines ? __( 'Scroll long lines', 'chapterwright' ) : __( 'Wrap long lines', 'chapterwright' ) ); ?>"
+			aria-pressed="<?php echo esc_attr( $hsrtech_wrap_lines ? 'true' : 'false' ); ?>"
+		>
+			<svg class="hsrtech-code__wrap-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h13a3 3 0 0 1 0 6h-4m2-2-2 2 2 2M3 18h6"></path></svg>
+			<svg class="hsrtech-code__unwrap-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"></path></svg>
+		</button>
+		<button
 			class="hsrtech-code__copy"
 			type="button"
 			data-hsrtech-copy-label="<?php esc_attr_e( 'Copy code', 'chapterwright' ); ?>"
@@ -60,29 +93,32 @@ $hsrtech_wrapper_attributes = get_block_wrapper_attributes( array( 'class' => im
 			<svg class="hsrtech-code__copy-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"></rect><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"></path></svg>
 			<svg class="hsrtech-code__copied-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
 		</button>
-		<div class="hsrtech-code__body">
-			<?php if ( $hsrtech_show_line_numbers ) : ?>
+		<?php if ( $hsrtech_needs_rows ) : ?>
+			<div
+				class="hsrtech-code__lines"
+				style="--hsrtech-line-digits: <?php echo esc_attr( (string) $hsrtech_line_digits ); ?>;"
+				data-hsrtech-language="<?php echo esc_attr( $hsrtech_language ); ?>"
+				data-hsrtech-show-numbers="<?php echo esc_attr( $hsrtech_show_line_numbers ? '1' : '0' ); ?>"
+				data-hsrtech-start-line="<?php echo esc_attr( (string) $hsrtech_start_line ); ?>"
+				data-hsrtech-highlight-lines="<?php echo esc_attr( $hsrtech_highlight_lines_raw ); ?>"
+			>
 				<?php
-				// One number per source line, not per rendered/wrapped visual
-				// row — see the .hsrtech-code__line-numbers comment in
-				// style.css for the "Wrap long lines" + "Show line numbers"
-				// combination this doesn't account for.
-				$hsrtech_line_count = substr_count( $hsrtech_code, "\n" ) + 1;
-				// Echoed via PHP rather than closed/reopened around a literal <pre>
-				// tag, specifically so this stays one continuous embedded PHP region
-				// with no opening tag sharing a line with markup, which is what
-				// tripped Squiz.PHP.EmbeddedPhp.ContentBeforeOpen here before.
-				echo '<pre class="hsrtech-code__line-numbers" aria-hidden="true">';
-				for ( $hsrtech_i = 1; $hsrtech_i <= $hsrtech_line_count; $hsrtech_i++ ) {
-					echo esc_html( (string) $hsrtech_i );
-					if ( $hsrtech_i < $hsrtech_line_count ) {
-						echo "\n";
+				foreach ( $hsrtech_code_lines as $hsrtech_row_index => $hsrtech_row_text ) :
+					$hsrtech_row_classes = array( 'hsrtech-code__line' );
+					if ( isset( $hsrtech_highlight_set[ $hsrtech_row_index + 1 ] ) ) {
+						$hsrtech_row_classes[] = 'hsrtech-code__line--highlighted';
 					}
-				}
-				// phpcs:ignore Squiz.PHP.EmbeddedPhp.ContentAfterEnd -- Deliberately no line break before the closing tag either: same reason as the opening tag above, for the closing </pre>.
-				?></pre>
-			<?php endif; ?>
+					?>
+					<div class="<?php echo esc_attr( implode( ' ', $hsrtech_row_classes ) ); ?>">
+						<?php if ( $hsrtech_show_line_numbers ) : ?>
+							<span class="hsrtech-code__line-number" aria-hidden="true"><?php echo esc_html( (string) ( $hsrtech_start_line + $hsrtech_row_index ) ); ?></span>
+						<?php endif; ?>
+						<span class="hsrtech-code__line-code"><?php echo esc_html( $hsrtech_row_text ); ?></span>
+					</div>
+				<?php endforeach; ?>
+			</div>
+		<?php else : ?>
 			<pre data-hsrtech-language="<?php echo esc_attr( $hsrtech_language ); ?>"><code><?php echo esc_html( $hsrtech_code ); ?></code></pre>
-		</div>
+		<?php endif; ?>
 	</div>
 </figure>

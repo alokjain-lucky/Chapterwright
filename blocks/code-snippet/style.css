@@ -80,6 +80,12 @@
 	top: 1rem;
 }
 
+/* Shared chrome for both frame-corner buttons — copy, and the wrap toggle
+   just below. Each sets only its own `right` offset, positioned side by
+   side: copy stays closest to the corner (unchanged position, so it lines
+   up with every already-shipped screenshot/tutorial reference to "the copy
+   button in the corner"), wrap toggle sits just to its left. */
+.hsrtech-code__wrap-toggle,
 .hsrtech-code__copy {
 	align-items: center;
 	background: rgba(255, 255, 255, 0.08);
@@ -92,11 +98,20 @@
 	justify-content: center;
 	padding: 0;
 	position: absolute;
-	right: 0.9rem;
 	top: 0.8rem;
 	width: 2.1rem;
 }
 
+.hsrtech-code__copy {
+	right: 0.9rem;
+}
+
+.hsrtech-code__wrap-toggle {
+	right: 3.5rem;
+}
+
+.hsrtech-code__wrap-toggle:hover,
+.hsrtech-code__wrap-toggle:focus-visible,
 .hsrtech-code__copy:hover,
 .hsrtech-code__copy:focus-visible {
 	background: rgba(255, 255, 255, 0.18);
@@ -108,11 +123,24 @@
 	color: #fff;
 }
 
-/* Icon-only button: swap which of the two icons is visible instead of
-   changing any text, so the "Copied!" confirmation reads via aria-label
+/* A visible "pressed" look while wrap is on — driven by the figure's own
+   .hsrtech-code--wrap (view.js toggles that, not any class on this button
+   itself), the same class the "Wrap long lines" block option sets, so a
+   reader's override and the author's own saved setting look identical
+   either way. Deliberately quieter than .is-copied's full accent-color
+   flash above: that's a momentary confirmation, this is a standing state. */
+.hsrtech-code--wrap .hsrtech-code__wrap-toggle {
+	background: rgba(255, 255, 255, 0.18);
+	border-color: rgba(255, 255, 255, 0.32);
+}
+
+/* Icon-only buttons: swap which of each pair's two icons is visible instead
+   of changing any text, so state (copied, or wrapped) reads via aria-label
    (see view.js) for screen readers rather than visible copy. */
 .hsrtech-code__copy-icon,
-.hsrtech-code__copied-icon {
+.hsrtech-code__copied-icon,
+.hsrtech-code__wrap-icon,
+.hsrtech-code__unwrap-icon {
 	height: 1.05rem;
 	width: 1.05rem;
 }
@@ -120,58 +148,50 @@
 .hsrtech-code__copy-icon { display: block; }
 .hsrtech-code__copied-icon { display: none; }
 
+.hsrtech-code__wrap-icon { display: block; }
+.hsrtech-code__unwrap-icon { display: none; }
+
+.hsrtech-code--wrap .hsrtech-code__wrap-icon { display: none; }
+.hsrtech-code--wrap .hsrtech-code__unwrap-icon { display: block; }
+
 .hsrtech-code__copy.is-copied .hsrtech-code__copy-icon { display: none; }
 .hsrtech-code__copy.is-copied .hsrtech-code__copied-icon { display: block; }
 
-/* Shared by both <pre> elements .hsrtech-code can contain — the code itself
-   and, when the "Show line numbers" option is on, the numbers gutter next to
-   it (added below) — so their text lines up at exactly the same height
-   whether or not line numbers are showing. The parts that differ between the
-   two (padding, overflow, whether the text wraps) are set separately below,
-   scoped with :not(.hsrtech-code__line-numbers) rather than a positive class
-   on the code <pre> itself, so this keeps applying to both the code-snippet
-   block's own markup (render.php) and the plain-<pre>-in-chapter-content
-   markup assets/js/code-highlight.js's wrapPlainBlock() synthesizes, neither
-   of which needs to know about that class.
+/* The flat, no-frills code <pre> — render.php's simplest case, used when
+   nothing needs a per-line hook ("Show line numbers" and "Highlight lines"
+   both off — see $hsrtech_needs_rows there), and also what
+   wrapPlainBlock() (assets/js/code-highlight.js) synthesizes around a bare
+   <pre><code> found elsewhere in chapter content, since neither of those
+   needs the row structure below either.
 
-   Selectors below are scoped through both .hsrtech-code and
-   .hsrtech-code__frame (not just one of the two) on purpose: a plain "<pre>"
-   is exactly the kind of element themes often style generically for their
-   own content areas (e.g. a theme rule like ".entry-content pre {
-   background: ...; margin: 1.5rem 0; }"). A single-class selector like that
-   has the same specificity as a single-class selector of ours — one class,
-   one element either way — so on a tie, whichever stylesheet the browser
-   happens to cascade later wins, and a theme's own background/margin can
-   silently win over ours depending on load order (an earlier version of this
-   rule went through .hsrtech-code__frame alone for exactly this reason, but
-   that's still only one class — it never actually fixed anything). Requiring
-   both ancestor classes adds a second class, which reliably outranks a
-   theme's single-class content-area selector regardless of order.
-   background: none is set explicitly here too, for the same reason —
-   without it, nothing here competes for that property at all, so a theme's
-   own pre { background: ... } applies completely unopposed and shows
-   through as a different shade than .hsrtech-code__frame's own background,
-   right behind it.
-
-   Every other rule below that overrides one of these three properties for a
-   specific case (the line-numbers gutter, "Wrap long lines", "Hide language
-   label") is deliberately bumped by the same one extra class, so the ties
-   between them and these three rules — and which one wins by coming later in
-   the file — stay exactly as they were before this file went from one
-   ancestor class to two. */
+   Scoped through both .hsrtech-code and .hsrtech-code__frame (not just one
+   of the two) on purpose: a plain "<pre>" is exactly the kind of element
+   themes often style generically for their own content areas (e.g. a theme
+   rule like ".entry-content pre { background: ...; margin: 1.5rem 0; }").
+   A single-class selector like that has the same specificity as a
+   single-class selector of ours — one class, one element either way — so on
+   a tie, whichever stylesheet the browser happens to cascade later wins,
+   and a theme's own background/margin can silently win over ours depending
+   on load order (an earlier version of this rule went through
+   .hsrtech-code__frame alone for exactly this reason, but that's still only
+   one class — it never actually fixed anything). Requiring both ancestor
+   classes adds a second class, which reliably outranks a theme's
+   single-class content-area selector regardless of order. background: none
+   is set explicitly here too, for the same reason — without it, nothing
+   here competes for that property at all, so a theme's own
+   pre { background: ... } applies completely unopposed and shows through as
+   a different shade than .hsrtech-code__frame's own background, right
+   behind it. */
 .hsrtech-code .hsrtech-code__frame pre {
 	background: none;
 	font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 	font-size: 0.88rem;
 	line-height: 1.65;
 	margin: 0;
-	tab-size: 4;
-}
-
-.hsrtech-code .hsrtech-code__frame pre:not(.hsrtech-code__line-numbers) {
 	max-width: 100%;
 	overflow-x: auto;
 	padding: 2.75rem 1.5rem 1.5rem;
+	tab-size: 4;
 	white-space: pre;
 }
 
@@ -182,80 +202,40 @@
 	padding: 0;
 }
 
-/* Holds the code <pre> and, when present, the line-numbers gutter next to
-   it — a plain flex row so the two sit side by side and stretch to the same
-   height regardless of which one has more visual content. */
-.hsrtech-code__body {
-	display: flex;
-}
-
-/* The numbers gutter itself: a second, independent <pre> (render.php),
-   listing "1\n2\n3…" — a flat list that only lines up 1:1 with the code
-   <pre>'s own rows for as long as no line visually wraps onto a second row.
-   This markup is now only what actually reaches the page when JavaScript
-   never runs: assets/js/code-highlight.js's buildNumberedLines() replaces
-   this <pre> and its code sibling with a .hsrtech-code__lines structure
-   (below) that stays correct regardless of wrapping, on every page load
-   where it can. Kept here, unchanged, purely as that no-JS fallback — still
-   worth having something over nothing, even if it's the one case "Wrap long
-   lines" and "Show line numbers" together can still drift. flex: none keeps
-   this column a fixed width driven by its own content (the digits) rather
-   than sharing the row's available space with the code. */
-.hsrtech-code .hsrtech-code__frame .hsrtech-code__line-numbers {
-	background: none;
-	border-right: 1px solid rgba(255, 255, 255, 0.12);
-	color: var(--hsrtech-code-ink, #f5f2ea);
-	flex: none;
-	opacity: 0.4;
-	padding: 2.75rem 0.9rem 1.5rem 1.5rem;
-	text-align: right;
-	user-select: none;
-}
-
-/* The code <pre> is the flexible column — full width on its own, sharing
-   the row with the numbers gutter (fixed-width, above) when one's present.
-   min-width: 0 is required alongside flex: 1 1 auto for overflow-x: auto to
-   actually kick in here instead of the flex item refusing to shrink below
-   its content's natural width (a flex item's default min-width is auto, not
-   0). The adjacent-sibling rule trims the code's own left inset only when a
-   numbers gutter precedes it, so the two don't add up to a doubled gap. */
-.hsrtech-code__body pre:not(.hsrtech-code__line-numbers) {
-	flex: 1 1 auto;
-	min-width: 0;
-}
-
-/* Same specificity as the padding shorthand it overrides (.hsrtech-code
-   .hsrtech-code__frame pre:not(...), above) — three classes and an element
-   either way — so this only wins because it comes later in the file. */
-.hsrtech-code .hsrtech-code__frame .hsrtech-code__line-numbers + pre {
-	padding-left: 0.9rem;
-}
-
 /* "Wrap long lines" option: overrides the horizontal-scroll default above
    with normal text wrapping instead. word-break covers a single unbroken
    token (a long URL or hash) that's still wider than the block on its own,
-   which white-space: pre-wrap alone wouldn't break. Same specificity as the
-   rule it overrides, again for the same reason: three classes and an
-   element, winning only because it's later in the file.
+   which white-space: pre-wrap alone wouldn't break.
 
    .hsrtech-code and .hsrtech-code--wrap with no space between them, not a
    descendant selector — render.php puts both classes on the same <figure>,
    not on two nested elements, so ".hsrtech-code .hsrtech-code--wrap" (with
    a space) would look for one inside the other and never match anything. */
-.hsrtech-code.hsrtech-code--wrap pre:not(.hsrtech-code__line-numbers) {
+.hsrtech-code.hsrtech-code--wrap pre {
 	overflow-x: hidden;
 	white-space: pre-wrap;
 	word-break: break-word;
 }
 
-/* JS-built replacement for the .hsrtech-code__line-numbers + <pre> pair
-   above, one row per source line instead of two independently-scrolling
-   columns — see buildNumberedLines(), assets/js/code-highlight.js. A plain
-   <div>, not a <pre>, on purpose: it never collides with a theme's own
-   generic "pre { ... }" content-area styling (see the note on
-   .hsrtech-code .hsrtech-code__frame pre near the top of this file) the
-   way the old gutter's <pre> could, so this needs none of that rule's
-   specificity workarounds. */
+/* "Show language label" off (render.php adds this class when
+   hideLanguageLabel is true) — see the matching .hsrtech-code--no-lang
+   .hsrtech-code__lines rule below for the row-based shape's version and the
+   full explanation of the trade-off this makes with the copy/wrap-toggle
+   buttons that stay in the same top-right corner regardless. */
+.hsrtech-code.hsrtech-code--no-lang pre {
+	padding-top: 1.75rem;
+}
+
+/* Row-based shape: one <div> per source line, a number (if "Show line
+   numbers" is on) and that line's code side by side — render.php's markup
+   whenever something needs a per-line hook, rebuilt identically client-side
+   by buildLineRows() (assets/js/code-highlight.js) once JavaScript runs, so
+   a wrapped line's continuation simply has no extra number rather than
+   every later one drifting (the two-independent-<pre>-columns approach this
+   replaced could only ever stay lined up as long as no line wrapped). A
+   plain <div>, not a <pre>, on purpose: unlike the flat case above, it never
+   collides with a theme's own generic "pre { ... }" content-area styling at
+   all, needing none of that rule's ancestor-class specificity workarounds. */
 .hsrtech-code__lines {
 	font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 	font-size: 0.88rem;
@@ -270,10 +250,22 @@
 	display: flex;
 }
 
-/* Width driven by --hsrtech-line-digits, a custom property buildNumberedLines()
-   sets once per block based on its own line count, so a 3-digit line number
-   (100+ lines) gets as much room as a 1-digit one, instead of a fixed width
-   sized for the common case that would clip or misalign larger ones. */
+/* "Highlight lines" option: a subtle background tint plus a left accent bar
+   for lines an author called out (render.php's $hsrtech_highlight_set, or
+   buildLineRows()'s highlightSet once JavaScript rebuilds the row). Sits at
+   the row's own edge, not bled out to the frame's full width, since padding
+   lives on .hsrtech-code__lines as a whole rather than per row. */
+.hsrtech-code__line--highlighted {
+	background: rgba(255, 255, 255, 0.07);
+	box-shadow: inset 3px 0 0 var(--hsrtech-accent, #f45d48);
+}
+
+/* Width driven by --hsrtech-line-digits, a custom property both render.php
+   (inline, server-side) and buildLineRows() (JS rebuild) set based on the
+   snippet's own line count plus "Start line" offset, so a 3-digit displayed
+   number (row 100+, or startLine pushing an early row past 99) gets as much
+   room as a 1-digit one, instead of a fixed width sized for the common case
+   that would clip or misalign larger ones. */
 .hsrtech-code__line-number {
 	border-right: 1px solid rgba(255, 255, 255, 0.12);
 	color: var(--hsrtech-code-ink, #f5f2ea);
@@ -294,14 +286,14 @@
 	width: calc(var(--hsrtech-line-digits, 2) * 1ch + 2px);
 }
 
-/* The line's own code — min-width: 0 alongside flex: 1 1 auto for the same
-   reason as .hsrtech-code__body pre:not(...) above: a flex item's default
-   min-width is auto, not 0, which would otherwise stop it shrinking (and
-   .hsrtech-code__lines' own overflow-x: auto from kicking in) below its
-   content's natural width. white-space: pre by default, matching every
-   other code <pre> in this file — the .hsrtech-code--wrap override just
-   below is what actually makes wrapping (and therefore this whole
-   structure's reason for existing) work correctly, row by row. */
+/* The line's own code — min-width: 0 alongside flex: 1 1 auto is required
+   for .hsrtech-code__lines' own overflow-x: auto to actually kick in here
+   instead of the flex item refusing to shrink below its content's natural
+   width (a flex item's default min-width is auto, not 0). white-space: pre
+   by default, matching every other code <pre> in this file — the
+   .hsrtech-code--wrap override just below is what actually makes wrapping
+   (and therefore highlighted-line backgrounds staying full-row-width, and
+   line numbers staying correct once a row wraps) work correctly. */
 .hsrtech-code__line-code {
 	flex: 1 1 auto;
 	min-width: 0;
@@ -319,26 +311,15 @@
 }
 
 /* "Show language label" off (render.php adds this class when
-   hideLanguageLabel is true): the top padding above defaults to 2.75rem to
-   clear both the language label (top: 1rem, left) and the copy button
-   (top: 0.8rem, right — the taller of the two, reaching to about 2.9rem).
-   With the label gone there's only the button left to clear, so this gives
-   back some — but not all — of that reserved space; shrinking all the way
-   down to the button's own ~2.9rem requirement would give back almost
-   nothing, so this accepts the copy button visually overlapping the first
+   hideLanguageLabel is true, on either markup shape): the top padding above
+   defaults to 2.75rem to clear both the language label (top: 1rem, left)
+   and whichever of the copy/wrap-toggle buttons reaches lowest (top: 0.8rem,
+   right — about 2.9rem). With the label gone there's only the buttons left
+   to clear, so this gives back some — but not all — of that reserved space;
+   shrinking all the way down to their own ~2.9rem requirement would give
+   back almost nothing, so this accepts them visually overlapping the first
    line or two of short snippets instead, the same trade-off plenty of code
-   viewers make for a corner-floating copy button.
-
-   Same compound-selector note as "Wrap long lines" above: .hsrtech-code and
-   .hsrtech-code--no-lang have no space between them because render.php puts
-   both on the same <figure>, not on two nested elements. */
-.hsrtech-code.hsrtech-code--no-lang pre:not(.hsrtech-code__line-numbers) {
-	padding-top: 1.75rem;
-}
-
-.hsrtech-code.hsrtech-code--no-lang .hsrtech-code__line-numbers {
-	padding-top: 1.75rem;
-}
+   viewers make for corner-floating buttons. */
 
 /* The editor's own version of the block has no copy button at all (the code
    field is a plain editable PlainText, not the rendered <pre>/button pair
