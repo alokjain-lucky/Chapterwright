@@ -411,7 +411,12 @@
 .hsrtech-toc-drawer { background: var(--hsrtech-surface); bottom: 0; box-shadow: -1.5rem 0 3rem rgba(0, 0, 0, .2); max-width: 26rem; overflow-y: auto; position: fixed; right: 0; top: 0; transform: translateX(100%); transition: transform .3s ease; width: 88vw; z-index: 201; }
 .hsrtech-toc-drawer.is-open { transform: translateX(0); }
 
-.hsrtech-toc-drawer__header { align-items: center; background: var(--hsrtech-surface); border-bottom: 1px solid var(--hsrtech-line); display: flex; justify-content: space-between; padding: 1.5rem clamp(1.5rem, 4vw, 2.5rem); position: sticky; top: 0; }
+/* z-index is required here, not just position: sticky + a solid background —
+   without it (z-index: auto) Safari has a long-standing bug where a sticky
+   element's own stacking context isn't reliably established, so scrolled
+   content underneath can paint over it instead of staying behind, showing
+   as row text bleeding through the header during/after a scroll. */
+.hsrtech-toc-drawer__header { align-items: center; background: var(--hsrtech-surface); border-bottom: 1px solid var(--hsrtech-line); display: flex; justify-content: space-between; padding: 1.5rem clamp(1.5rem, 4vw, 2.5rem); position: sticky; top: 0; z-index: 1; }
 .hsrtech-toc-drawer__header p { margin: 0; }
 .hsrtech-toc-drawer__close { background: none; border: 0; border-radius: 999px; color: var(--hsrtech-ink); cursor: pointer; font-size: 1.5rem; height: 2.25rem; line-height: 1; width: 2.25rem; }
 .hsrtech-toc-drawer__close:hover { background: var(--hsrtech-paper); }
