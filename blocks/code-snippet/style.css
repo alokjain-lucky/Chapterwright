@@ -190,16 +190,17 @@
 }
 
 /* The numbers gutter itself: a second, independent <pre> (render.php),
-   listing "1\n2\n3…" — not CSS counters on a per-line wrapper around the
-   actual code, which would require assets/js/code-highlight.js to tokenize
-   each line separately instead of the whole block at once. A plain sibling
-   <pre> needs no changes there, at the cost of one known trade-off: if
-   "Wrap long lines" is also on and a single source line wraps to two visual
-   rows, the numbers stop lining up with that row onward. Most snippets don't
-   need both at once, and this is the same trade-off simpler code viewers
-   elsewhere make. flex: none keeps this column a fixed width driven by its
-   own content (the digits) rather than sharing the row's available space
-   with the code. */
+   listing "1\n2\n3…" — a flat list that only lines up 1:1 with the code
+   <pre>'s own rows for as long as no line visually wraps onto a second row.
+   This markup is now only what actually reaches the page when JavaScript
+   never runs: assets/js/code-highlight.js's buildNumberedLines() replaces
+   this <pre> and its code sibling with a .hsrtech-code__lines structure
+   (below) that stays correct regardless of wrapping, on every page load
+   where it can. Kept here, unchanged, purely as that no-JS fallback — still
+   worth having something over nothing, even if it's the one case "Wrap long
+   lines" and "Show line numbers" together can still drift. flex: none keeps
+   this column a fixed width driven by its own content (the digits) rather
+   than sharing the row's available space with the code. */
 .hsrtech-code .hsrtech-code__frame .hsrtech-code__line-numbers {
 	background: none;
 	border-right: 1px solid rgba(255, 255, 255, 0.12);
@@ -245,6 +246,68 @@
 	overflow-x: hidden;
 	white-space: pre-wrap;
 	word-break: break-word;
+}
+
+/* JS-built replacement for the .hsrtech-code__line-numbers + <pre> pair
+   above, one row per source line instead of two independently-scrolling
+   columns — see buildNumberedLines(), assets/js/code-highlight.js. A plain
+   <div>, not a <pre>, on purpose: it never collides with a theme's own
+   generic "pre { ... }" content-area styling (see the note on
+   .hsrtech-code .hsrtech-code__frame pre near the top of this file) the
+   way the old gutter's <pre> could, so this needs none of that rule's
+   specificity workarounds. */
+.hsrtech-code__lines {
+	font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+	font-size: 0.88rem;
+	line-height: 1.65;
+	max-width: 100%;
+	overflow-x: auto;
+	padding: 2.75rem 1.5rem 1.5rem;
+	tab-size: 4;
+}
+
+.hsrtech-code__line {
+	display: flex;
+}
+
+/* Width driven by --hsrtech-line-digits, a custom property buildNumberedLines()
+   sets once per block based on its own line count, so a 3-digit line number
+   (100+ lines) gets as much room as a 1-digit one, instead of a fixed width
+   sized for the common case that would clip or misalign larger ones. */
+.hsrtech-code__line-number {
+	border-right: 1px solid rgba(255, 255, 255, 0.12);
+	color: var(--hsrtech-code-ink, #f5f2ea);
+	flex: none;
+	margin-right: 0.9rem;
+	opacity: 0.4;
+	padding-right: 0.9rem;
+	text-align: right;
+	user-select: none;
+	width: calc(var(--hsrtech-line-digits, 2) * 1ch);
+}
+
+/* The line's own code — min-width: 0 alongside flex: 1 1 auto for the same
+   reason as .hsrtech-code__body pre:not(...) above: a flex item's default
+   min-width is auto, not 0, which would otherwise stop it shrinking (and
+   .hsrtech-code__lines' own overflow-x: auto from kicking in) below its
+   content's natural width. white-space: pre by default, matching every
+   other code <pre> in this file — the .hsrtech-code--wrap override just
+   below is what actually makes wrapping (and therefore this whole
+   structure's reason for existing) work correctly, row by row. */
+.hsrtech-code__line-code {
+	flex: 1 1 auto;
+	min-width: 0;
+	white-space: pre;
+}
+
+.hsrtech-code--wrap .hsrtech-code__line-code {
+	overflow-wrap: anywhere;
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.hsrtech-code--no-lang .hsrtech-code__lines {
+	padding-top: 1.75rem;
 }
 
 /* "Show language label" off (render.php adds this class when

@@ -17,12 +17,29 @@
 		}
 
 		var figure = button.closest( '.hsrtech-code' );
-		var code = figure ? figure.querySelector( 'code' ) : null;
-		if ( ! code ) {
+		if ( ! figure ) {
 			return;
 		}
 
-		var text = code.textContent || '';
+		// When "Show line numbers" is on, code-highlight.js replaces the
+		// <pre><code> pair with a .hsrtech-code__lines row-per-line
+		// structure (see buildNumberedLines() there) that has no <code>
+		// element at all — rebuild the original text by rejoining each
+		// row's own code span with "\n", the same separator that structure
+		// split on in the first place, rather than assuming <code> exists.
+		var lineRows = figure.querySelectorAll( '.hsrtech-code__lines .hsrtech-code__line-code' );
+		var text;
+		if ( lineRows.length ) {
+			text = Array.prototype.map.call( lineRows, function ( row ) {
+				return row.textContent;
+			} ).join( '\n' );
+		} else {
+			var code = figure.querySelector( 'code' );
+			if ( ! code ) {
+				return;
+			}
+			text = code.textContent || '';
+		}
 		var copiedLabel = button.getAttribute( 'data-hsrtech-copied-label' ) || 'Copied!';
 		var defaultLabel = button.getAttribute( 'data-hsrtech-copy-label' ) || 'Copy code';
 
