@@ -68,8 +68,11 @@ $hsrtech_wrapper_attributes = get_block_wrapper_attributes( array( 'class' => im
 				// style.css for the "Wrap long lines" + "Show line numbers"
 				// combination this doesn't account for.
 				$hsrtech_line_count = substr_count( $hsrtech_code, "\n" ) + 1;
-				?>
-				<pre class="hsrtech-code__line-numbers" aria-hidden="true"><?php // phpcs:ignore Squiz.PHP.EmbeddedPhp.ContentBeforeOpen -- Deliberately no line break here: one would add a literal leading newline inside the rendered <pre>, shifting every line number down by one.
+				// Echoed via PHP rather than closed/reopened around a literal <pre>
+				// tag, specifically so this stays one continuous embedded PHP region
+				// with no opening tag sharing a line with markup, which is what
+				// tripped Squiz.PHP.EmbeddedPhp.ContentBeforeOpen here before.
+				echo '<pre class="hsrtech-code__line-numbers" aria-hidden="true">';
 				for ( $hsrtech_i = 1; $hsrtech_i <= $hsrtech_line_count; $hsrtech_i++ ) {
 					echo esc_html( (string) $hsrtech_i );
 					if ( $hsrtech_i < $hsrtech_line_count ) {
