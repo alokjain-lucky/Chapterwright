@@ -18,6 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 add_action( 'init', 'hsrtech_register_code_snippet_block' );
 add_action( 'enqueue_block_editor_assets', 'hsrtech_localize_code_snippet_languages' );
+add_filter( 'allowed_block_types_all', 'hsrtech_maybe_remove_code_snippet_block_from_inserter', 10, 2 );
 
 /**
  * Register the Code Snippet block from its block.json.
@@ -29,6 +30,45 @@ function hsrtech_register_code_snippet_block() {
 	// for why the editor needs this script at all.
 	hsrtech_register_code_highlight_script();
 	register_block_type( __DIR__ );
+}
+
+/**
+ * Remove the Code Snippet block from the inserter when a site owner has
+ * turned that on in Settings (hsrtech_code_snippet_block_disabled(),
+ * admin/settings.php), without unregistering the block type itself.
+ *
+ * Deliberately not done by skipping register_block_type() in
+ * hsrtech_register_code_snippet_block() above: this block is dynamic
+ * (rendered entirely by render.php, with no save() markup of its own), so a
+ * block instance already sitting in a book, chapter, or any other post's
+ * content depends on the block type staying registered to render at all —
+ * unregistering it would make every existing Code Snippet block on the site
+ * quietly render as nothing. Filtering it out of the inserter instead only
+ * stops it from being offered for *new* content; anything already published
+ * keeps working exactly as it does today.
+ *
+ * @param bool|array<int,string>  $allowed_block_types  True (every registered
+ *                                block is allowed, the default) or an array
+ *                                of allowed block names, if another plugin
+ *                                has already narrowed it.
+ * @param WP_Block_Editor_Context $block_editor_context Unused — the setting
+ *                                applies everywhere, not per-context.
+ * @return bool|array<int,string>
+ */
+function hsrtech_maybe_remove_code_snippet_block_from_inserter( $allowed_block_types, $block_editor_context ) {
+	if ( ! hsrtech_code_snippet_block_disabled() ) {
+		return $allowed_block_types;
+	}
+
+	if ( true === $allowed_block_types ) {
+		$allowed_block_types = array_keys( WP_Block_Type_Registry::get_instance()->get_all_registered() );
+	}
+
+	if ( ! is_array( $allowed_block_types ) ) {
+		return $allowed_block_types;
+	}
+
+	return array_values( array_diff( $allowed_block_types, array( 'chapterwright/code-snippet' ) ) );
 }
 
 /**

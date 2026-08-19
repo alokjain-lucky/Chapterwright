@@ -40,15 +40,16 @@ add_action( 'admin_init', 'hsrtech_register_settings' );
  */
 function hsrtech_default_settings() {
 	return array(
-		'show_mode_toggle'    => '0',
-		'show_credit'         => '0',
-		'show_toc_excerpt'    => '1',
-		'show_toc_button'     => '1',
-		'show_draft_chapters' => '0',
-		'archive_eyebrow'     => __( 'The library', 'chapterwright' ),
-		'archive_heading'     => __( 'Books worth opening', 'chapterwright' ),
-		'archive_subheading'  => __( 'Read one chapter at a time, right here on the web.', 'chapterwright' ),
-		'toc_heading'         => __( 'Read at your own pace', 'chapterwright' ),
+		'show_mode_toggle'           => '0',
+		'show_credit'                => '0',
+		'show_toc_excerpt'           => '1',
+		'show_toc_button'            => '1',
+		'show_draft_chapters'        => '0',
+		'disable_code_snippet_block' => '0',
+		'archive_eyebrow'            => __( 'The library', 'chapterwright' ),
+		'archive_heading'            => __( 'Books worth opening', 'chapterwright' ),
+		'archive_subheading'         => __( 'Read one chapter at a time, right here on the web.', 'chapterwright' ),
+		'toc_heading'                => __( 'Read at your own pace', 'chapterwright' ),
 	);
 }
 
@@ -81,15 +82,16 @@ function hsrtech_sanitize_settings( $input ) {
 	$defaults = hsrtech_default_settings();
 
 	return array(
-		'show_mode_toggle'    => empty( $input['show_mode_toggle'] ) ? '0' : '1',
-		'show_credit'         => empty( $input['show_credit'] ) ? '0' : '1',
-		'show_toc_excerpt'    => empty( $input['show_toc_excerpt'] ) ? '0' : '1',
-		'show_toc_button'     => empty( $input['show_toc_button'] ) ? '0' : '1',
-		'show_draft_chapters' => empty( $input['show_draft_chapters'] ) ? '0' : '1',
-		'archive_eyebrow'     => isset( $input['archive_eyebrow'] ) ? sanitize_text_field( wp_unslash( $input['archive_eyebrow'] ) ) : $defaults['archive_eyebrow'],
-		'archive_heading'     => isset( $input['archive_heading'] ) ? sanitize_text_field( wp_unslash( $input['archive_heading'] ) ) : $defaults['archive_heading'],
-		'archive_subheading'  => isset( $input['archive_subheading'] ) ? sanitize_text_field( wp_unslash( $input['archive_subheading'] ) ) : $defaults['archive_subheading'],
-		'toc_heading'         => isset( $input['toc_heading'] ) ? sanitize_text_field( wp_unslash( $input['toc_heading'] ) ) : $defaults['toc_heading'],
+		'show_mode_toggle'           => empty( $input['show_mode_toggle'] ) ? '0' : '1',
+		'show_credit'                => empty( $input['show_credit'] ) ? '0' : '1',
+		'show_toc_excerpt'           => empty( $input['show_toc_excerpt'] ) ? '0' : '1',
+		'show_toc_button'            => empty( $input['show_toc_button'] ) ? '0' : '1',
+		'show_draft_chapters'        => empty( $input['show_draft_chapters'] ) ? '0' : '1',
+		'disable_code_snippet_block' => empty( $input['disable_code_snippet_block'] ) ? '0' : '1',
+		'archive_eyebrow'            => isset( $input['archive_eyebrow'] ) ? sanitize_text_field( wp_unslash( $input['archive_eyebrow'] ) ) : $defaults['archive_eyebrow'],
+		'archive_heading'            => isset( $input['archive_heading'] ) ? sanitize_text_field( wp_unslash( $input['archive_heading'] ) ) : $defaults['archive_heading'],
+		'archive_subheading'         => isset( $input['archive_subheading'] ) ? sanitize_text_field( wp_unslash( $input['archive_subheading'] ) ) : $defaults['archive_subheading'],
+		'toc_heading'                => isset( $input['toc_heading'] ) ? sanitize_text_field( wp_unslash( $input['toc_heading'] ) ) : $defaults['toc_heading'],
 	);
 }
 
@@ -172,6 +174,22 @@ function hsrtech_show_toc_button() {
 function hsrtech_show_draft_chapters() {
 	$settings = hsrtech_get_settings();
 	return '1' === $settings['show_draft_chapters'];
+}
+
+/**
+ * Whether the Code Snippet block should be removed from the block inserter.
+ * Off by default. Turning this on doesn't touch anything already
+ * published — a Code Snippet block already placed in a book, chapter, or
+ * any other post keeps rendering exactly as it does today; this only stops
+ * the block from being offered for *new* content, for a site owner who'd
+ * rather standardize on a different code-formatting block or plugin going
+ * forward instead of ripping out content that already uses this one.
+ *
+ * @return bool
+ */
+function hsrtech_code_snippet_block_disabled() {
+	$settings = hsrtech_get_settings();
+	return '1' === $settings['disable_code_snippet_block'];
 }
 
 /**
@@ -274,6 +292,22 @@ function hsrtech_render_settings_page() {
 						</label>
 						<p class="description">
 							<?php esc_html_e( 'Gives readers a preview of what\'s coming without letting them open an unfinished chapter. Off by default.', 'chapterwright' ); ?>
+						</p>
+					</td>
+				</tr>
+			</table>
+
+			<h2><?php esc_html_e( 'Code Snippet block', 'chapterwright' ); ?></h2>
+			<table class="form-table" role="presentation">
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Block inserter', 'chapterwright' ); ?></th>
+					<td>
+						<label>
+							<input type="checkbox" name="hsrtech_settings[disable_code_snippet_block]" value="1" <?php checked( '1', $settings['disable_code_snippet_block'] ); ?> />
+							<?php esc_html_e( 'Remove the Code Snippet block from the block inserter', 'chapterwright' ); ?>
+						</label>
+						<p class="description">
+							<?php esc_html_e( 'Use this if you\'d rather use a different code-formatting block or plugin. Any Code Snippet block already in your content keeps working and displaying normally — this only stops new ones from being added.', 'chapterwright' ); ?>
 						</p>
 					</td>
 				</tr>
