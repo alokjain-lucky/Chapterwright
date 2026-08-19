@@ -91,7 +91,7 @@ $hsrtech_line_digits = strlen( (string) ( $hsrtech_start_line + count( $hsrtech_
 						data-hsrtech-wrap-label="<?php esc_attr_e( 'Wrap long lines', 'chapterwright' ); ?>"
 						data-hsrtech-unwrap-label="<?php esc_attr_e( 'Scroll long lines', 'chapterwright' ); ?>"
 						aria-label="<?php echo esc_attr( $hsrtech_wrap_lines ? __( 'Scroll long lines', 'chapterwright' ) : __( 'Wrap long lines', 'chapterwright' ) ); ?>"
-						title="<?php echo esc_attr( $hsrtech_wrap_lines ? __( 'Scroll long lines', 'chapterwright' ) : __( 'Wrap long lines', 'chapterwright' ) ); ?>"
+						data-tooltip="<?php echo esc_attr( $hsrtech_wrap_lines ? __( 'Scroll long lines', 'chapterwright' ) : __( 'Wrap long lines', 'chapterwright' ) ); ?>"
 						aria-pressed="<?php echo esc_attr( $hsrtech_wrap_lines ? 'true' : 'false' ); ?>"
 					>
 						<svg class="hsrtech-code__wrap-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h13a3 3 0 0 1 0 6h-4m2-2-2 2 2 2M3 18h6"></path></svg>
@@ -105,7 +105,7 @@ $hsrtech_line_digits = strlen( (string) ( $hsrtech_start_line + count( $hsrtech_
 						data-hsrtech-copy-label="<?php esc_attr_e( 'Copy code', 'chapterwright' ); ?>"
 						data-hsrtech-copied-label="<?php esc_attr_e( 'Copied!', 'chapterwright' ); ?>"
 						aria-label="<?php esc_attr_e( 'Copy code', 'chapterwright' ); ?>"
-						title="<?php esc_attr_e( 'Copy code', 'chapterwright' ); ?>"
+						data-tooltip="<?php esc_attr_e( 'Copy code', 'chapterwright' ); ?>"
 					>
 						<svg class="hsrtech-code__copy-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"></rect><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"></path></svg>
 						<svg class="hsrtech-code__copied-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>

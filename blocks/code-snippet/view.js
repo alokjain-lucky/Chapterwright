@@ -34,11 +34,14 @@
 
 		toggle.setAttribute( 'aria-pressed', isWrapped ? 'true' : 'false' );
 		toggle.setAttribute( 'aria-label', isWrapped ? unwrapLabel : wrapLabel );
-		// Keeps the native hover tooltip (render.php's own title="…") in sync
-		// with aria-label above rather than leaving it stuck on the button's
-		// original server-rendered state — same reasoning as showCopied()'s
-		// own title update below.
-		toggle.setAttribute( 'title', isWrapped ? unwrapLabel : wrapLabel );
+		// Keeps the CSS tooltip (render.php's own data-tooltip="…", styled via
+		// the [data-tooltip]::after rule, style.css) in sync with aria-label
+		// above rather than leaving it stuck on the button's original
+		// server-rendered state — same reasoning as showCopied()'s own
+		// data-tooltip update below. Not the title attribute: Safari doesn't
+		// reliably show title tooltips on <button> elements at all, which is
+		// why this button has a CSS tooltip instead in the first place.
+		toggle.setAttribute( 'data-tooltip', isWrapped ? unwrapLabel : wrapLabel );
 	} );
 
 	document.addEventListener( 'click', function ( event ) {
@@ -76,18 +79,20 @@
 
 		// Icon-only button: the visible state change is a swapped icon (via
 		// the .is-copied class, see style.css), with the accessible name
-		// carried by aria-label rather than by textContent. title mirrors
-		// aria-label so the native hover tooltip (sighted mouse users) reads
-		// "Copied!" too, not just screen readers — set on both here rather
-		// than relying on the static title render.php already writes, which
-		// would otherwise never change from "Copy code".
+		// carried by aria-label rather than by textContent. data-tooltip
+		// mirrors aria-label so the CSS tooltip ([data-tooltip]::after,
+		// style.css — not the title attribute, which Safari doesn't
+		// reliably show on <button> elements at all) reads "Copied!" too,
+		// not just screen readers — set on both here rather than relying on
+		// the static data-tooltip render.php already writes, which would
+		// otherwise never change from "Copy code".
 		function showCopied() {
 			button.setAttribute( 'aria-label', copiedLabel );
-			button.setAttribute( 'title', copiedLabel );
+			button.setAttribute( 'data-tooltip', copiedLabel );
 			button.classList.add( 'is-copied' );
 			window.setTimeout( function () {
 				button.setAttribute( 'aria-label', defaultLabel );
-				button.setAttribute( 'title', defaultLabel );
+				button.setAttribute( 'data-tooltip', defaultLabel );
 				button.classList.remove( 'is-copied' );
 			}, 2000 );
 		}

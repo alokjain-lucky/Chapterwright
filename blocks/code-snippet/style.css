@@ -113,6 +113,12 @@
 	height: 2.1rem;
 	justify-content: center;
 	padding: 0;
+	/* Positions each button's own [data-tooltip] bubble below, relative to
+	   itself rather than to .hsrtech-code__actions (the shared positioned
+	   ancestor otherwise closest to both buttons) — without this, both
+	   tooltips would anchor to the actions row's own top-right corner
+	   instead of to whichever button is actually being hovered. */
+	position: relative;
 	width: 2.1rem;
 }
 
@@ -121,6 +127,58 @@
 .hsrtech-code__copy:hover,
 .hsrtech-code__copy:focus-visible {
 	background: rgba(255, 255, 255, 0.18);
+}
+
+/* CSS-only tooltip (no JS) for these two icon-only buttons — the browser's
+   own title attribute (what these used before) doesn't reliably show a
+   tooltip on <button> elements in Safari at all, a long-standing WebKit
+   limitation, so this mirrors the same data-tooltip + ::after pattern
+   .hsrtech-toc-jump (chapterwright.css) already uses instead, rather than
+   relying on title. Positioned BELOW the button rather than above (that
+   other button's own convention): these sit near the very top of the code
+   frame, where a tooltip opening upward would have far less clearance
+   before running into whatever content sits above the block on the page.
+   Content comes from data-tooltip so the same translated string also
+   lives in aria-label (render.php, and view.js as it changes) for screen
+   readers, without duplicating it here. Colors are hardcoded rather than
+   any --hsrtech-* custom property, same reasoning as everywhere else in
+   this file: this stylesheet never depends on chapterwright.css also
+   being loaded, and needs to read clearly against whatever page
+   background happens to be behind it, not just this block's own dark
+   frame. */
+.hsrtech-code__wrap-toggle[data-tooltip]::after,
+.hsrtech-code__copy[data-tooltip]::after {
+	background: rgba(20, 20, 20, 0.95);
+	border-radius: 0.4rem;
+	color: #fff;
+	content: attr(data-tooltip);
+	font-size: 0.72rem;
+	font-weight: 600;
+	opacity: 0;
+	padding: 0.35rem 0.6rem;
+	pointer-events: none;
+	position: absolute;
+	right: 0;
+	top: calc(100% + 0.5rem);
+	transform: translateY(-0.25rem);
+	transition: opacity 0.15s ease, transform 0.15s ease;
+	white-space: nowrap;
+	z-index: 1;
+}
+
+.hsrtech-code__wrap-toggle[data-tooltip]:hover::after,
+.hsrtech-code__wrap-toggle[data-tooltip]:focus-visible::after,
+.hsrtech-code__copy[data-tooltip]:hover::after,
+.hsrtech-code__copy[data-tooltip]:focus-visible::after {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.hsrtech-code__wrap-toggle[data-tooltip]::after,
+	.hsrtech-code__copy[data-tooltip]::after {
+		transition: none;
+	}
 }
 
 .hsrtech-code__copy.is-copied {
