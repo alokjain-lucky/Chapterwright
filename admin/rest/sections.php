@@ -119,7 +119,7 @@ function hsrtech_register_sections_routes() {
 			array(
 				'methods'             => WP_REST_Server::DELETABLE,
 				'callback'            => 'hsrtech_rest_delete_section',
-				'permission_callback' => 'hsrtech_rest_can_edit_section',
+				'permission_callback' => 'hsrtech_rest_can_delete_section',
 				'args'                => array(
 					'id' => array(
 						'required'          => true,
@@ -162,6 +162,28 @@ function hsrtech_rest_can_edit_section( $request ) {
 	}
 
 	return current_user_can( 'edit_post', $section['book_id'] );
+}
+
+/**
+ * Permission check for `DELETE /sections/{id}` specifically — stronger than
+ * hsrtech_rest_can_edit_section() above. Deleting a section also strips
+ * `_hsrtech_section_id` from every chapter assigned to it (see
+ * hsrtech_delete_section()), a write to each of those chapters, not just to
+ * the section's own book. Shared with the delete-section Ability
+ * (includes/abilities.php) via hsrtech_user_can_delete_section()
+ * (includes/sections.php) so both enforce the same rule.
+ *
+ * @param WP_REST_Request $request Current request.
+ * @return bool|WP_Error
+ */
+function hsrtech_rest_can_delete_section( $request ) {
+	$section = hsrtech_get_section( (int) $request['id'] );
+
+	if ( ! $section ) {
+		return new WP_Error( 'hsrtech_rest_section_not_found', __( 'That section no longer exists.', 'chapterwright' ), array( 'status' => 404 ) );
+	}
+
+	return hsrtech_user_can_delete_section( $section );
 }
 
 /**

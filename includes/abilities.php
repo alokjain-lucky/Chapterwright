@@ -76,7 +76,14 @@ function hsrtech_register_abilities() {
 			'execute_callback'    => 'hsrtech_ability_list_books',
 			'permission_callback' => function () {
 				// 'edit_hsrtech_books' as of 2.2.0 — Books have their own
-				// capability_type now, see hsrtech_register_post_types().
+				// capability_type now, see hsrtech_register_post_types(). This
+				// only gates whether the ability can be called at all; it does
+				// not by itself mean the caller can see every author's drafts
+				// and private books — hsrtech_ability_list_books() below
+				// additionally restricts the returned list to the caller's own
+				// books unless they also have 'edit_others_hsrtech_books',
+				// mirroring the classic admin list table's own restriction for
+				// this capability_type.
 				return current_user_can( 'edit_hsrtech_books' );
 			},
 			'meta'                => array(
@@ -215,21 +222,13 @@ function hsrtech_register_abilities() {
 			'permission_callback' => function ( $input ) {
 				$section = hsrtech_get_section( (int) $input['section_id'] );
 
-				if ( ! $section || ! current_user_can( 'edit_post', $section['book_id'] ) ) {
-					return false;
-				}
-
-				// Deleting a section also strips _hsrtech_section_id from every
-				// chapter assigned to it (see hsrtech_delete_section()) — that's
-				// a write to each of those chapters, so the caller needs edit
-				// rights on all of them too, not just on the parent book.
-				foreach ( hsrtech_get_chapters_in_section( $section['id'] ) as $chapter_id ) {
-					if ( ! current_user_can( 'edit_post', $chapter_id ) ) {
-						return false;
-					}
-				}
-
-				return true;
+				// hsrtech_user_can_delete_section() (includes/sections.php) also
+				// requires edit rights on every chapter assigned to the section,
+				// not just on its book — deleting a section writes to each of
+				// those chapters too (see hsrtech_delete_section()). Shared with
+				// the DELETE /sections/{id} REST route so both enforce the same
+				// rule.
+				return $section && hsrtech_user_can_delete_section( $section );
 			},
 			'meta'                => array(
 				'annotations'  => array(
@@ -295,24 +294,41 @@ function hsrtech_ability_get_book_overview( $input ) {
 		return new WP_Error( 'hsrtech_ability_book_not_found', __( 'That book does not exist.', 'chapterwright' ) );
 	}
 
-	$chapters = hsrtech_get_all_chapters_for_admin( $book_id );
+	// The permission_callback only confirms the caller can edit *this book*;
+	// a role can have edit_post on a Book without edit rights on every
+	// Chapter within it (they're separate capability_types as of 2.2.0 — see
+	// hsrtech_register_post_types()), and hsrtech_get_all_chapters_for_admin()
+	// deliberately returns every chapter regardless of status or author.
+	// Filter down to what the caller can individually edit — the same
+	// per-post current_user_can( 'edit_post', ... ) check used everywhere
+	// else in this plugin, which already resolves private/draft/others'-post
+	// rules correctly via map_meta_cap — same as the list-books ability does
+	// for books, just one level down.
+	$chapters = array_filter(
+		hsrtech_get_all_chapters_for_admin( $book_id ),
+		function ( $chapter ) {
+			return current_user_can( 'edit_post', $chapter->ID );
+		}
+	);
 
 	return array(
 		'id'       => $book_id,
 		'title'    => get_the_title( $book_id ),
 		'subtitle' => get_post_meta( $book_id, '_hsrtech_subtitle', true ),
 		'sections' => hsrtech_get_book_sections( $book_id ),
-		'chapters' => array_map(
-			function ( $chapter ) {
-				return array(
-					'id'         => $chapter->ID,
-					'title'      => get_the_title( $chapter ),
-					'status'     => $chapter->post_status,
-					'section_id' => (int) get_post_meta( $chapter->ID, '_hsrtech_section_id', true ),
-					'order'      => (int) get_post_meta( $chapter->ID, '_hsrtech_order', true ),
-				);
-			},
-			$chapters
+		'chapters' => array_values(
+			array_map(
+				function ( $chapter ) {
+					return array(
+						'id'         => $chapter->ID,
+						'title'      => get_the_title( $chapter ),
+						'status'     => $chapter->post_status,
+						'section_id' => (int) get_post_meta( $chapter->ID, '_hsrtech_section_id', true ),
+						'order'      => (int) get_post_meta( $chapter->ID, '_hsrtech_order', true ),
+					);
+				},
+				$chapters
+			)
 		),
 	);
 }

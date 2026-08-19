@@ -104,13 +104,27 @@ function hsrtech_rest_can_list_book_chapters( $request ) {
  * status — see the file docblock for why this exists instead of querying
  * the core collection endpoint.
  *
+ * The permission_callback above only confirms the caller has some general
+ * Chapter-edit capability plus edit rights on this specific book; neither
+ * implies edit (or even read) rights on every individual chapter the book
+ * happens to contain — a chapter can belong to a different author and be
+ * draft/private/pending. Filter down to what the caller can individually
+ * edit, the same current_user_can( 'edit_post', ... ) per-post check used
+ * throughout this plugin, which already resolves private/draft/others'-post
+ * rules correctly via this post type's map_meta_cap.
+ *
  * @param WP_REST_Request $request Current request.
  * @return WP_REST_Response
  */
 function hsrtech_rest_get_book_chapters( $request ) {
-	$chapters = hsrtech_get_all_chapters_for_admin( (int) $request['book_id'] );
+	$chapters = array_filter(
+		hsrtech_get_all_chapters_for_admin( (int) $request['book_id'] ),
+		function ( $chapter ) {
+			return current_user_can( 'edit_post', $chapter->ID );
+		}
+	);
 
-	return rest_ensure_response( array_map( 'hsrtech_prepare_chapter_for_response', $chapters ) );
+	return rest_ensure_response( array_values( array_map( 'hsrtech_prepare_chapter_for_response', $chapters ) ) );
 }
 
 /**
