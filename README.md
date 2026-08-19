@@ -13,7 +13,7 @@ Opens a temporary WordPress site in your browser with Chapterwright already inst
 | WordPress | 6.4 or newer |
 | PHP | 7.4 or newer |
 | Tested through | WordPress 7.0 |
-| Plugin version | 2.8.0 |
+| Plugin version | 2.8.1 |
 
 Chapterwright adds two content types to WordPress: **Books** and **Chapters**. Each book can have its own cover, subtitle, accent color, introduction, and table of contents. Chapters can be grouped into sections — each with its own name and description — and receive automatic previous/next navigation.
 
@@ -321,6 +321,13 @@ Both run automatically on every push and pull request via GitHub Actions (`.gith
 
 The three most recent releases are below. See [CHANGELOG.md](CHANGELOG.md) for the full history back to 1.0.0.
 
+### 2.8.1
+
+- Fixed the Code Snippet block's frame and code background rendering as two visibly different shades, with unwanted top/bottom margin, when the block is used outside a book or chapter page on some themes — the block's own CSS never explicitly set a background on the code itself, so a theme's own generic styling for `<pre>` elements could win.
+- Fixed line numbers drifting out of sync with the code once a line visually wraps onto a second row (only relevant with "Wrap long lines" also on) — numbers are now built per source line where JavaScript runs, instead of as a fixed list that assumed one row per line.
+- Hiding the language label now also reduces the top space reserved for it, instead of leaving it as empty padding.
+- Tightened a few more REST API and Abilities API permission checks, following up on 2.6.0's pass.
+
 ### 2.8.0
 
 - Fixed the Code Snippet block not showing colored syntax or a working copy button outside of book and chapter pages — the highlighting script only ever loaded there; the block's own frame (language label, copy button chrome) always looked right since it loads independently, but the coloring and copy behavior never ran anywhere else.
@@ -334,11 +341,6 @@ The three most recent releases are below. See [CHANGELOG.md](CHANGELOG.md) for t
 - The table of contents now shows a chapter's excerpt even for a draft chapter (previously excerpt display was published-only, if "Show excerpt in table of contents" is on and the chapter has one), and a draft chapter keeps its real number instead of having "Draft" printed in its place — "Draft" is now a separate label next to the title, still announced to screen readers.
 - Chapters in **Books & Chapters** now show their excerpt below the title too, for drafts and published chapters alike, matching the same "Show excerpt" setting.
 - Fixed a chapter, section, or book occasionally staying missing from its list right after being added successfully — root-caused to a caching layer in front of WordPress on some hosts serving a stale response for a short time afterward, not anything wrong with the save itself. Every GET request the admin app makes now includes a unique value, so it can never be served a cached hit.
-
-### 2.6.1
-
-- Fixed a book, section, or chapter that had already been deleted or changed server-side (e.g. by a request that actually succeeded despite looking like it failed) staying stuck in the admin app's list — every retry just repeated the same error with nothing visibly changing. Delete, save, and reorder actions in **Books & Chapters** now re-sync their list from the server after a failure, not just after success.
-- Fixed a newly added chapter or section sometimes not appearing right after being added, with no error shown — an immediate re-fetch after creating one could occasionally lag behind on some hosts. **Books & Chapters** now shows what was just created directly, instead of relying on that re-fetch.
 
 ## License
 

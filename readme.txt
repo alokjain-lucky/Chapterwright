@@ -4,7 +4,7 @@ Tags: ebook, books, publishing, reading, chapters
 Requires at least: 6.4
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 2.8.0
+Stable tag: 2.8.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -81,6 +81,12 @@ Yes. Every string (PHP and the admin app's JavaScript) is wrapped for translatio
 5. The **Code Snippet** block with syntax coloring and a copy button.
 
 == Changelog ==
+
+= 2.8.1 =
+* Fixed the Code Snippet block's frame and code background showing as two different shades, with unwanted top/bottom margin, when the block is used outside a book or chapter page on some themes.
+* Fixed line numbers drifting out of sync with the code once a line wraps onto a second row (only relevant with "Wrap long lines" also on).
+* Hiding the language label now also reduces the space reserved for it, instead of leaving it as empty padding.
+* Tightened a few more REST API and Abilities API permission checks.
 
 = 2.8.0 =
 * Fixed the Code Snippet block not showing colored syntax or a working copy button outside of book and chapter pages — for example, when used in an ordinary blog post. It always looked right, but the highlighting only ever ran on book/chapter pages.
