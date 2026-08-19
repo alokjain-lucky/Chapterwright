@@ -71,7 +71,7 @@ $hsrtech_wrapper_attributes = get_block_wrapper_attributes( array( 'class' => im
 // need to agree on markup shape but not on exact content.
 $hsrtech_needs_rows = $hsrtech_show_line_numbers || ! empty( $hsrtech_highlight_set );
 
-$hsrtech_code_lines = explode( "\n", $hsrtech_code );
+$hsrtech_code_lines  = explode( "\n", $hsrtech_code );
 $hsrtech_line_digits = strlen( (string) ( $hsrtech_start_line + count( $hsrtech_code_lines ) - 1 ) );
 ?>
 <figure <?php echo $hsrtech_wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() escapes its own output. ?>>
