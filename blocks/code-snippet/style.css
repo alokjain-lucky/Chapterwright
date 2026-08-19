@@ -282,8 +282,16 @@
 	opacity: 0.4;
 	padding-right: 0.9rem;
 	text-align: right;
+	/* Neither .hsrtech-code__lines nor anything above it sets white-space,
+	   so without this a double-digit number wraps onto two stacked rows —
+	   "1" then "0" — the moment its width calc (below) comes out even a
+	   hair narrower than the digits' actual rendered width, which happens
+	   easily since a monospace font's glyphs are rarely an exact 1ch each.
+	   nowrap means a too-narrow column just overflows slightly rather than
+	   ever breaking the number itself onto a second line. */
+	white-space: nowrap;
 	user-select: none;
-	width: calc(var(--hsrtech-line-digits, 2) * 1ch);
+	width: calc(var(--hsrtech-line-digits, 2) * 1ch + 2px);
 }
 
 /* The line's own code — min-width: 0 alongside flex: 1 1 auto for the same
