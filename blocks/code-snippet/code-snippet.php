@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 add_action( 'init', 'hsrtech_register_code_snippet_block' );
 add_action( 'enqueue_block_editor_assets', 'hsrtech_localize_code_snippet_languages' );
-add_filter( 'allowed_block_types_all', 'hsrtech_maybe_remove_code_snippet_block_from_inserter', 10, 2 );
+add_filter( 'allowed_block_types_all', 'hsrtech_maybe_remove_code_snippet_block_from_inserter' );
 
 /**
  * Register the Code Snippet block from its block.json.
@@ -47,15 +47,21 @@ function hsrtech_register_code_snippet_block() {
  * stops it from being offered for *new* content; anything already published
  * keeps working exactly as it does today.
  *
- * @param bool|array<int,string>  $allowed_block_types  True (every registered
+ * Only accepts the first of the two arguments this filter normally passes
+ * (the second is the current block editor context, e.g. post editor vs.
+ * widgets screen) — the setting applies everywhere, not per-context, so
+ * there's nothing to do with it. WordPress only passes as many arguments as
+ * `add_filter()`'s registration declares (default: one), so simply omitting
+ * it here is enough; nothing needs an explicit ignore for an unused
+ * parameter that was never declared.
+ *
+ * @param bool|array<int,string> $allowed_block_types True (every registered
  *                                block is allowed, the default) or an array
  *                                of allowed block names, if another plugin
  *                                has already narrowed it.
- * @param WP_Block_Editor_Context $block_editor_context Unused — the setting
- *                                applies everywhere, not per-context.
  * @return bool|array<int,string>
  */
-function hsrtech_maybe_remove_code_snippet_block_from_inserter( $allowed_block_types, $block_editor_context ) {
+function hsrtech_maybe_remove_code_snippet_block_from_inserter( $allowed_block_types ) {
 	if ( ! hsrtech_code_snippet_block_disabled() ) {
 		return $allowed_block_types;
 	}
