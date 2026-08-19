@@ -80,11 +80,26 @@
 	top: 1rem;
 }
 
-/* Shared chrome for both frame-corner buttons — copy, and the wrap toggle
-   just below. Each sets only its own `right` offset, positioned side by
-   side: copy stays closest to the corner (unchanged position, so it lines
-   up with every already-shipped screenshot/tutorial reference to "the copy
-   button in the corner"), wrap toggle sits just to its left. */
+/* Groups the frame-corner buttons — copy, and the wrap toggle — in one
+   positioned flex row instead of each button carrying its own fixed `right`
+   offset. That matters now that either one can be turned off per block
+   (hideCopyButton / hideWrapToggle, render.php): with a flex row, whichever
+   one is still shown just slides over into the gap; with two independently
+   `right`-offset absolutely-positioned buttons, hiding one would leave an
+   empty gap where it used to sit instead. Order in the markup (wrap toggle,
+   then copy) keeps copy closest to the corner when both are present,
+   matching its original always-been-there position. wrapPlainBlock()
+   (assets/js/code-highlight.js) reuses this same wrapper around its own
+   lone copy button for the same reason, even though it never renders a
+   wrap toggle at all. */
+.hsrtech-code__actions {
+	display: flex;
+	gap: 0.6rem;
+	position: absolute;
+	right: 0.9rem;
+	top: 0.8rem;
+}
+
 .hsrtech-code__wrap-toggle,
 .hsrtech-code__copy {
 	align-items: center;
@@ -94,20 +109,11 @@
 	color: var(--hsrtech-code-ink, #f5f2ea);
 	cursor: pointer;
 	display: flex;
+	flex: none;
 	height: 2.1rem;
 	justify-content: center;
 	padding: 0;
-	position: absolute;
-	top: 0.8rem;
 	width: 2.1rem;
-}
-
-.hsrtech-code__copy {
-	right: 0.9rem;
-}
-
-.hsrtech-code__wrap-toggle {
-	right: 3.5rem;
 }
 
 .hsrtech-code__wrap-toggle:hover,
@@ -218,10 +224,10 @@
 }
 
 /* "Show language label" off (render.php adds this class when
-   hideLanguageLabel is true) — see the matching .hsrtech-code--no-lang
-   .hsrtech-code__lines rule below for the row-based shape's version and the
-   full explanation of the trade-off this makes with the copy/wrap-toggle
-   buttons that stay in the same top-right corner regardless. */
+   hideLanguageLabel is true) — see the combined .hsrtech-code--no-lang rule
+   further down (grouped with its .hsrtech-code__lines counterpart) for the
+   full explanation, including how this interacts with hideCopyButton /
+   hideWrapToggle via .hsrtech-code--no-actions. */
 .hsrtech-code.hsrtech-code--no-lang pre {
 	padding-top: 1.75rem;
 }
@@ -319,7 +325,30 @@
    shrinking all the way down to their own ~2.9rem requirement would give
    back almost nothing, so this accepts them visually overlapping the first
    line or two of short snippets instead, the same trade-off plenty of code
-   viewers make for corner-floating buttons. */
+   viewers make for corner-floating buttons. (The rule pairing this with
+   .hsrtech-code__frame pre lives further up, right after that rule — kept
+   there instead of merged into this selector list since pre's own base
+   rule already sits right above it.) */
+.hsrtech-code--no-lang .hsrtech-code__lines {
+	padding-top: 1.75rem;
+}
+
+/* Both hideCopyButton and hideWrapToggle on for this block (render.php adds
+   this class only then — see .hsrtech-code__actions above, which handles
+   just one of the two being off on its own): nothing left in the top-right
+   corner at all, so this can give back the same padding as "no language
+   label" alone. Combined with --no-lang, nothing occupies the top of the
+   frame at all, so it drops all the way to the block's own side/bottom
+   padding, the next rule down. */
+.hsrtech-code.hsrtech-code--no-actions pre,
+.hsrtech-code--no-actions .hsrtech-code__lines {
+	padding-top: 1.75rem;
+}
+
+.hsrtech-code.hsrtech-code--no-lang.hsrtech-code--no-actions pre,
+.hsrtech-code--no-lang.hsrtech-code--no-actions .hsrtech-code__lines {
+	padding-top: 1.5rem;
+}
 
 /* The editor's own version of the block has no copy button at all (the code
    field is a plain editable PlainText, not the rendered <pre>/button pair

@@ -499,9 +499,20 @@
 			'<svg class="hsrtech-code__copy-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"></rect><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"></path></svg>' +
 			'<svg class="hsrtech-code__copied-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
 
+		// .hsrtech-code__actions (style.css) is what actually positions the
+		// button in the frame's top-right corner — required even for this
+		// lone copy button (no wrap toggle ever joins it here, a deliberate
+		// scope decision noted on this function's own docblock) since that
+		// positioning rule lives on the wrapper now, not on .hsrtech-code__copy
+		// itself, to support render.php's blocks sliding a remaining button
+		// over when the other one's hidden (hideCopyButton/hideWrapToggle).
+		var actions = document.createElement( 'div' );
+		actions.className = 'hsrtech-code__actions';
+		actions.appendChild( copyButton );
+
 		pre.parentNode.insertBefore( figure, pre );
 		frame.appendChild( langLabel );
-		frame.appendChild( copyButton );
+		frame.appendChild( actions );
 		frame.appendChild( pre );
 		figure.appendChild( frame );
 	}

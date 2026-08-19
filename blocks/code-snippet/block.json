@@ -40,11 +40,28 @@
 		"startLine": {
 			"type": "number",
 			"default": 1
+		},
+		"hideCopyButton": {
+			"type": "boolean",
+			"default": false
+		},
+		"hideWrapToggle": {
+			"type": "boolean",
+			"default": false
 		}
 	},
 	"supports": {
 		"html": false,
 		"anchor": true
+	},
+	"example": {
+		"attributes": {
+			"language": "js",
+			"caption": "greet.js",
+			"showLineNumbers": true,
+			"highlightLines": "2",
+			"code": "function greet( name ) {\n\treturn `Hello, ${ name }!`;\n}\n\nconsole.log( greet( 'world' ) );"
+		}
 	},
 	"editorScript": "file:./edit.js",
 	"style": "file:./style.css",

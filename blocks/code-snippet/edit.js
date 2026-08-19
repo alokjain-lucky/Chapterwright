@@ -62,6 +62,106 @@
 		return tmp.textContent || tmp.innerText || '';
 	}
 
+	/**
+	 * Preview-only mirror of hsrtech_parse_code_snippet_line_ranges()
+	 * (code-snippet.php) / parseLineRanges() (assets/js/code-highlight.js) —
+	 * a third independent implementation of the same small parse, so
+	 * buildPreviewElement() below can show "Highlight lines" without pulling
+	 * the front-end-only code-highlight.js script into the block editor.
+	 * Same trade-off already made for language/line-count elsewhere in this
+	 * plugin: independent implementations of one simple parse, rather than
+	 * sharing code across editor and front-end bundles that are never
+	 * loaded together.
+	 *
+	 * @param {string} raw Raw field value, comma-separated numbers and/or ranges.
+	 * @return {Object<number, boolean>} Set of matching line numbers.
+	 */
+	function parsePreviewLineRanges( raw ) {
+		var lines = {};
+		( raw || '' ).split( ',' ).forEach( function ( part ) {
+			part = part.trim();
+			if ( ! part ) {
+				return;
+			}
+			var rangeMatch = part.match( /^(\d+)\s*-\s*(\d+)$/ );
+			if ( rangeMatch ) {
+				var start = parseInt( rangeMatch[ 1 ], 10 );
+				var end = parseInt( rangeMatch[ 2 ], 10 );
+				if ( start > end ) {
+					var swap = start;
+					start = end;
+					end = swap;
+				}
+				end = Math.min( end, start + 2000 );
+				for ( var line = start; line <= end; line++ ) {
+					lines[ line ] = true;
+				}
+			} else if ( /^\d+$/.test( part ) ) {
+				lines[ parseInt( part, 10 ) ] = true;
+			}
+		} );
+		return lines;
+	}
+
+	/**
+	 * A read-only stand-in for what render.php actually outputs, shown
+	 * instead of the editable PlainText field whenever the block isn't
+	 * selected — which is also exactly the state the block Inserter's hover
+	 * preview renders in, so this is what fixes that previously blank
+	 * "No preview available" panel too (block.json's "example" entry
+	 * supplies the sample attributes it's shown with). Deliberately reuses
+	 * render.php's own class names (.hsrtech-code__lines, .hsrtech-code__line,
+	 * etc.) unchanged rather than inventing preview-specific markup, so
+	 * every existing style.css rule for numbers/highlighting/wrapping
+	 * already applies with no new CSS needed.
+	 *
+	 * Not syntax-colored — unlike the front end (assets/js/code-highlight.js)
+	 * and unlike render.php's own no-JS fallback, there's no tokenizer
+	 * running in the block editor at all, so this only reproduces the
+	 * layout (frame, numbers, highlight tint), not token colors. The same
+	 * "still renders correctly, just without coloring" trade-off already
+	 * documented for lesser-supported languages (code-snippet.php) — not
+	 * worth pulling the GRAMMARS tokenizer into the editor bundle purely
+	 * for a preview that's never the code an author actually reads closely.
+	 *
+	 * @param {Object} attributes Block attributes.
+	 * @return {*} A React element.
+	 */
+	function buildPreviewElement( attributes ) {
+		var code = attributes.code || '';
+		var showNumbers = !! attributes.showLineNumbers;
+		var startLine = attributes.startLine || 1;
+		var highlightSet = parsePreviewLineRanges( attributes.highlightLines );
+		var needsRows = showNumbers || Object.keys( highlightSet ).length > 0;
+
+		if ( ! needsRows ) {
+			return el( 'pre', {}, el( 'code', {}, code ) );
+		}
+
+		var lines = code.split( '\n' );
+		var lineDigits = String( startLine + lines.length - 1 ).length;
+
+		return el(
+			'div',
+			{
+				className: 'hsrtech-code__lines',
+				style: { '--hsrtech-line-digits': lineDigits }
+			},
+			lines.map( function ( lineText, index ) {
+				var rowClassName = 'hsrtech-code__line';
+				if ( highlightSet[ index + 1 ] ) {
+					rowClassName += ' hsrtech-code__line--highlighted';
+				}
+				return el(
+					'div',
+					{ className: rowClassName, key: index },
+					showNumbers ? el( 'span', { className: 'hsrtech-code__line-number' }, String( startLine + index ) ) : null,
+					el( 'span', { className: 'hsrtech-code__line-code' }, lineText )
+				);
+			} )
+		);
+	}
+
 	blocks.registerBlockType( 'chapterwright/code-snippet', {
 		transforms: {
 			from: [
@@ -97,12 +197,30 @@
 		edit: function ( props ) {
 			var attributes = props.attributes;
 			var setAttributes = props.setAttributes;
+			var isSelected = props.isSelected;
 			var figureClassName = 'hsrtech-code hsrtech-code--editing';
 			if ( attributes.hideLanguageLabel ) {
 				// See the matching .hsrtech-code--no-lang rule, style.css.
 				figureClassName += ' hsrtech-code--no-lang';
 			}
+			if ( attributes.wrapLines ) {
+				// Matches render.php so the read-only preview below (unselected,
+				// or the Inserter's hover preview) wraps the same way the front
+				// end will.
+				figureClassName += ' hsrtech-code--wrap';
+			}
 			var blockProps = useBlockProps( { className: figureClassName } );
+
+			// The editable PlainText field is best for actually writing code
+			// (no risk of a click landing on a token span instead of placing
+			// the cursor), but doesn't show numbers, highlighting, or wrapping
+			// at all — so swap to the read-only formatted preview
+			// (buildPreviewElement() above) whenever the block isn't selected,
+			// which is also exactly the state the block Inserter's hover
+			// preview renders in (see block.json's "example"). Clicking the
+			// preview selects the block same as clicking any other block
+			// content, switching straight back to the editable field.
+			var showPreview = ! isSelected && !! ( attributes.code && attributes.code.trim() );
 
 			return el(
 				Fragment,
@@ -173,6 +291,24 @@
 							onChange: function ( value ) {
 								setAttributes( { hideLanguageLabel: ! value } );
 							}
+						} ),
+						el( ToggleControl, {
+							__nextHasNoMarginBottom: true,
+							label: __( 'Show copy button', 'chapterwright' ),
+							help: __( 'The button in the corner that copies this snippet. Off hides it just for this block.', 'chapterwright' ),
+							checked: ! attributes.hideCopyButton,
+							onChange: function ( value ) {
+								setAttributes( { hideCopyButton: ! value } );
+							}
+						} ),
+						el( ToggleControl, {
+							__nextHasNoMarginBottom: true,
+							label: __( 'Show wrap toggle', 'chapterwright' ),
+							help: __( 'Lets a reader turn "Wrap long lines" on or off for just this block. Off hides the button; the block still uses your own "Wrap long lines" setting above.', 'chapterwright' ),
+							checked: ! attributes.hideWrapToggle,
+							onChange: function ( value ) {
+								setAttributes( { hideWrapToggle: ! value } );
+							}
 						} )
 					)
 				),
@@ -195,15 +331,17 @@
 						attributes.hideLanguageLabel
 							? null
 							: el( 'span', { className: 'hsrtech-code__lang' }, attributes.language.toUpperCase() ),
-						el( PlainText, {
-							className: 'hsrtech-code__editor',
-							value: attributes.code,
-							onChange: function ( value ) {
-								setAttributes( { code: value } );
-							},
-							placeholder: __( 'Paste or write your code…', 'chapterwright' ),
-							'aria-label': __( 'Code', 'chapterwright' )
-						} )
+						showPreview
+							? buildPreviewElement( attributes )
+							: el( PlainText, {
+								className: 'hsrtech-code__editor',
+								value: attributes.code,
+								onChange: function ( value ) {
+									setAttributes( { code: value } );
+								},
+								placeholder: __( 'Paste or write your code…', 'chapterwright' ),
+								'aria-label': __( 'Code', 'chapterwright' )
+							} )
 					)
 				)
 			);
