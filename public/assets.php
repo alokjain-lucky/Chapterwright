@@ -24,6 +24,20 @@ function hsrtech_enqueue_public_assets() {
 
 	if ( $is_view || $has_library_shortcode ) {
 		wp_enqueue_style( 'chapterwright', HSRTECH_URL . 'assets/css/chapterwright.css', array(), HSRTECH_VERSION );
+
+		// Only printed when a site owner has actually set a non-zero offset
+		// (Settings → "Button position") — chapterwright.css's own
+		// var(--hsrtech-toc-jump-offset, 0px) fallback already keeps every
+		// other site at today's plain 2rem/1.25rem position with nothing
+		// extra in the page's <head> at all.
+		$hsrtech_toc_button_offset = hsrtech_toc_button_offset();
+		if ( $hsrtech_toc_button_offset > 0 ) {
+			wp_add_inline_style(
+				'chapterwright',
+				sprintf( ':root { --hsrtech-toc-jump-offset: %dpx; }', $hsrtech_toc_button_offset )
+			);
+		}
+
 		wp_enqueue_script( 'chapterwright-reader', HSRTECH_URL . 'assets/js/chapterwright-reader.js', array(), HSRTECH_VERSION, true );
 		wp_localize_script(
 			'chapterwright-reader',

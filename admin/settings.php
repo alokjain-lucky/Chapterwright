@@ -44,6 +44,7 @@ function hsrtech_default_settings() {
 		'show_credit'                => '0',
 		'show_toc_excerpt'           => '1',
 		'show_toc_button'            => '1',
+		'toc_button_offset'          => '0',
 		'show_draft_chapters'        => '0',
 		'disable_code_snippet_block' => '0',
 		'archive_eyebrow'            => __( 'The library', 'chapterwright' ),
@@ -86,6 +87,11 @@ function hsrtech_sanitize_settings( $input ) {
 		'show_credit'                => empty( $input['show_credit'] ) ? '0' : '1',
 		'show_toc_excerpt'           => empty( $input['show_toc_excerpt'] ) ? '0' : '1',
 		'show_toc_button'            => empty( $input['show_toc_button'] ) ? '0' : '1',
+		// Clamped to a sane range rather than left open-ended — mainly to
+		// keep a typo (an extra digit) from pushing the button fully off
+		// screen, not because a legitimate value would ever need to be
+		// anywhere near 500px.
+		'toc_button_offset'          => isset( $input['toc_button_offset'] ) ? (string) min( 500, absint( $input['toc_button_offset'] ) ) : $defaults['toc_button_offset'],
 		'show_draft_chapters'        => empty( $input['show_draft_chapters'] ) ? '0' : '1',
 		'disable_code_snippet_block' => empty( $input['disable_code_snippet_block'] ) ? '0' : '1',
 		'archive_eyebrow'            => isset( $input['archive_eyebrow'] ) ? sanitize_text_field( wp_unslash( $input['archive_eyebrow'] ) ) : $defaults['archive_eyebrow'],
@@ -159,6 +165,22 @@ function hsrtech_show_toc_excerpt() {
 function hsrtech_show_toc_button() {
 	$settings = hsrtech_get_settings();
 	return '1' === $settings['show_toc_button'];
+}
+
+/**
+ * Extra spacing (in pixels) added above the floating table of contents
+ * button's default bottom-right position, on top of the button itself.
+ * Zero by default (today's existing position, untouched). Exists for a site
+ * whose theme adds its own floating element in the same corner — a chat
+ * widget, a "Buy me a coffee" button, a cookie banner — which would
+ * otherwise overlap this button with no way to nudge either one out of the
+ * other's way short of editing CSS.
+ *
+ * @return int Pixels, 0-500.
+ */
+function hsrtech_toc_button_offset() {
+	$settings = hsrtech_get_settings();
+	return absint( $settings['toc_button_offset'] );
 }
 
 /**
@@ -281,6 +303,16 @@ function hsrtech_render_settings_page() {
 							<input type="checkbox" name="hsrtech_settings[show_toc_button]" value="1" <?php checked( '1', $settings['show_toc_button'] ); ?> />
 							<?php esc_html_e( 'Show a floating button on chapter pages that opens the book\'s table of contents in a side panel', 'chapterwright' ); ?>
 						</label>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="hsrtech-toc-button-offset"><?php esc_html_e( 'Button position', 'chapterwright' ); ?></label></th>
+					<td>
+						<input type="number" id="hsrtech-toc-button-offset" class="small-text" min="0" max="500" step="1" name="hsrtech_settings[toc_button_offset]" value="<?php echo esc_attr( $settings['toc_button_offset'] ); ?>" />
+						<?php esc_html_e( 'px of extra space above the button', 'chapterwright' ); ?>
+						<p class="description">
+							<?php esc_html_e( 'Raise the button if your theme adds its own floating element in the same bottom-right corner — a chat widget, a "Buy me a coffee" button, a cookie banner — that would otherwise overlap it. Leave at 0 for the default position.', 'chapterwright' ); ?>
+						</p>
 					</td>
 				</tr>
 				<tr>

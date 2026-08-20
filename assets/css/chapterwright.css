@@ -367,8 +367,18 @@
    alone) — without this, the icon silently inherits the page's ink color
    instead of the button's own high-contrast surface color, and disappears
    against its own background. Same reasoning as .hsrtech-button's existing
-   "color: #fff !important" a bit further up this file. */
-.hsrtech-toc-jump { align-items: center; background: var(--hsrtech-ink); border: 0; border-radius: 999px; bottom: 2rem; box-shadow: 0 .6rem 1.5rem rgba(0, 0, 0, .25); color: var(--hsrtech-surface) !important; cursor: pointer; display: flex; font-size: 1.3rem; height: 3.25rem; justify-content: center; position: fixed; right: 2rem; text-decoration: none; transition: transform .2s ease; width: 3.25rem; z-index: 100; }
+   "color: #fff !important" a bit further up this file.
+
+   bottom is a calc() against --hsrtech-toc-jump-offset (Settings → "Button
+   position", admin/settings.php's hsrtech_toc_button_offset()) rather than a
+   flat value, so a site owner can raise the button when a theme adds its own
+   floating element in the same corner — a chat widget, a "Buy me a coffee"
+   button, a cookie banner — that would otherwise sit on top of it. The
+   fallback in var(…, 0px) is what keeps this at today's plain 2rem for every
+   site that never touches that setting; public/assets.php only ever prints
+   the custom property's actual value (via wp_add_inline_style) when it's
+   non-zero. */
+.hsrtech-toc-jump { align-items: center; background: var(--hsrtech-ink); border: 0; border-radius: 999px; bottom: calc(2rem + var(--hsrtech-toc-jump-offset, 0px)); box-shadow: 0 .6rem 1.5rem rgba(0, 0, 0, .25); color: var(--hsrtech-surface) !important; cursor: pointer; display: flex; font-size: 1.3rem; height: 3.25rem; justify-content: center; position: fixed; right: 2rem; text-decoration: none; transition: transform .2s ease; width: 3.25rem; z-index: 100; }
 .hsrtech-toc-jump:hover { transform: translateY(-3px); }
 /* The <svg> has no width/height attributes (only a viewBox), so without
    this it falls back to the browser's default replaced-element size —
@@ -492,7 +502,7 @@
 	.hsrtech-toc-row__title { flex-shrink: 1; min-width: 0; }
 	.hsrtech-reader__next { grid-template-columns: 1fr; }
 	.hsrtech-reader__next .is-next { text-align: left; }
-	.hsrtech-toc-jump { bottom: 1.25rem; font-size: 1.1rem; height: 2.85rem; right: 1.25rem; width: 2.85rem; }
+	.hsrtech-toc-jump { bottom: calc(1.25rem + var(--hsrtech-toc-jump-offset, 0px)); font-size: 1.1rem; height: 2.85rem; right: 1.25rem; width: 2.85rem; }
 	.hsrtech-toc-jump svg { height: 1.2rem; width: 1.2rem; }
 
 	/* The bar is a flex row with space-between everywhere else — fine for a
