@@ -108,7 +108,7 @@ function hsrtech_register_post_types() {
  * better link to hand out once a book is actually public.
  *
  * @param WP_REST_Response $response REST response being prepared.
- * @param WP_Post           $post     The book post.
+ * @param WP_Post          $post     The book post.
  * @return WP_REST_Response
  */
 function hsrtech_rest_prepare_book_view_link( $response, $post ) {
