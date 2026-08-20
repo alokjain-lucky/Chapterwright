@@ -45,6 +45,7 @@ function hsrtech_default_settings() {
 		'show_toc_excerpt'           => '1',
 		'show_toc_button'            => '1',
 		'toc_button_offset'          => '0',
+		'toc_button_right_offset'    => '0',
 		'show_draft_chapters'        => '0',
 		'disable_code_snippet_block' => '0',
 		'archive_eyebrow'            => __( 'The library', 'chapterwright' ),
@@ -92,6 +93,9 @@ function hsrtech_sanitize_settings( $input ) {
 		// screen, not because a legitimate value would ever need to be
 		// anywhere near 500px.
 		'toc_button_offset'          => isset( $input['toc_button_offset'] ) ? (string) min( 500, absint( $input['toc_button_offset'] ) ) : $defaults['toc_button_offset'],
+		// Same clamping rationale as toc_button_offset above, applied to the
+		// horizontal axis instead of the vertical one.
+		'toc_button_right_offset'    => isset( $input['toc_button_right_offset'] ) ? (string) min( 500, absint( $input['toc_button_right_offset'] ) ) : $defaults['toc_button_right_offset'],
 		'show_draft_chapters'        => empty( $input['show_draft_chapters'] ) ? '0' : '1',
 		'disable_code_snippet_block' => empty( $input['disable_code_snippet_block'] ) ? '0' : '1',
 		'archive_eyebrow'            => isset( $input['archive_eyebrow'] ) ? sanitize_text_field( wp_unslash( $input['archive_eyebrow'] ) ) : $defaults['archive_eyebrow'],
@@ -181,6 +185,21 @@ function hsrtech_show_toc_button() {
 function hsrtech_toc_button_offset() {
 	$settings = hsrtech_get_settings();
 	return absint( $settings['toc_button_offset'] );
+}
+
+/**
+ * Extra spacing (in pixels) added to the right of the floating table of
+ * contents button's default bottom-right position, on top of the button
+ * itself. Zero by default (today's existing position, untouched). Same
+ * purpose as hsrtech_toc_button_offset() above but for the horizontal
+ * axis, for a theme's floating element that overlaps from the side rather
+ * than from below.
+ *
+ * @return int Pixels, 0-500.
+ */
+function hsrtech_toc_button_right_offset() {
+	$settings = hsrtech_get_settings();
+	return absint( $settings['toc_button_right_offset'] );
 }
 
 /**
@@ -306,12 +325,20 @@ function hsrtech_render_settings_page() {
 					</td>
 				</tr>
 				<tr>
-					<th scope="row"><label for="hsrtech-toc-button-offset"><?php esc_html_e( 'Button position', 'chapterwright' ); ?></label></th>
+					<th scope="row"><?php esc_html_e( 'Button position', 'chapterwright' ); ?></th>
 					<td>
-						<input type="number" id="hsrtech-toc-button-offset" class="small-text" min="0" max="500" step="1" name="hsrtech_settings[toc_button_offset]" value="<?php echo esc_attr( $settings['toc_button_offset'] ); ?>" />
-						<?php esc_html_e( 'px of extra space above the button', 'chapterwright' ); ?>
+						<p>
+							<label for="hsrtech-toc-button-offset"><?php esc_html_e( 'Bottom offset:', 'chapterwright' ); ?></label>
+							<input type="number" id="hsrtech-toc-button-offset" class="small-text" min="0" max="500" step="1" name="hsrtech_settings[toc_button_offset]" value="<?php echo esc_attr( $settings['toc_button_offset'] ); ?>" />
+							<?php esc_html_e( 'px of extra space above the button', 'chapterwright' ); ?>
+						</p>
+						<p>
+							<label for="hsrtech-toc-button-right-offset"><?php esc_html_e( 'Right offset:', 'chapterwright' ); ?></label>
+							<input type="number" id="hsrtech-toc-button-right-offset" class="small-text" min="0" max="500" step="1" name="hsrtech_settings[toc_button_right_offset]" value="<?php echo esc_attr( $settings['toc_button_right_offset'] ); ?>" />
+							<?php esc_html_e( 'px of extra space to the right of the button', 'chapterwright' ); ?>
+						</p>
 						<p class="description">
-							<?php esc_html_e( 'Raise the button if your theme adds its own floating element in the same bottom-right corner — a chat widget, a "Buy me a coffee" button, a cookie banner — that would otherwise overlap it. Leave at 0 for the default position.', 'chapterwright' ); ?>
+							<?php esc_html_e( 'Nudge the button if your theme adds its own floating element in the same bottom-right corner — a chat widget, a "Buy me a coffee" button, a cookie banner — that would otherwise overlap it. Leave both at 0 for the default position.', 'chapterwright' ); ?>
 						</p>
 					</td>
 				</tr>

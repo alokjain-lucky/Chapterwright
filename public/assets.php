@@ -27,15 +27,20 @@ function hsrtech_enqueue_public_assets() {
 
 		// Only printed when a site owner has actually set a non-zero offset
 		// (Settings → "Button position") — chapterwright.css's own
-		// var(--hsrtech-toc-jump-offset, 0px) fallback already keeps every
-		// other site at today's plain 2rem/1.25rem position with nothing
-		// extra in the page's <head> at all.
-		$hsrtech_toc_button_offset = hsrtech_toc_button_offset();
+		// var(--hsrtech-toc-jump-offset, 0px) / var(--hsrtech-toc-jump-right-offset, 0px)
+		// fallbacks already keep every other site at today's plain
+		// 2rem/1.25rem position with nothing extra in the page's <head> at all.
+		$hsrtech_toc_button_offset       = hsrtech_toc_button_offset();
+		$hsrtech_toc_button_right_offset = hsrtech_toc_button_right_offset();
+		$hsrtech_toc_jump_vars           = '';
 		if ( $hsrtech_toc_button_offset > 0 ) {
-			wp_add_inline_style(
-				'chapterwright',
-				sprintf( ':root { --hsrtech-toc-jump-offset: %dpx; }', $hsrtech_toc_button_offset )
-			);
+			$hsrtech_toc_jump_vars .= sprintf( '--hsrtech-toc-jump-offset: %dpx;', $hsrtech_toc_button_offset );
+		}
+		if ( $hsrtech_toc_button_right_offset > 0 ) {
+			$hsrtech_toc_jump_vars .= sprintf( '--hsrtech-toc-jump-right-offset: %dpx;', $hsrtech_toc_button_right_offset );
+		}
+		if ( '' !== $hsrtech_toc_jump_vars ) {
+			wp_add_inline_style( 'chapterwright', sprintf( ':root { %s }', $hsrtech_toc_jump_vars ) );
 		}
 
 		wp_enqueue_script( 'chapterwright-reader', HSRTECH_URL . 'assets/js/chapterwright-reader.js', array(), HSRTECH_VERSION, true );
