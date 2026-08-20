@@ -192,6 +192,24 @@ export default function BooksList() {
 									<Button __next40pxDefaultSize variant="secondary" href={ `#/books/${ book.id }` }>
 										{ __( 'Manage', 'chapterwright' ) }
 									</Button>
+									{ /* Icon-only, same as the reorder arrows elsewhere in this app —
+									     opens the book's own front-end page in a new tab so an author
+									     can check how it actually looks without leaving this list.
+									     book.link comes straight from the core /wp/v2/hsrtech_book REST
+									     response; hsrtech_rest_prepare_book_view_link() (content-types.php)
+									     swaps in a preview link for a book that isn't published yet, so
+									     this works the same way regardless of status. */ }
+									{ book.link && (
+										<Button
+											__next40pxDefaultSize
+											variant="tertiary"
+											icon="external"
+											label={ __( 'View', 'chapterwright' ) }
+											href={ book.link }
+											target="_blank"
+											rel="noopener"
+										/>
+									) }
 									<Button __next40pxDefaultSize variant="tertiary" isDestructive onClick={ () => handleTrash( book ) }>
 										{ __( 'Trash', 'chapterwright' ) }
 									</Button>

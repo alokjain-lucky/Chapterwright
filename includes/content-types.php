@@ -11,6 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 add_action( 'init', 'hsrtech_register_post_types' );
 add_action( 'init', 'hsrtech_register_meta_fields', 20 );
+add_filter( 'rest_prepare_' . HSRTECH_BOOK_POST_TYPE, 'hsrtech_rest_prepare_book_view_link', 10, 2 );
 
 /**
  * Register the Book and Chapter custom post types.
@@ -83,6 +84,43 @@ function hsrtech_register_post_types() {
 			'map_meta_cap'    => true,
 		)
 	);
+}
+
+/**
+ * Make a Book's REST `link` field usable as a "View" action for a
+ * draft/pending/private/future book, not just a published one.
+ *
+ * `WP_REST_Posts_Controller::prepare_item_for_response()` always sets `link`
+ * to a plain `get_permalink()`, regardless of status — for anything other
+ * than a published post, that URL 404s for every visitor, including the
+ * book's own author, since WordPress only renders a non-published post at
+ * its permalink through the separate preview mechanism
+ * (`get_preview_post_link()`), which appends the `preview`/`preview_nonce`
+ * query args core's own "Preview" button uses. This swaps `link` to that
+ * preview-aware URL for any book that isn't published yet, so the admin app's
+ * "View" action (books-list.js, book-detail.js) works the same way
+ * regardless of status — the same thing admin/rest/chapters.php already does
+ * for Chapters, which don't go through this controller at all.
+ *
+ * Left untouched for published books: `get_preview_post_link()` would still
+ * resolve to a working page for them too, but only by tacking on a
+ * short-lived nonce for no benefit — a plain, evergreen permalink is the
+ * better link to hand out once a book is actually public.
+ *
+ * @param WP_REST_Response $response REST response being prepared.
+ * @param WP_Post           $post     The book post.
+ * @return WP_REST_Response
+ */
+function hsrtech_rest_prepare_book_view_link( $response, $post ) {
+	if ( 'publish' === $post->post_status ) {
+		return $response;
+	}
+
+	$data         = $response->get_data();
+	$data['link'] = get_preview_post_link( $post );
+	$response->set_data( $data );
+
+	return $response;
 }
 
 /**

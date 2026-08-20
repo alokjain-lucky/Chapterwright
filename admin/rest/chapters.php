@@ -144,6 +144,15 @@ function hsrtech_prepare_chapter_for_response( $chapter ) {
 			'rendered' => get_the_title( $chapter ),
 		),
 		'status'  => $chapter->post_status,
+		// Powers the admin app's "View" action (book-detail.js). A plain
+		// get_permalink() for a draft/pending/private/future chapter 404s for
+		// everyone, including its own author — get_preview_post_link()
+		// appends the same preview=true/preview_nonce query args core's own
+		// "Preview" button uses, which only work for the currently logged-in
+		// user and expire with the nonce, but that's fine here since this
+		// link is only ever clicked from inside the (already authenticated)
+		// admin app, never stored or shared.
+		'link'    => 'publish' === $chapter->post_status ? get_permalink( $chapter ) : get_preview_post_link( $chapter ),
 		// Same call the front-end table of contents uses (see
 		// templates/partials/toc-list.php) — falls back to an
 		// auto-generated excerpt from the chapter's content when no manual
