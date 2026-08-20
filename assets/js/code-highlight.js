@@ -326,8 +326,10 @@
 
 	/**
 	 * Parse a "Highlight lines" field (e.g. "3-5, 8, 12-14") into a lookup
-	 * set of 1-based line numbers, counted from the top of the snippet —
-	 * the exact JavaScript mirror of hsrtech_parse_code_snippet_line_ranges()
+	 * set of line numbers — matching whatever number is actually displayed
+	 * in the gutter (already offset by "Start line"), not counted from the
+	 * top of the snippet as pasted — the exact JavaScript mirror of
+	 * hsrtech_parse_code_snippet_line_ranges()
 	 * (blocks/code-snippet/code-snippet.php), which produces the
 	 * `data-hsrtech-highlight-lines` attribute this reads. Kept as two
 	 * independent implementations of the same simple parse, the same way
@@ -383,9 +385,10 @@
 	 * @param {Object} options
 	 * @param {boolean}             [options.showNumbers]  Render a number per row.
 	 * @param {number}              [options.startLine]    Number displayed for row 1.
-	 * @param {Object<number, boolean>} [options.highlightSet] Lines (counted
-	 *        from 1 regardless of startLine — see parseLineRanges() above and
-	 *        the matching PHP-side note) that get the "highlighted" modifier.
+	 * @param {Object<number, boolean>} [options.highlightSet] Lines (the
+	 *        number actually displayed in the gutter, i.e. already offset by
+	 *        startLine — see parseLineRanges() above and the matching
+	 *        PHP-side note) that get the "highlighted" modifier.
 	 * @return {DocumentFragment} One row per source line, ready to replace a
 	 *                            .hsrtech-code__lines container's children.
 	 */
@@ -404,7 +407,7 @@
 		lines.forEach( function ( lineTokens, index ) {
 			var row = document.createElement( 'div' );
 			row.className = 'hsrtech-code__line';
-			if ( highlightSet[ index + 1 ] ) {
+			if ( highlightSet[ startLine + index ] ) {
 				row.className += ' hsrtech-code__line--highlighted';
 			}
 

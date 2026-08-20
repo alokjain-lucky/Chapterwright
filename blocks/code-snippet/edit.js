@@ -187,7 +187,7 @@
 			},
 			lines.map( function ( lineText, index ) {
 				var rowClassName = 'hsrtech-code__line';
-				if ( highlightSet[ index + 1 ] ) {
+				if ( highlightSet[ startLine + index ] ) {
 					rowClassName += ' hsrtech-code__line--highlighted';
 				}
 				var codeChildren = linesOfTokens
@@ -334,7 +334,7 @@
 						} ),
 						el( TextControl, {
 							label: __( 'Highlight lines (optional)', 'chapterwright' ),
-							help: __( 'e.g. 3-5, 8. Counted from the top of the snippet, regardless of "Start line".', 'chapterwright' ),
+							help: __( 'e.g. 3-5, 8. Matches the line numbers shown in the gutter, including "Start line".', 'chapterwright' ),
 							value: attributes.highlightLines,
 							onChange: function ( value ) {
 								setAttributes( { highlightLines: value } );

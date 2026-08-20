@@ -4,7 +4,7 @@ Tags: ebook, books, publishing, reading, chapters
 Requires at least: 6.4
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 2.8.3
+Stable tag: 2.8.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -81,6 +81,9 @@ Yes. Every string (PHP and the admin app's JavaScript) is wrapped for translatio
 5. The **Code Snippet** block with syntax coloring and a copy button.
 
 == Changelog ==
+
+= 2.8.4 =
+* Fixed "Highlight lines" not matching the line numbers actually shown in the gutter once "Start line" was set to anything other than 1 — you had to type the position from the top of the snippet instead of the number you could see. Typing the numbers you see now highlights the right rows.
 
 = 2.8.3 =
 * Added a "View" icon to the Books & Chapters admin app (book cards, the book detail screen, and each chapter row) that opens that book or chapter's actual page in a new tab — including a working preview link for a book or chapter that isn't published yet.

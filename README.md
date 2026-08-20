@@ -13,7 +13,7 @@ Opens a temporary WordPress site in your browser with Chapterwright already inst
 | WordPress | 6.4 or newer |
 | PHP | 7.4 or newer |
 | Tested through | WordPress 7.0 |
-| Plugin version | 2.8.3 |
+| Plugin version | 2.8.4 |
 
 Chapterwright adds two content types to WordPress: **Books** and **Chapters**. Each book can have its own cover, subtitle, accent color, introduction, and table of contents. Chapters can be grouped into sections — each with its own name and description — and receive automatic previous/next navigation.
 
@@ -321,6 +321,10 @@ Both run automatically on every push and pull request via GitHub Actions (`.gith
 
 The three most recent releases are below. See [CHANGELOG.md](CHANGELOG.md) for the full history back to 1.0.0.
 
+### 2.8.4
+
+- Fixed "Highlight lines" not matching the line numbers actually shown in the gutter once "Start line" was set to anything other than 1 — you had to type the position counted from the top of the snippet instead of the number you could see. Typing the numbers you see now highlights the right rows.
+
 ### 2.8.3
 
 - Added a "View" icon to the Books & Chapters admin app (book cards, the book detail screen, and each chapter row) that opens that book or chapter's actual page in a new tab — including a working preview link for a book or chapter that isn't published yet.
@@ -328,13 +332,6 @@ The three most recent releases are below. See [CHANGELOG.md](CHANGELOG.md) for t
 ### 2.8.2
 
 - Fixed the chapter-page table-of-contents drawer showing long chapter titles that overflowed sideways, forcing an ugly, hard-to-use horizontal scroll to read them. The drawer reuses the same table-of-contents markup as the book page's own full-width list, which only wraps a long title on narrow browser windows — the drawer is a fixed, narrow panel regardless of window width, so that wrapping never kicked in there. Long titles now always wrap inside the drawer.
-
-### 2.8.1
-
-- Fixed the Code Snippet block's frame and code background rendering as two visibly different shades, with unwanted top/bottom margin, when the block is used outside a book or chapter page on some themes — the block's own CSS never explicitly set a background on the code itself, so a theme's own generic styling for `<pre>` elements could win.
-- Fixed line numbers drifting out of sync with the code once a line visually wraps onto a second row (only relevant with "Wrap long lines" also on) — numbers are now built per source line where JavaScript runs, instead of as a fixed list that assumed one row per line.
-- Hiding the language label now also reduces the top space reserved for it, instead of leaving it as empty padding.
-- Tightened a few more REST API and Abilities API permission checks, following up on 2.6.0's pass.
 
 ## License
 

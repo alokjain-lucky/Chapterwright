@@ -228,11 +228,16 @@ function hsrtech_localize_code_snippet_languages() {
 
 /**
  * Parse a "Highlight lines" field (e.g. "3-5, 8, 12-14") into a lookup set
- * of 1-based line numbers, counted from the top of the snippet as pasted —
- * independent of the "Start line" option, which only changes what number is
- * *displayed* next to each line, not which ones this refers to. Keeping the
- * two independent means an author doesn't have to redo their highlight
- * ranges every time they adjust where the gutter starts counting from.
+ * of line numbers — matching whatever number is actually *displayed* in the
+ * gutter for that row, i.e. already offset by "Start line", not counted from
+ * the top of the snippet as pasted. An earlier version kept the two
+ * independent instead (typed ranges always counted from 1, regardless of
+ * Start line), on the theory that it would save an author from redoing their
+ * ranges after adjusting where the gutter starts — in practice that meant
+ * typing "3-5" to highlight the rows visibly numbered 18-20 whenever Start
+ * line wasn't 1, which read as broken rather than convenient. Matching the
+ * displayed number is what "Highlight lines 18-20" actually means to
+ * someone looking at the rendered block.
  *
  * Mirrored in JavaScript by parseLineRanges() (assets/js/code-highlight.js),
  * which rebuilds this same set client-side from the same raw string (see

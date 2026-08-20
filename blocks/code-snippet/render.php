@@ -125,7 +125,7 @@ $hsrtech_line_digits = strlen( (string) ( $hsrtech_start_line + count( $hsrtech_
 				<?php
 				foreach ( $hsrtech_code_lines as $hsrtech_row_index => $hsrtech_row_text ) :
 					$hsrtech_row_classes = array( 'hsrtech-code__line' );
-					if ( isset( $hsrtech_highlight_set[ $hsrtech_row_index + 1 ] ) ) {
+					if ( isset( $hsrtech_highlight_set[ $hsrtech_start_line + $hsrtech_row_index ] ) ) {
 						$hsrtech_row_classes[] = 'hsrtech-code__line--highlighted';
 					}
 					?>
