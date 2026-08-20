@@ -177,9 +177,25 @@ export default function BookDetail( { bookId } ) {
 						{ __( 'Write the introduction, set the cover image, and add an excerpt in the Block Editor.', 'chapterwright' ) }
 					</p>
 				</div>
-				<Button __next40pxDefaultSize variant="secondary" href={ editLink( book.id ) } target="_blank">
-					{ __( 'Open in Block Editor →', 'chapterwright' ) }
-				</Button>
+				<div className="hsrtech-book-detail__title-actions">
+					{ /* Same book.link the books-list.js card footer uses — see
+					     hsrtech_rest_prepare_book_view_link() (content-types.php) for
+					     why this already works for a draft book too. */ }
+					{ book.link && (
+						<Button
+							__next40pxDefaultSize
+							variant="tertiary"
+							icon="external"
+							label={ __( 'View', 'chapterwright' ) }
+							href={ book.link }
+							target="_blank"
+							rel="noopener"
+						/>
+					) }
+					<Button __next40pxDefaultSize variant="secondary" href={ editLink( book.id ) } target="_blank">
+						{ __( 'Open in Block Editor →', 'chapterwright' ) }
+					</Button>
+				</div>
 			</div>
 
 			<BookFields
@@ -711,6 +727,20 @@ function ChaptersManager( { bookId, sections, chapters, onChange, onError, editL
 									onChange={ ( value ) => changeSection( chapter.id, value ? Number( value ) : UNASSIGNED ) }
 								/>
 								<div className="hsrtech-row__actions">
+									{ /* Comes from admin/rest/chapters.php's hsrtech_prepare_chapter_for_response(),
+									     which already resolves to a preview link for a chapter
+									     that isn't published yet — works the same regardless of status. */ }
+									{ chapter.link && (
+										<Button
+											variant="tertiary"
+											size="small"
+											icon="external"
+											label={ __( 'View', 'chapterwright' ) }
+											href={ chapter.link }
+											target="_blank"
+											rel="noopener"
+										/>
+									) }
 									<Button variant="tertiary" size="small" href={ editLink( chapter.id ) } target="_blank">
 										{ __( 'Edit', 'chapterwright' ) }
 									</Button>

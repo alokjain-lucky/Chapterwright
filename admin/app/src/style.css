@@ -269,6 +269,13 @@
 	margin-bottom: 20px;
 }
 
+.hsrtech-book-detail__title-actions {
+	align-items: center;
+	display: flex;
+	flex-shrink: 0;
+	gap: 6px;
+}
+
 .hsrtech-book-detail__title {
 	font-size: 20px;
 	margin: 0;
