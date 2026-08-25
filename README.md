@@ -12,7 +12,7 @@ Opens a temporary WordPress site in your browser with Chapterwright already inst
 | --- | --- |
 | WordPress | 6.4 or newer |
 | PHP | 7.4 or newer |
-| Tested through | WordPress 7.0 |
+| Tested through | WordPress 7.1 |
 | Plugin version | 2.8.6 |
 
 Chapterwright adds two content types to WordPress: **Books** and **Chapters**. Each book can have its own cover, subtitle, accent color, introduction, and table of contents. Chapters can be grouped into sections — each with its own name and description — and receive automatic previous/next navigation.
