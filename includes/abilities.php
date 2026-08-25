@@ -269,11 +269,31 @@ function hsrtech_ability_list_books() {
 
 	return array_map(
 		function ( $book ) {
+			// hsrtech_get_all_chapters_for_admin() deliberately returns every
+			// chapter assigned to the book regardless of status or author (it
+			// backs the admin app's own book-detail screen, where an editor
+			// with edit_others_hsrtech_chapters needs to see everything). A
+			// book and its chapters are separate capability_types as of
+			// 2.2.0 (see hsrtech_register_post_types()), so being allowed to
+			// list this book at all doesn't mean the caller can see every
+			// chapter under it — e.g. a book with chapters drafted by other
+			// authors. Count only the chapters the caller can individually
+			// edit, the same per-post current_user_can( 'edit_post', ... )
+			// check hsrtech_ability_get_book_overview() already applies one
+			// level down, so this count never discloses more than the
+			// caller could see by actually opening the book.
+			$chapters = array_filter(
+				hsrtech_get_all_chapters_for_admin( $book->ID ),
+				function ( $chapter ) {
+					return current_user_can( 'edit_post', $chapter->ID );
+				}
+			);
+
 			return array(
 				'id'            => $book->ID,
 				'title'         => get_the_title( $book ),
 				'status'        => $book->post_status,
-				'chapter_count' => count( hsrtech_get_all_chapters_for_admin( $book->ID ) ),
+				'chapter_count' => count( $chapters ),
 			);
 		},
 		$books
