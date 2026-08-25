@@ -25,11 +25,10 @@ function hsrtech_enqueue_public_assets() {
 	if ( $is_view || $has_library_shortcode ) {
 		wp_enqueue_style( 'chapterwright', HSRTECH_URL . 'assets/css/chapterwright.css', array(), HSRTECH_VERSION );
 
-		// Only printed when a site owner has actually set a non-zero offset
-		// (Settings → "Button position") — chapterwright.css's own
-		// var(--hsrtech-toc-jump-offset, 0px) / var(--hsrtech-toc-jump-right-offset, 0px)
-		// fallbacks already keep every other site at today's plain
-		// 2rem/1.25rem position with nothing extra in the page's <head> at all.
+		// Only printed when a site owner has set a non-zero offset (Settings
+		// → "Button position") — chapterwright.css's own var(..., 0px)
+		// fallbacks keep every other site at the default position with
+		// nothing extra in the page's <head>.
 		$hsrtech_toc_button_offset       = hsrtech_toc_button_offset();
 		$hsrtech_toc_button_right_offset = hsrtech_toc_button_right_offset();
 		$hsrtech_toc_jump_vars           = '';
@@ -55,17 +54,12 @@ function hsrtech_enqueue_public_assets() {
 		);
 	}
 
-	// The code-snippet block's highlighting script used to load only
-	// alongside the rest of the reader experience above (book/chapter/
-	// archive/shortcode pages) — which meant a Code Snippet block used in an
-	// ordinary post or page got the frame (language label, copy button; that
-	// part is block.json's own "style" registration, and always loads
-	// wherever the block does) but never the colored tokens or working copy
-	// button, since the script that adds those simply hadn't run. Loading it
-	// here too, whenever the current post actually contains the block,
-	// fixes that without pulling in the rest of the book-reading experience
-	// (chapterwright.css's book hero/TOC/etc. styles, the mode toggle) on a
-	// page that has nothing to do with any of that.
+	// Loads the highlighting script whenever the current post contains a
+	// Code Snippet block, even outside the reader views above — so a block
+	// used in an ordinary post or page still gets colored tokens and a
+	// working copy button, without pulling in the rest of the book-reading
+	// experience (chapterwright.css's book hero/TOC/etc. styles, the mode
+	// toggle) on a page that has nothing to do with any of that.
 	$has_code_snippet_block = $queried_id && has_block( 'chapterwright/code-snippet', $queried_id );
 
 	if ( $is_view || $has_library_shortcode || $has_code_snippet_block ) {

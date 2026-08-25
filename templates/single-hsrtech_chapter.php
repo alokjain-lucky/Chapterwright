@@ -53,16 +53,11 @@ $hsrtech_book_progress = ( false !== $hsrtech_current && count( $hsrtech_chapter
 <main id="hsrtech-chapter-content" class="hsrtech-page hsrtech-reader" style="--hsrtech-accent:<?php echo esc_attr( $hsrtech_accent ? $hsrtech_accent : '#f45d48' ); ?>;--hsrtech-progress:<?php echo esc_attr( $hsrtech_book_progress ); ?>%;" tabindex="-1">
 	<?php
 	/*
-	 * Lives inside <main>, not as a sibling before it, specifically so it
-	 * inherits the --hsrtech-accent custom property set on <main>'s own inline
-	 * style just above — position: fixed means moving it here changes
+	 * Lives inside <main>, not as a sibling before it, so it inherits the
+	 * --hsrtech-accent custom property set on <main>'s own inline style just
+	 * above. position: fixed means its placement in the markup changes
 	 * nothing about where it renders (still pinned to the very top of the
 	 * viewport via inset: 0 0 auto), only what CSS variables it can see.
-	 * Previously it sat before <main> in the markup, so --hsrtech-accent was
-	 * undefined at its scope and .hsrtech-reading-progress span's
-	 * `var(--hsrtech-accent, #f45d48)` silently fell through to the hardcoded
-	 * fallback color on every single book, regardless of that book's own
-	 * accent setting.
 	 */
 	?>
 	<div class="hsrtech-reading-progress" aria-hidden="true"><span data-hsrtech-reading-progress></span></div>

@@ -45,13 +45,10 @@ add_filter( 'plugin_action_links_' . plugin_basename( HSRTECH_FILE ), 'hsrtech_a
  * Must run before admin/settings.php's hsrtech_add_settings_page() — see the
  * priority comment above.
  *
- * Gated on 'edit_hsrtech_books' rather than the generic 'edit_posts' — as of
- * 2.2.0, Books/Chapters have their own capability_type (see
- * hsrtech_register_post_types()), so this now only requires access to this
- * plugin's own content, not blanket access to every post on the site. Every
- * default role that could see this menu before 2.2.0 still can —
- * hsrtech_add_capabilities_to_roles() grants it identically — this only changes
- * what's *possible* for a newly created, narrowly scoped role.
+ * Gated on 'edit_hsrtech_books' rather than the generic 'edit_posts', so this
+ * requires access to this plugin's own content, not blanket access to every
+ * post on the site. hsrtech_add_capabilities_to_roles() grants every default
+ * role the same practical access.
  */
 function hsrtech_add_app_page() {
 	add_menu_page(
@@ -61,11 +58,9 @@ function hsrtech_add_app_page() {
 		'chapterwright',
 		'hsrtech_render_app_page',
 		'dashicons-book-alt',
-		// 100, not the previous 20 (which lands right on top of core's
-		// "Pages" position and crowds the primary content menus). Below
-		// Settings (80) and the 99 separator keeps this plugin's top-level
-		// item out of the way of everything an admin reaches for first, per
-		// the WordPress.org Plugin Directory reviewer's recommendation.
+		// 100: below Settings (80) and the 99 separator, out of the way of
+		// the primary content menus, per the WordPress.org Plugin Directory
+		// reviewer's recommendation.
 		100
 	);
 
@@ -88,10 +83,7 @@ function hsrtech_render_app_page() {
 
 /**
  * Add a "Books & Chapters" link to this plugin's row on the Plugins screen,
- * next to Deactivate — now that the admin menu sits at position 100 (see
- * hsrtech_add_app_page()), it's no longer right at the top of the sidebar,
- * so this gives users a fast way back to it straight from the row where
- * they just activated the plugin.
+ * next to Deactivate, for a fast way back to the admin app.
  *
  * @param array<int,string> $links Existing action links (Deactivate, etc.).
  * @return array<int,string>

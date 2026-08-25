@@ -22,37 +22,27 @@ add_filter( 'rest_prepare_' . HSRTECH_BOOK_POST_TYPE, 'hsrtech_rest_prepare_book
  * HSRTECH_BOOK_POST_TYPE / HSRTECH_CHAPTER_POST_TYPE (defined in chapterwright.php)
  * and are part of the plugin's stable data contract — see AGENTS.md.
  *
- * As of 2.0.0, `show_in_menu` is false for both: the admin app registered in
- * admin/app.php (top-level "Chapterwright" menu) is the primary place authors
- * browse and organize Books/Chapters/Sections, so the native list/edit
- * screens no longer clutter the sidebar. `show_ui` stays at its true
- * default so those screens still exist and work — the admin app and the
- * Gutenberg editor sidebar panel (admin/app/src/editor-sidebar.js) both
- * deep-link straight into post.php for writing a chapter's actual content.
+ * `show_in_menu` is false for both: the admin app (admin/app.php, top-level
+ * "Chapterwright" menu) is the primary place authors browse and organize
+ * Books/Chapters/Sections. `show_ui` stays true so the native edit screens
+ * still exist — the admin app and the editor sidebar panel
+ * (admin/app/src/editor-sidebar.js) deep-link into post.php for writing a
+ * chapter's actual content.
  *
- * `'custom-fields'` is in both `supports` arrays for a reason that is easy
- * to miss and expensive to debug without it: `WP_REST_Posts_Controller::
- * get_item_schema()` only adds a `meta` property to a post type's REST
- * schema when `post_type_supports( $post_type, 'custom-fields' )` is true.
- * Without it, `register_post_meta()` still runs and the field is genuinely
- * registered (`get_registered_meta_keys()` reports it correctly), but the
- * REST controller never exposes or accepts it — every create/update
- * request carrying `meta` in the body is silently accepted and silently
- * ignored: no error, no rejected write, meta auth_callback never even
- * invoked, because the request never reaches that code path at all. See the
- * "Unreleased" AGENTS.md entry for how this was actually root-caused (five
- * rounds of live debug.log instrumentation) — don't remove this support
- * flag without re-reading that first.
+ * `'custom-fields'` must stay in both `supports` arrays: `WP_REST_Posts_Controller`
+ * only adds a `meta` property to a post type's REST schema when
+ * `post_type_supports( $post_type, 'custom-fields' )` is true. Without it,
+ * `register_post_meta()` still registers the field, but the REST controller
+ * silently ignores any `meta` sent in a create/update request — no error,
+ * just a dropped write.
  *
- * As of 2.2.0, both types register their own `capability_type` (`hsrtech_book`/
- * `hsrtech_books`, `hsrtech_chapter`/`hsrtech_chapters`) with `map_meta_cap => true`,
- * instead of defaulting to generic `post`/`posts` capabilities. This means
- * "who can touch Books/Chapters" is no longer the same permission as "who
- * can edit any post on the site" — a site can now create a role scoped to
- * just this plugin. `hsrtech_add_capabilities_to_roles()` below grants the
- * default roles exactly the capabilities they already effectively had
- * under the old generic-post behavior, so this change is a no-op for any
- * existing site unless it deliberately creates a new role.
+ * Both types register their own `capability_type` (`hsrtech_book`/`hsrtech_books`,
+ * `hsrtech_chapter`/`hsrtech_chapters`) with `map_meta_cap => true`, instead of the
+ * generic `post`/`posts` capabilities — so "who can touch Books/Chapters" is
+ * a permission a site can scope independently of general post-editing
+ * access. `hsrtech_add_capabilities_to_roles()` below grants the default
+ * roles the same practical access they'd have under generic post
+ * capabilities.
  */
 function hsrtech_register_post_types() {
 	register_post_type(
@@ -91,21 +81,16 @@ function hsrtech_register_post_types() {
  * draft/pending/private/future book, not just a published one.
  *
  * `WP_REST_Posts_Controller::prepare_item_for_response()` always sets `link`
- * to a plain `get_permalink()`, regardless of status — for anything other
- * than a published post, that URL 404s for every visitor, including the
- * book's own author, since WordPress only renders a non-published post at
- * its permalink through the separate preview mechanism
- * (`get_preview_post_link()`), which appends the `preview`/`preview_nonce`
- * query args core's own "Preview" button uses. This swaps `link` to that
- * preview-aware URL for any book that isn't published yet, so the admin app's
- * "View" action (books-list.js, book-detail.js) works the same way
- * regardless of status — the same thing admin/rest/chapters.php already does
- * for Chapters, which don't go through this controller at all.
+ * to a plain `get_permalink()`, which 404s for anything other than a
+ * published post — WordPress only renders a non-published post at its
+ * permalink through `get_preview_post_link()`, which appends the
+ * `preview`/`preview_nonce` query args. This swaps `link` to that
+ * preview-aware URL for any book that isn't published yet, so the admin
+ * app's "View" action (books-list.js, book-detail.js) works regardless of
+ * status.
  *
- * Left untouched for published books: `get_preview_post_link()` would still
- * resolve to a working page for them too, but only by tacking on a
- * short-lived nonce for no benefit — a plain, evergreen permalink is the
- * better link to hand out once a book is actually public.
+ * Left untouched for published books, since a plain, evergreen permalink is
+ * the better link to hand out once a book is actually public.
  *
  * @param WP_REST_Response $response REST response being prepared.
  * @param WP_Post          $post     The book post.
@@ -125,17 +110,12 @@ function hsrtech_rest_prepare_book_view_link( $response, $post ) {
 
 /**
  * Grant the default WordPress roles the same practical access to Books and
- * Chapters that they had before 2.2.0's move to a dedicated capability_type.
+ * Chapters as WordPress's built-in `post` type.
  *
  * WordPress never grants a custom post type's mapped capabilities to any
- * role automatically — that has always been the theme/plugin's job, done
- * once (typically on activation). The capability names granted per role
- * below deliberately mirror exactly what WordPress's own `populate_roles()`
- * grants each default role for the built-in `post` type (see
- * wp-admin/includes/schema.php), so switching Books/Chapters onto their own
- * capability_type does not change what an Administrator, Editor, Author, or
- * Contributor could already do — it only makes it *possible* to grant a
- * narrower, dedicated role that skips generic post access entirely.
+ * role automatically — that's the plugin's job, done on activation. The
+ * capabilities per role below mirror what `populate_roles()` grants each
+ * default role for `post` (see wp-admin/includes/schema.php).
  *
  * Safe to call repeatedly: WP_Role::add_cap() is idempotent.
  */

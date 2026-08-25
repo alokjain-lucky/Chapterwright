@@ -15,19 +15,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-// Priority 20, and on 'init' rather than the earlier 'plugins_loaded' (which
-// is where this ran prior to 2.2.1): hsrtech_maybe_upgrade() calls
-// hsrtech_add_capabilities_to_roles(), which needs the Book/Chapter post types
-// to already be registered (it looks up their capability names via
+// Priority 20 on 'init', not 'plugins_loaded': hsrtech_maybe_upgrade() calls
+// hsrtech_add_capabilities_to_roles(), which needs the Book/Chapter post
+// types already registered (it looks up their capability names via
 // get_post_type_object()). Post types register on 'init' at the default
 // priority 10 (hsrtech_register_post_types(), includes/content-types.php).
-// 'plugins_loaded' always fires before 'init', so running this there meant
-// get_post_type_object() returned null every time, the capability grant
-// silently did nothing, and hsrtech_db_version still advanced to '2.2.0' as if
-// it had worked — see the 2.2.1 note under Notable history in AGENTS.md for
-// how this actually surfaced (the "Books & Chapters" admin menu item
-// disappearing) and why a version bump alone doesn't fix an already-bumped
-// site without the 2.2.1 re-run gate below.
 add_action( 'init', 'hsrtech_maybe_upgrade', 20 );
 
 /**
@@ -79,26 +71,21 @@ function hsrtech_maybe_upgrade() {
 	}
 
 	if ( version_compare( $installed, '2.2.0', '<' ) ) {
-		// Books/Chapters moved off generic 'post' capabilities onto their own
-		// capability_type in 2.2.0 (see hsrtech_register_post_types() in
-		// includes/content-types.php). New installs get this from
-		// hsrtech_activate()'s own call; this covers every site that updates the
-		// plugin's files without deactivating/reactivating it, which is the
-		// common case and would otherwise silently strip existing users'
-		// access to Books and Chapters.
+		// Books/Chapters use their own capability_type instead of generic
+		// 'post' capabilities (see hsrtech_register_post_types()). New
+		// installs get this from hsrtech_activate(); this covers sites that
+		// update the plugin's files without deactivating/reactivating, so
+		// existing users don't silently lose access to Books and Chapters.
 		hsrtech_add_capabilities_to_roles();
 		update_option( 'hsrtech_db_version', '2.2.0' );
 	}
 
 	if ( version_compare( $installed, '2.2.1', '<' ) ) {
-		// Re-run of the exact same call as the 2.2.0 block above. On any site
-		// that already ran that block before this file's 'init' priority-20
-		// fix (see the comment on add_action() above), the capability grant
-		// silently did nothing — but hsrtech_db_version still advanced to
-		// '2.2.0', so the block above will never run again on that site. This
-		// gate exists purely to self-heal that: safe and cheap to run even on
-		// a site where 2.2.0 worked correctly the first time, since
-		// WP_Role::add_cap() is idempotent.
+		// Re-runs the capability grant above for any site where it ran before
+		// the 'init' priority-20 fix and silently did nothing (Book/Chapter
+		// post types weren't registered yet at that point in the request).
+		// Safe to run again elsewhere too, since WP_Role::add_cap() is
+		// idempotent.
 		hsrtech_add_capabilities_to_roles();
 		update_option( 'hsrtech_db_version', '2.2.1' );
 	}

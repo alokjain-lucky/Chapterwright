@@ -2,15 +2,12 @@
 /**
  * Uninstall handler.
  *
- * As of 2.0.1, uninstalling Chapterwright performs a full clean sweep: every
- * Book and Chapter post (and their post meta), the hsrtech_sections table, and
- * every option the plugin created are all removed. Nothing the plugin added
- * is left behind. This is a deliberate reversal of the plugin's pre-2.0.1
- * "retain content" behavior, made at the project owner's explicit request —
- * see AGENTS.md, engineering standard 8, for the reasoning. It only runs
- * when a site owner actually deletes the plugin from the Plugins screen
- * (never on deactivation or update), so it is not something that can happen
- * by accident.
+ * Uninstalling Chapterwright performs a full clean sweep: every Book and
+ * Chapter post (and their post meta), the hsrtech_sections table, and every
+ * option the plugin created are all removed. Nothing the plugin added is
+ * left behind. This only runs when a site owner actually deletes the plugin
+ * from the Plugins screen (never on deactivation or update), so it is not
+ * something that can happen by accident.
  *
  * @package Chapterwright
  */
@@ -90,19 +87,18 @@ function hsrtech_uninstall_drop_sections_table() {
  * role on the site — including any custom role a site owner created that
  * happens to hold one of these capabilities.
  *
- * As of 2.2.0, Books and Chapters register their own `capability_type`
- * (hsrtech_register_post_types(), includes/content-types.php) instead of using
- * generic 'post' capabilities, and hsrtech_add_capabilities_to_roles() grants
- * the resulting capability names to the default roles. This is the reverse
- * of that: WordPress never removes a role capability on its own, so without
- * this, an uninstalled site would keep dangling `edit_hsrtech_book`-style
- * capabilities on its roles forever — a small but real violation of "clean
- * sweep." The post types are not registered during uninstall (this file
- * runs in a minimal WordPress environment that never loads chapterwright.php),
- * so the capability names are spelled out directly here instead of being
- * read off a live post type object, mirroring get_post_type_capabilities()'s
- * default naming for a `capability_type => array( $singular, $plural )` post
- * type with `map_meta_cap => true`.
+ * Books and Chapters register their own `capability_type`
+ * (hsrtech_register_post_types(), includes/content-types.php), and
+ * hsrtech_add_capabilities_to_roles() grants the resulting capability names
+ * to the default roles. WordPress never removes a role capability on its
+ * own, so without this, an uninstalled site would keep dangling
+ * `edit_hsrtech_book`-style capabilities on its roles forever. The post
+ * types are not registered during uninstall (this file runs in a minimal
+ * WordPress environment that never loads chapterwright.php), so the
+ * capability names are spelled out directly here instead of being read off
+ * a live post type object, mirroring get_post_type_capabilities()'s default
+ * naming for a `capability_type => array( $singular, $plural )` post type
+ * with `map_meta_cap => true`.
  */
 function hsrtech_uninstall_remove_capabilities() {
 	$capabilities = array();

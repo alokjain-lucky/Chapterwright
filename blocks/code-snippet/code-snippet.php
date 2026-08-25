@@ -229,26 +229,16 @@ function hsrtech_localize_code_snippet_languages() {
 /**
  * Parse a "Highlight lines" field (e.g. "3-5, 8, 12-14") into a lookup set
  * of line numbers — matching whatever number is actually *displayed* in the
- * gutter for that row, i.e. already offset by "Start line", not counted from
- * the top of the snippet as pasted. An earlier version kept the two
- * independent instead (typed ranges always counted from 1, regardless of
- * Start line), on the theory that it would save an author from redoing their
- * ranges after adjusting where the gutter starts — in practice that meant
- * typing "3-5" to highlight the rows visibly numbered 18-20 whenever Start
- * line wasn't 1, which read as broken rather than convenient. Matching the
- * displayed number is what "Highlight lines 18-20" actually means to
- * someone looking at the rendered block.
+ * gutter for that row, i.e. already offset by "Start line", not counted
+ * from the top of the snippet as pasted.
  *
  * Mirrored in JavaScript by parseLineRanges() (assets/js/code-highlight.js),
  * which rebuilds this same set client-side from the same raw string (see
- * the `data-hsrtech-highlight-lines` attribute render.php outputs below)
- * rather than trusting anything computed server-side, the same pattern
- * already used for line numbers and language.
+ * the `data-hsrtech-highlight-lines` attribute render.php outputs below).
  *
  * Unrecognized junk (an empty segment, non-numeric text, a reversed or
  * malformed range) is silently skipped rather than erroring — this only
- * ever affects which lines get a visual tint, never what code is shown or
- * whether the block renders at all.
+ * affects which lines get a visual tint, never what code is shown.
  *
  * @param string $raw Raw field value, comma-separated numbers and/or ranges.
  * @return array<int,bool> Set of matching line numbers, as array keys, for

@@ -6,11 +6,10 @@
  * Books and Chapters register with `show_ui => true` (so post.php — the
  * actual Block Editor screen — keeps working; the admin app and the editor
  * sidebar panel both deep-link straight into it) but `show_in_menu => false`
- * (see hsrtech_register_post_types(), includes/content-types.php). That leaves
- * their native list-table and "Add New" screens still directly reachable by
- * URL even though nothing in the plugin links to them anymore, and landing
- * on one shows the old, scattered pre-2.0.0 interface the admin app
- * replaced. This redirects those specific URLs back to the app.
+ * (see hsrtech_register_post_types(), includes/content-types.php). That
+ * leaves their native list-table and "Add New" screens still directly
+ * reachable by URL even though nothing in the plugin links to them. This
+ * redirects those specific URLs back to the app.
  *
  * Deliberately does NOT touch:
  * - post.php?action=edit (needed to write a Book/Chapter's actual content).
@@ -21,8 +20,8 @@
  *   reachable.
  *
  * There are no custom taxonomies in this plugin (Sections are a database
- * table, not a taxonomy — see includes/sections.php and the "Notable
- * history" entry on why), so there is nothing to redirect on that front.
+ * table, not a taxonomy — see includes/sections.php), so there is nothing to
+ * redirect on that front.
  *
  * @package Chapterwright
  */

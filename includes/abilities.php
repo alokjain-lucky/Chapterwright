@@ -5,17 +5,13 @@
  * The Abilities API (WordPress 6.9+) is a discoverable registry that lets AI
  * agents, automation tools, and other plugins find and invoke a plugin's
  * capabilities in a standardized, schema-validated way — see
- * https://developer.wordpress.org/apis/abilities-api/. It is strictly
- * additive: everything registered here is a thin wrapper around the exact
- * same functions the REST controllers in admin/rest/ already call, so there
- * is one source of truth for "what can be done to a book," not two.
+ * https://developer.wordpress.org/apis/abilities-api/. Every ability here is
+ * a thin wrapper around the same functions the REST controllers in
+ * admin/rest/ call.
  *
- * This plugin's minimum supported version stays WordPress 6.4 (see the
- * plugin header and README), so registration here is feature-detected
- * rather than required: on WordPress 6.8 and earlier, the
- * `wp_abilities_api_init` / `wp_abilities_api_categories_init` action hooks
- * simply do not exist, these callbacks never run, and nothing else in the
- * plugin depends on them.
+ * Registration is feature-detected: on WordPress versions without the
+ * Abilities API, the `wp_abilities_api_init` / `wp_abilities_api_categories_init`
+ * hooks don't exist, so these callbacks simply never run.
  *
  * @package Chapterwright
  */
@@ -75,15 +71,11 @@ function hsrtech_register_abilities() {
 			),
 			'execute_callback'    => 'hsrtech_ability_list_books',
 			'permission_callback' => function () {
-				// 'edit_hsrtech_books' as of 2.2.0 — Books have their own
-				// capability_type now, see hsrtech_register_post_types(). This
-				// only gates whether the ability can be called at all; it does
-				// not by itself mean the caller can see every author's drafts
-				// and private books — hsrtech_ability_list_books() below
-				// additionally restricts the returned list to the caller's own
-				// books unless they also have 'edit_others_hsrtech_books',
-				// mirroring the classic admin list table's own restriction for
-				// this capability_type.
+				// Gates whether the ability can be called at all. It doesn't
+				// mean the caller can see every author's drafts and private
+				// books — hsrtech_ability_list_books() below restricts the
+				// list to the caller's own books unless they also have
+				// 'edit_others_hsrtech_books'.
 				return current_user_can( 'edit_hsrtech_books' );
 			},
 			'meta'                => array(
@@ -187,9 +179,8 @@ function hsrtech_register_abilities() {
 			'output_schema'       => array( 'type' => 'object' ),
 			'execute_callback'    => 'hsrtech_ability_create_chapter',
 			'permission_callback' => function ( $input ) {
-				// Must be able to edit the target book, and to create a new
-				// Chapter at all — 'edit_hsrtech_chapters' as of 2.2.0, replacing
-				// the generic 'edit_posts' (see hsrtech_register_post_types()).
+				// Must be able to edit the target book, and to create a
+				// Chapter at all.
 				return current_user_can( 'edit_post', (int) $input['book_id'] ) && current_user_can( 'edit_hsrtech_chapters' );
 			},
 			'meta'                => array(
@@ -257,10 +248,8 @@ function hsrtech_ability_list_books() {
 	);
 
 	// The permission_callback only confirms the caller can edit *some*
-	// Books ('edit_hsrtech_books'); it doesn't mean they can see every
-	// author's drafts and private books. Mirror the same restriction the
-	// admin post list table applies for this capability_type: without
-	// 'edit_others_hsrtech_books', only return the caller's own.
+	// Books. Without 'edit_others_hsrtech_books', restrict the list to
+	// their own.
 	if ( ! current_user_can( 'edit_others_hsrtech_books' ) ) {
 		$args['author'] = get_current_user_id();
 	}
@@ -269,19 +258,9 @@ function hsrtech_ability_list_books() {
 
 	return array_map(
 		function ( $book ) {
-			// hsrtech_get_all_chapters_for_admin() deliberately returns every
-			// chapter assigned to the book regardless of status or author (it
-			// backs the admin app's own book-detail screen, where an editor
-			// with edit_others_hsrtech_chapters needs to see everything). A
-			// book and its chapters are separate capability_types as of
-			// 2.2.0 (see hsrtech_register_post_types()), so being allowed to
-			// list this book at all doesn't mean the caller can see every
-			// chapter under it — e.g. a book with chapters drafted by other
-			// authors. Count only the chapters the caller can individually
-			// edit, the same per-post current_user_can( 'edit_post', ... )
-			// check hsrtech_ability_get_book_overview() already applies one
-			// level down, so this count never discloses more than the
-			// caller could see by actually opening the book.
+			// Being allowed to list the book doesn't mean the caller can see
+			// every chapter under it, so only count the ones they can
+			// individually edit.
 			$chapters = array_filter(
 				hsrtech_get_all_chapters_for_admin( $book->ID ),
 				function ( $chapter ) {
@@ -314,16 +293,8 @@ function hsrtech_ability_get_book_overview( $input ) {
 		return new WP_Error( 'hsrtech_ability_book_not_found', __( 'That book does not exist.', 'chapterwright' ) );
 	}
 
-	// The permission_callback only confirms the caller can edit *this book*;
-	// a role can have edit_post on a Book without edit rights on every
-	// Chapter within it (they're separate capability_types as of 2.2.0 — see
-	// hsrtech_register_post_types()), and hsrtech_get_all_chapters_for_admin()
-	// deliberately returns every chapter regardless of status or author.
-	// Filter down to what the caller can individually edit — the same
-	// per-post current_user_can( 'edit_post', ... ) check used everywhere
-	// else in this plugin, which already resolves private/draft/others'-post
-	// rules correctly via map_meta_cap — same as the list-books ability does
-	// for books, just one level down.
+	// Edit rights on the book don't imply edit rights on every chapter in
+	// it, so filter down to the chapters the caller can individually edit.
 	$chapters = array_filter(
 		hsrtech_get_all_chapters_for_admin( $book_id ),
 		function ( $chapter ) {

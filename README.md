@@ -13,7 +13,7 @@ Opens a temporary WordPress site in your browser with Chapterwright already inst
 | WordPress | 6.4 or newer |
 | PHP | 7.4 or newer |
 | Tested through | WordPress 7.0 |
-| Plugin version | 2.8.5 |
+| Plugin version | 2.8.6 |
 
 Chapterwright adds two content types to WordPress: **Books** and **Chapters**. Each book can have its own cover, subtitle, accent color, introduction, and table of contents. Chapters can be grouped into sections — each with its own name and description — and receive automatic previous/next navigation.
 
@@ -321,6 +321,11 @@ Both run automatically on every push and pull request via GitHub Actions (`.gith
 
 The three most recent releases are below. See [CHANGELOG.md](CHANGELOG.md) for the full history back to 1.0.0.
 
+### 2.8.6
+
+- Added a "Right offset" option next to "Button position" for the floating table of contents button, so you can also shift it away from the right edge, not just up, when a theme's floating element overlaps it from the side.
+- Fixed the "List books" automation ability (Abilities API) returning a chapter count that could include chapters the caller isn't allowed to see, on a book with chapters from more than one author.
+
 ### 2.8.5
 
 - Added a "Button position" setting for the floating table of contents button, so you can raise it when a theme adds its own floating element (a chat widget, a "Buy me a coffee" button, a cookie banner) in the same bottom-right corner.
@@ -328,10 +333,6 @@ The three most recent releases are below. See [CHANGELOG.md](CHANGELOG.md) for t
 ### 2.8.4
 
 - Fixed "Highlight lines" not matching the line numbers actually shown in the gutter once "Start line" was set to anything other than 1 — you had to type the position counted from the top of the snippet instead of the number you could see. Typing the numbers you see now highlights the right rows.
-
-### 2.8.3
-
-- Added a "View" icon to the Books & Chapters admin app (book cards, the book detail screen, and each chapter row) that opens that book or chapter's actual page in a new tab — including a working preview link for a book or chapter that isn't published yet.
 
 ## License
 

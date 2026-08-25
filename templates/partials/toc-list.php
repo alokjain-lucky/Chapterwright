@@ -76,11 +76,11 @@ $hsrtech_current_chapter_id = isset( $hsrtech_current_chapter_id ) ? (int) $hsrt
 								<?php endif; ?>
 								<span class="hsrtech-toc-row__leader" aria-hidden="true"></span>
 								<?php
-								// Always the order number now (never replaced by "Draft" —
-								// see above) and always aria-hidden, same as a published
-								// row: purely decorative/redundant with the chapter's
-								// position in this <ol>, already conveyed to assistive
-								// tech via list semantics.
+								// Always the order number, never replaced by "Draft" (see
+								// above), and always aria-hidden, same as a published row:
+								// purely decorative/redundant with the chapter's position in
+								// this <ol>, already conveyed to assistive tech via list
+								// semantics.
 								?>
 								<b aria-hidden="true"><?php echo esc_html( get_post_meta( $hsrtech_chapter->ID, '_hsrtech_order', true ) ); ?></b>
 							</span>

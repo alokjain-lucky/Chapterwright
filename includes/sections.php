@@ -262,10 +262,7 @@ function hsrtech_get_chapters_in_section( $section_id ) {
  * those chapters, so the caller needs edit rights on all of them too, not
  * just on the section's own book. Shared by the delete-section Ability
  * (includes/abilities.php) and the `DELETE /sections/{id}` REST route
- * (admin/rest/sections.php) so both enforce the same rule instead of two
- * independently maintained checks quietly drifting apart — which is exactly
- * what had happened before this was pulled out: the REST route only checked
- * book-level edit rights, not the per-chapter ones the Ability already did.
+ * (admin/rest/sections.php) so both enforce the same rule.
  *
  * @param array<string,mixed> $section Section row, as returned by hsrtech_get_section().
  * @return bool

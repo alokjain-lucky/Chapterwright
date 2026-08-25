@@ -4,7 +4,7 @@ Tags: ebook, books, publishing, reading, chapters
 Requires at least: 6.4
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 2.8.5
+Stable tag: 2.8.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -81,6 +81,10 @@ Yes. Every string (PHP and the admin app's JavaScript) is wrapped for translatio
 5. The **Code Snippet** block with syntax coloring and a copy button.
 
 == Changelog ==
+
+= 2.8.6 =
+* Added a "Right offset" option next to "Button position" for the floating table of contents button, so you can also shift it away from the right edge, not just up, when a theme's floating element overlaps it from the side.
+* Fixed the "List books" automation ability (Abilities API) returning a chapter count that could include chapters the caller isn't allowed to see, on a book with chapters from more than one author.
 
 = 2.8.5 =
 * Added a "Button position" setting for the floating table of contents button, so you can raise it when a theme adds its own floating element (a chat widget, a "Buy me a coffee" button, a cookie banner) in the same bottom-right corner.

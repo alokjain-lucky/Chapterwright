@@ -62,13 +62,11 @@ $hsrtech_wrapper_attributes = get_block_wrapper_attributes( array( 'class' => im
 
 // One <div> per source line — with an optional number and/or highlight tint
 // — is only worth the extra markup when something actually needs a per-line
-// hook. Anything else stays the simpler flat <pre><code>, exactly as before
-// "Show line numbers" and "Highlight lines" existed. Either shape is what a
-// visitor with JavaScript disabled actually sees; assets/js/code-highlight.js
-// discards and rebuilds whichever one rendered, from the raw code and the
-// data-hsrtech-* attributes below, so it always ends up correct regardless
-// of how a line wraps — see that file's buildLineRows() for why the two
-// need to agree on markup shape but not on exact content.
+// hook; otherwise this stays the simpler flat <pre><code>. Either shape is
+// what a visitor with JavaScript disabled actually sees;
+// assets/js/code-highlight.js discards and rebuilds whichever one rendered,
+// from the raw code and the data-hsrtech-* attributes below, so it always
+// ends up correct regardless of how a line wraps.
 $hsrtech_needs_rows = $hsrtech_show_line_numbers || ! empty( $hsrtech_highlight_set );
 
 $hsrtech_code_lines  = explode( "\n", $hsrtech_code );

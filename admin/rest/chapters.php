@@ -9,17 +9,11 @@
  *
  * - Listing every chapter that belongs to one book, across every status an
  *   author needs to see (draft, pending, private, future, not just
- *   published). The obvious alternative — querying the core
- *   `/wp/v2/hsrtech_chapter` collection with `status` as an array and filtering
- *   the result client-side by `_hsrtech_book_id` — is what the admin app used
- *   through 2.3.1, and is fragile in exactly the way that class of query
- *   tends to be: it depends on the collection endpoint's own
- *   status/context capability handling behaving as expected for every
- *   status in the array, across every request. The route below instead
- *   wraps `hsrtech_get_all_chapters_for_admin()` (includes/queries.php), the
- *   same plain `get_posts()` query already trusted elsewhere in this
- *   plugin (admin/list-table.php, includes/abilities.php) — one door, not
- *   two, for "every chapter in this book regardless of status."
+ *   published). Wraps `hsrtech_get_all_chapters_for_admin()`
+ *   (includes/queries.php), the same plain `get_posts()` query already used
+ *   elsewhere in the plugin (admin/list-table.php, includes/abilities.php),
+ *   rather than querying the core `/wp/v2/hsrtech_chapter` collection with
+ *   `status` as an array and filtering client-side by `_hsrtech_book_id`.
  * - Reordering several chapters' section and order values together after a
  *   drag-and-drop reorder in the admin app, so the tree never ends up
  *   partially updated.
@@ -144,27 +138,14 @@ function hsrtech_prepare_chapter_for_response( $chapter ) {
 			'rendered' => get_the_title( $chapter ),
 		),
 		'status'  => $chapter->post_status,
-		// Powers the admin app's "View" action (book-detail.js). A plain
-		// get_permalink() for a draft/pending/private/future chapter 404s for
-		// everyone, including its own author — get_preview_post_link()
-		// appends the same preview=true/preview_nonce query args core's own
-		// "Preview" button uses, which only work for the currently logged-in
-		// user and expire with the nonce, but that's fine here since this
-		// link is only ever clicked from inside the (already authenticated)
-		// admin app, never stored or shared.
+		// Powers the admin app's "View" action. get_permalink() 404s for a
+		// non-published chapter, so use get_preview_post_link() instead —
+		// only ever clicked from inside the authenticated admin app.
 		'link'    => 'publish' === $chapter->post_status ? get_permalink( $chapter ) : get_preview_post_link( $chapter ),
-		// Same call the front-end table of contents uses (see
-		// templates/partials/toc-list.php) — falls back to an
-		// auto-generated excerpt from the chapter's content when no manual
-		// excerpt has been set, exactly like the front end does, so what
-		// the admin app shows here matches what a reader would actually
-		// see. Included regardless of the "Show excerpt in table of
-		// contents" setting (hsrtech_show_toc_excerpt(), admin/settings.php)
-		// — that setting only controls whether the front end *displays*
-		// this; whether to show it here is up to the admin app's own UI,
-		// which reads the same setting via window.hsrtechApp.showTocExcerpt
-		// (hsrtech_enqueue_app_assets(), admin/app.php) rather than this
-		// response omitting the field entirely.
+		// Matches what the front-end table of contents shows (falls back to
+		// an auto-generated excerpt when none is set). Always included; the
+		// admin app's own UI decides whether to display it, based on the
+		// "Show excerpt in table of contents" setting.
 		'excerpt' => get_the_excerpt( $chapter ),
 		'meta'    => array(
 			'_hsrtech_book_id'    => absint( get_post_meta( $chapter->ID, '_hsrtech_book_id', true ) ),
