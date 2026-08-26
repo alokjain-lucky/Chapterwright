@@ -28,18 +28,18 @@ function hsrtech_render_credit( $context = 'book' ) {
 		return;
 	}
 
-	$repo_url = 'https://github.com/alokjain-lucky/Chapterwright';
-	$label    = 'archive' === $context
-		/* translators: 1: opening <a> tag linking to the plugin's repository, 2: closing </a> tag. */
+	$plugin_url = 'https://wordpress.org/plugins/chapterwright/';
+	$label      = 'archive' === $context
+		/* translators: 1: opening <a> tag linking to the plugin's WordPress.org page, 2: closing </a> tag. */
 		? __( 'This library is powered by %1$sChapterwright%2$s', 'chapterwright' )
-		/* translators: 1: opening <a> tag linking to the plugin's repository, 2: closing </a> tag. */
+		/* translators: 1: opening <a> tag linking to the plugin's WordPress.org page, 2: closing </a> tag. */
 		: __( 'This book is created with %1$sChapterwright%2$s', 'chapterwright' );
 	?>
 	<p class="hsrtech-credit">
 		<?php
 		printf(
 			esc_html( $label ),
-			'<a href="' . esc_url( $repo_url ) . '" target="_blank" rel="noopener noreferrer">',
+			'<a href="' . esc_url( $plugin_url ) . '" target="_blank" rel="noopener noreferrer">',
 			'</a>'
 		);
 		?>

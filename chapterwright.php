@@ -1,9 +1,9 @@
 <?php
 /**
  * Plugin Name:       Chapterwright
- * Plugin URI:        https://github.com/alokjain-lucky/Chapterwright
+ * Plugin URI:        https://wordpress.org/plugins/chapterwright/
  * Description:       Create and publish multiple, beautifully readable ebooks with chapters, sections, and code-friendly formatting.
- * Version:           2.8.6
+ * Version:           2.8.7
  * Requires at least: 6.4
  * Requires PHP:      7.4
  * Author:            Alok Jain
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'HSRTECH_VERSION', '2.8.6' );
+define( 'HSRTECH_VERSION', '2.8.7' );
 define( 'HSRTECH_FILE', __FILE__ );
 define( 'HSRTECH_PATH', plugin_dir_path( __FILE__ ) );
 define( 'HSRTECH_URL', plugin_dir_url( __FILE__ ) );

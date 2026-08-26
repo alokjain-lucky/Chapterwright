@@ -4,7 +4,7 @@ Tags: ebook, books, publishing, reading, chapters
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 2.8.6
+Stable tag: 2.8.7
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -81,6 +81,9 @@ Yes. Every string (PHP and the admin app's JavaScript) is wrapped for translatio
 5. The **Code Snippet** block with syntax coloring and a copy button.
 
 == Changelog ==
+
+= 2.8.7 =
+* The "Created with Chapterwright" / "Powered by Chapterwright" footer credit link, and the plugin's own info link, now point to its WordPress.org page instead of GitHub, now that the plugin is listed there.
 
 = 2.8.6 =
 * Added a "Right offset" option next to "Button position" for the floating table of contents button, so you can also shift it away from the right edge, not just up, when a theme's floating element overlaps it from the side.

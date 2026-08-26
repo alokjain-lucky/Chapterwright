@@ -2,6 +2,10 @@
 
 All notable changes to Chapterwright. See [README.md](README.md#changelog) for the most recent entries — this file is the full history.
 
+### 2.8.7
+
+- **Pointed the plugin's own links at its new WordPress.org listing instead of GitHub**, now that Chapterwright is approved and live at wordpress.org/plugins/chapterwright/. `chapterwright.php`'s `Plugin URI` header, and `public/credit.php`'s "This book is created with Chapterwright" / "This library is powered by Chapterwright" footer credit link, both switched from the GitHub repo to the WordPress.org page. Left `admin/help.php`'s "Plugin documentation on GitHub" link (in the Book/Chapter screens' Help tab sidebar) pointing at GitHub on purpose — it links to the fuller `README.md`, not the shorter `readme.txt` WordPress.org displays.
+
 ### 2.8.6
 
 - **Added a "Right offset" setting for the floating table of contents button**, alongside the existing "Bottom offset" added in 2.8.5 (Settings → Reading experience → Button position). Same pattern: a `toc_button_right_offset` number field (0-500px, clamped in `hsrtech_sanitize_settings()`), a `hsrtech_toc_button_right_offset()` getter, and a `--hsrtech-toc-jump-right-offset` custom property. `assets/css/chapterwright.css`'s two `.hsrtech-toc-jump` rules now compute `right` as `calc(2rem + var(--hsrtech-toc-jump-right-offset, 0px))` / `calc(1.25rem + var(--hsrtech-toc-jump-right-offset, 0px))` instead of a flat value, so a site can nudge the button horizontally too — not just vertically — when another floating element overlaps it from the side rather than from below. `public/assets.php` combines both offsets' `wp_add_inline_style()` output into a single `:root { ... }` block, only emitting the properties that are actually non-zero.
