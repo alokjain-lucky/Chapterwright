@@ -2,6 +2,7 @@
 
 Publish multiple web-native ebooks in WordPress, with book landing pages, grouped tables of contents, ordered chapters, and a focused reading experience.
 
+[![Get Chapterwright on WordPress.org](https://img.shields.io/badge/-Get%20it%20on%20WordPress.org-21759B?style=for-the-badge&logo=wordpress&logoColor=white)](https://wordpress.org/plugins/chapterwright/)
 [![Try Chapterwright on WordPress Playground](https://img.shields.io/badge/-Try%20it%20on%20WordPress%20Playground-3858E9?style=for-the-badge&logo=wordpress&logoColor=white)](https://playground.wordpress.net/#%7B%22landingPage%22%3A%22%2Fwp-admin%2Fadmin.php%3Fpage%3Dchapterwright%22%2C%22preferredVersions%22%3A%7B%22php%22%3A%228.3%22%2C%22wp%22%3A%22latest%22%7D%2C%22features%22%3A%7B%22networking%22%3Atrue%7D%2C%22steps%22%3A%5B%7B%22step%22%3A%22login%22%2C%22username%22%3A%22admin%22%2C%22password%22%3A%22password%22%7D%2C%7B%22step%22%3A%22installPlugin%22%2C%22pluginData%22%3A%7B%22resource%22%3A%22url%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2Falokjain-lucky%2FChapterwright%2Freleases%2Flatest%2Fdownload%2Fchapterwright.zip%22%7D%2C%22options%22%3A%7B%22activate%22%3Atrue%7D%7D%5D%7D)
 
 Opens a temporary WordPress site in your browser with Chapterwright already installed and activated — no download or install needed. Uses [WordPress Playground](https://playground.wordpress.net/); the site and any changes you make disappear when you close the tab. The button always pulls the latest GitHub release, since the link points at GitHub's `releases/latest` redirect rather than a specific version.
@@ -42,14 +43,12 @@ Chapterwright adds two content types to WordPress: **Books** and **Chapters**. E
 
 ## Installation
 
-1. Download the plugin ZIP.
-2. In WordPress, go to **Plugins → Add New → Upload Plugin**.
-3. Upload the ZIP and activate **Chapterwright**.
-4. Go to **Chapterwright** in the admin sidebar and select **Add Book**.
-5. Open the new book, add a chapter from its detail screen, then follow the **Edit content →** link to write it in the block editor.
-6. Open the book's **View** link, visit `/books/`, or add `[hsrtech_books]` to a page.
+1. In WordPress, go to **Plugins → Add New Plugin**, search for "Chapterwright", then **Install Now** and **Activate**.
+2. Go to **Chapterwright** in the admin sidebar and select **Add Book**.
+3. Open the new book, add a chapter from its detail screen, then follow the **Edit content →** link to write it in the block editor.
+4. Open the book's **View** link, visit `/books/`, or add `[hsrtech_books]` to a page.
 
-You can also install the plugin manually by copying the `chapterwright` directory to `/wp-content/plugins/` and activating it from the **Plugins** screen.
+You can also install manually: download the ZIP from [the WordPress.org plugin page](https://wordpress.org/plugins/chapterwright/) or a [GitHub release](https://github.com/alokjain-lucky/Chapterwright/releases), then upload it under **Plugins → Add New Plugin → Upload Plugin**, or copy the `chapterwright` directory directly to `/wp-content/plugins/` and activate it from the **Plugins** screen.
 
 > [!TIP]
 > If a book URL returns a 404 after activation, go to **Settings → Permalinks** and click **Save Changes** once.
