@@ -1,0 +1,91 @@
+/**
+ * chapterwright/note — front end and editor.
+ *
+ * Uses the same --hsrtech-paper/--hsrtech-ink/--hsrtech-line/--hsrtech-accent
+ * custom properties as the rest of the reader (assets/css/chapterwright.css)
+ * — the same ones .hsrtech-toc and .hsrtech-callout already use — so a note
+ * matches the surrounding chapter's colors and switches with it when the
+ * reader toggles light/dark mode (chapterwright.css sets these on
+ * :root[data-hsrtech-mode], see that file for the mechanism). The left
+ * accent border and colored label reuse this book's own --hsrtech-accent
+ * (set per-book on <main>, see templates/single-hsrtech_chapter.php), the
+ * same "highlighted margin note" treatment .hsrtech-callout already uses,
+ * so a note reads as a deliberate callout rather than blending into the
+ * page. Kept deliberately quiet: a plain paper background, a thin accent
+ * border, and a small accent dot next to the label carry the identity —
+ * no tinted background or heavier shadow, so it stays easy on the eye
+ * next to a full page of reading.
+ *
+ * Every var() carries a literal light-mode fallback, though: this
+ * stylesheet auto-loads on *any* page containing the block, via block.json's
+ * own "style" registration, not only book/chapter pages where
+ * chapterwright.css is guaranteed to also be loaded (see
+ * hsrtech_enqueue_public_assets(), public/assets.php) — same reasoning as
+ * the Code Snippet block's own style.css. A note used in an ordinary post
+ * still looks intentional, just without the dark-mode reactivity or the
+ * book's own accent color, which only make sense inside this plugin's own
+ * reader chrome.
+ *
+ * @package Chapterwright
+ */
+
+.hsrtech-note {
+	background: var(--hsrtech-paper, #f6f3ec);
+	border-left: 3px solid var(--hsrtech-accent, #f45d48);
+	border-radius: 0 .75rem .75rem 0;
+	box-shadow: 0 1px 2px rgba(23, 23, 22, .04);
+	color: var(--hsrtech-ink, #171716);
+	margin: 1.75rem 0;
+	padding: 1.2rem 1.5rem 1.4rem;
+}
+
+.hsrtech-note__label-row {
+	align-items: center;
+	display: flex;
+	gap: .6rem;
+	margin-bottom: .75rem;
+}
+
+/* The divider is a flexible pseudo-element rather than a fixed-width line,
+   so it always fills the remaining width of the label row regardless of how
+   long the label text is (e.g. "Note" vs. "Important warning"). */
+.hsrtech-note__label-row::after {
+	background: var(--hsrtech-line, rgba(23, 23, 22, 0.14));
+	content: "";
+	flex: 1;
+	height: 1px;
+}
+
+.hsrtech-note__label {
+	align-items: center;
+	color: var(--hsrtech-accent, #f45d48);
+	display: inline-flex;
+	flex-shrink: 0;
+	font-size: .74rem;
+	font-weight: 700;
+	gap: .45rem;
+	letter-spacing: .07em;
+	text-transform: uppercase;
+}
+
+/* A small solid dot rather than an icon font or an inline SVG — same
+   "no extra assets" approach as the rest of this plugin's front end, and
+   enough on its own to read as a status marker next to the label. */
+.hsrtech-note__label::before {
+	background: var(--hsrtech-accent, #f45d48);
+	border-radius: 50%;
+	content: "";
+	flex-shrink: 0;
+	height: .4rem;
+	width: .4rem;
+}
+
+.hsrtech-note__content > * {
+	font-style: italic;
+	line-height: 1.65;
+	margin: 0 0 .6rem;
+}
+
+.hsrtech-note__content > :last-child {
+	margin-bottom: 0;
+}

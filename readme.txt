@@ -4,7 +4,7 @@ Tags: ebook, books, publishing, reading, chapters
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 2.8.7
+Stable tag: 2.8.8
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -28,7 +28,7 @@ It adds two content types, **Books** and **Chapters**. Each book can have its ow
 * Reading progress indicator and estimated reading time per chapter.
 * Book and Chapter schema.org structured data.
 * Accessible skip links, landmarks, focus indicators, and reduced-motion support.
-* Styled code blocks (with a dedicated **Code Snippet** block: syntax coloring, a language label, an optional caption, and a copy button), tables, and reusable callouts for technical writing.
+* Styled code blocks (with a dedicated **Code Snippet** block: syntax coloring, a language label, an optional caption, and a copy button), tables, and a **Note** block for highlighted notes, warnings, or tips.
 * A single **Chapterwright** admin page to manage every book, its sections, and its chapters — adding, reordering, and reassigning them — without the classic post-type screens' back-and-forth.
 * A Settings page to turn the reader's color-mode toggle on or off, and edit or remove page headings.
 * Registers with the WordPress Abilities API (WordPress 6.9+) so AI agents and automation tools can discover and use the plugin's book/chapter/section operations in a standardized, permission-checked way.
@@ -81,6 +81,9 @@ Yes. Every string (PHP and the admin app's JavaScript) is wrapped for translatio
 5. The **Code Snippet** block with syntax coloring and a copy button.
 
 == Changelog ==
+
+= 2.8.8 =
+* Added a **Note** block: an editable label above one or more paragraphs, styled as a highlighted callout for notes, warnings, or tips in a chapter. Matches the reader's light/dark mode and each book's own accent color.
 
 = 2.8.7 =
 * The "Created with Chapterwright" / "Powered by Chapterwright" footer credit link, and the plugin's own info link, now point to its WordPress.org page instead of GitHub, now that the plugin is listed there.

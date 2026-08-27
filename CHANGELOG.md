@@ -2,6 +2,10 @@
 
 All notable changes to Chapterwright. See [README.md](README.md#changelog) for the most recent entries — this file is the full history.
 
+### 2.8.8
+
+- **Added a `chapterwright/note` block** for highlighting a note, warning, or tip inside a chapter: an editable label (`RichText`, plain text only) above one or more `core/paragraph` blocks via `InnerBlocks`, restricted to paragraphs and pre-filled with one via `template`/`allowedBlocks`. A static block (`blocks/note/block.json`, `edit.js`, `note.php`) — `save()` produces the actual front-end markup directly, since there's no server-computed data to fold in at render time, so no `render.php` is needed. Styling (`blocks/note/style.css`) reuses the same `--hsrtech-paper`/`--hsrtech-ink`/`--hsrtech-line`/`--hsrtech-accent` custom properties as the rest of the reader and the existing `.hsrtech-callout` "highlighted margin note" convention (accent-colored left border, paper background), so a note tracks the reader's light/dark toggle and each book's own accent color automatically. Every `var()` carries a literal fallback since the stylesheet auto-loads on any page containing the block, not only book/chapter pages. Kept deliberately restrained after a couple of rounds of visual polish — a tinted background and a glow ring around the label's dot marker both ended up feeling like too much next to a full page of reading, so the shipped version is a plain paper background, a thin accent border, and a small solid accent dot.
+
 ### 2.8.7
 
 - **Pointed the plugin's own links at its new WordPress.org listing instead of GitHub**, now that Chapterwright is approved and live at wordpress.org/plugins/chapterwright/. `chapterwright.php`'s `Plugin URI` header, and `public/credit.php`'s "This book is created with Chapterwright" / "This library is powered by Chapterwright" footer credit link, both switched from the GitHub repo to the WordPress.org page. Left `admin/help.php`'s "Plugin documentation on GitHub" link (in the Book/Chapter screens' Help tab sidebar) pointing at GitHub on purpose — it links to the fuller `README.md`, not the shorter `readme.txt` WordPress.org displays.

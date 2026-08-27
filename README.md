@@ -14,7 +14,7 @@ Opens a temporary WordPress site in your browser with Chapterwright already inst
 | WordPress | 6.4 or newer |
 | PHP | 7.4 or newer |
 | Tested through | WordPress 7.1 |
-| Plugin version | 2.8.7 |
+| Plugin version | 2.8.8 |
 
 Chapterwright adds two content types to WordPress: **Books** and **Chapters**. Each book can have its own cover, subtitle, accent color, introduction, and table of contents. Chapters can be grouped into sections — each with its own name and description — and receive automatic previous/next navigation.
 
@@ -33,8 +33,9 @@ Chapterwright adds two content types to WordPress: **Books** and **Chapters**. E
 - Provide reading progress and estimated reading time.
 - Add Book and Chapter schema.org structured data.
 - Provide accessible skip links, landmarks, focus indicators, and reduced-motion support.
-- Style code blocks, tables, and reusable note or warning callouts for comfortable technical reading.
+- Style code blocks and tables for comfortable technical reading.
 - Add a **Code Snippet** block for formatted, copyable code examples with an optional caption and language label.
+- Add a **Note** block for highlighted notes, warnings, or tips, with an editable label and one or more paragraphs of content.
 - A single **Chapterwright** admin page lists every book, and lets you manage a book's sections and chapters — adding, reordering, and reassigning them — in one place, without the classic post-type screens' back-and-forth. See [The admin app](#the-admin-app).
 - Typography inherits the active theme's fonts and heading sizes, so the reader looks like a native part of the site instead of a bundled font stack.
 - A Settings page lets you turn the reader's color-mode toggle on or off, and edit or remove the library page's heading text and each book's table-of-contents heading.
@@ -113,6 +114,14 @@ For chapters that include code, add a **Code Snippet** block (search for "Code S
 - A language label (PHP, JavaScript, CSS, HTML, Shell, or Plain text).
 - An optional caption, useful for a filename or a one-line description.
 - A front-end **Copy** button so readers can copy the snippet without selecting text manually.
+
+## The Note block
+
+Add a **Note** block (search for "Note" in the block inserter) to call out a note, warning, or tip inside a chapter:
+
+- An editable label above the content, defaulting to "Note" — change it to "Warning", "Tip", or anything else that fits.
+- One or more paragraphs of content, added and reordered like any other paragraph blocks.
+- Styling that follows the reader's light/dark mode and the current book's own accent color, so it looks like part of the reader rather than a bolted-on widget.
 
 ## Displaying the book library
 
@@ -320,6 +329,10 @@ Both run automatically on every push and pull request via GitHub Actions (`.gith
 
 The three most recent releases are below. See [CHANGELOG.md](CHANGELOG.md) for the full history back to 1.0.0.
 
+### 2.8.8
+
+- Added a **Note** block: an editable label above one or more paragraphs, styled as a highlighted callout for notes, warnings, or tips in a chapter. Matches the reader's light/dark mode and each book's own accent color.
+
 ### 2.8.7
 
 - The "Created with Chapterwright" / "Powered by Chapterwright" footer credit link, and the plugin's own info link, now point to its WordPress.org page instead of GitHub, now that the plugin is listed there.
@@ -328,10 +341,6 @@ The three most recent releases are below. See [CHANGELOG.md](CHANGELOG.md) for t
 
 - Added a "Right offset" option next to "Button position" for the floating table of contents button, so you can also shift it away from the right edge, not just up, when a theme's floating element overlaps it from the side.
 - Fixed the "List books" automation ability (Abilities API) returning a chapter count that could include chapters the caller isn't allowed to see, on a book with chapters from more than one author.
-
-### 2.8.5
-
-- Added a "Button position" setting for the floating table of contents button, so you can raise it when a theme adds its own floating element (a chat widget, a "Buy me a coffee" button, a cookie banner) in the same bottom-right corner.
 
 ## License
 

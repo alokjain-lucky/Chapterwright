@@ -1,0 +1,36 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "chapterwright/note",
+	"title": "Note",
+	"category": "text",
+	"icon": "info",
+	"description": "A highlighted box for a note, warning, or tip — an editable label above one or more paragraphs of content, styled to stand out from the surrounding chapter text.",
+	"keywords": [ "note", "warning", "tip", "callout", "alert" ],
+	"textdomain": "chapterwright",
+	"attributes": {
+		"label": {
+			"type": "string",
+			"default": "Note"
+		}
+	},
+	"supports": {
+		"html": false,
+		"anchor": true
+	},
+	"example": {
+		"attributes": {
+			"label": "Note"
+		},
+		"innerBlocks": [
+			{
+				"name": "core/paragraph",
+				"attributes": {
+					"content": "You can use browser extensions like ‘Web Developer Toolbar’ for Firefox to turn on and off CSS, JavaScript and images in your webpage temporarily."
+				}
+			}
+		]
+	},
+	"editorScript": "file:./edit.js",
+	"style": "file:./style.css"
+}
