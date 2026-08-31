@@ -30,6 +30,8 @@ function hsrtech_add_help_tabs( $screen ) {
 		hsrtech_add_book_help_tabs( $screen );
 	} elseif ( HSRTECH_CHAPTER_POST_TYPE === $screen->post_type ) {
 		hsrtech_add_chapter_help_tabs( $screen );
+	} elseif ( HSRTECH_SECTION_POST_TYPE === $screen->post_type ) {
+		hsrtech_add_section_help_tabs( $screen );
 	} else {
 		return;
 	}
@@ -103,7 +105,7 @@ function hsrtech_add_chapter_help_tabs( $screen ) {
 				'<p>' . esc_html__( 'The Chapter Details panel shows how this chapter currently fits into its book — which Book, which Section (if any), and its reading order — for reference, not as editable fields:', 'chapterwright' ) . '</p>' .
 				'<ul>' .
 				'<li>' . esc_html__( 'Book — which book this chapter belongs to.', 'chapterwright' ) . '</li>' .
-				'<li>' . esc_html__( 'Section — an optional group, such as "Getting Started" or "Part II". Chapters assigned to the same section are grouped together, with the section\'s own text, in the table of contents; chapters left unassigned appear under a default "Chapters" heading.', 'chapterwright' ) . '</li>' .
+				'<li>' . esc_html__( 'Section — an optional group, such as "Getting Started" or "Part II". Chapters assigned to the same section are grouped together, with the section\'s own text, in the table of contents; chapters left unassigned appear under a default "Chapters" heading. A section\'s heading links to its own page when the section has been given content of its own.', 'chapterwright' ) . '</li>' .
 				'<li>' . esc_html__( 'Order — controls reading order, lowest to highest.', 'chapterwright' ) . '</li>' .
 				'</ul>' .
 				'<p>' . esc_html__( 'Creating chapters, assigning them to a book and section, and reordering them are all done from the Chapterwright admin page (Books & Chapters), not from this screen — open a book there to see every chapter and section together in one place. The Chapter Details panel links straight there.', 'chapterwright' ) . '</p>',
@@ -116,6 +118,27 @@ function hsrtech_add_chapter_help_tabs( $screen ) {
 			'title'   => __( 'Code Snippets', 'chapterwright' ),
 			'content' =>
 				'<p>' . esc_html__( 'For chapters that include code examples, search the block inserter for "Code Snippet" instead of using the core Code block. It adds a language label, an optional caption (e.g. a filename), and a Copy button for readers, styled to match the chapter reader.', 'chapterwright' ) . '</p>',
+		)
+	);
+}
+
+/**
+ * Help tab for the Section edit screen.
+ *
+ * (No list-screen variant: Section has 'show_in_menu' => false, so there is
+ * no native "All Sections" list screen — see the admin/app/src/screens/book-detail.js
+ * docblock for why.)
+ *
+ * @param WP_Screen $screen Current admin screen.
+ */
+function hsrtech_add_section_help_tabs( $screen ) {
+	$screen->add_help_tab(
+		array(
+			'id'      => 'hsrtech-section-overview',
+			'title'   => __( 'Overview', 'chapterwright' ),
+			'content' =>
+				'<p>' . esc_html__( 'A Section is a chapter-grouping heading, such as "Part I" or "Getting Started" — the title here is the heading shown in the table of contents, and the excerpt is the short description shown under it.', 'chapterwright' ) . '</p>' .
+				'<p>' . esc_html__( 'Writing content here (below the excerpt) is optional. When there is content, the section\'s heading in the table of contents links to this page as a longer, standalone introduction — the content itself is never shown inline in the table of contents. Leave it empty and the heading stays plain text.', 'chapterwright' ) . '</p>',
 		)
 	);
 }

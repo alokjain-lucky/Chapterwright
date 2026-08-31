@@ -3,24 +3,29 @@
  * Redirect native post-type screens this plugin hides from the admin menu
  * back to the equivalent screen in the "Chapterwright" admin app.
  *
- * Books and Chapters register with `show_ui => true` (so post.php — the
- * actual Block Editor screen — keeps working; the admin app and the editor
- * sidebar panel both deep-link straight into it) but `show_in_menu => false`
- * (see hsrtech_register_post_types(), includes/content-types.php). That
- * leaves their native list-table and "Add New" screens still directly
- * reachable by URL even though nothing in the plugin links to them. This
+ * Books, Chapters, and Sections register with `show_ui => true` (so
+ * post.php — the actual Block Editor screen — keeps working; the admin app
+ * and the editor sidebar panel both deep-link straight into it) but
+ * `show_in_menu => false` (see hsrtech_register_post_types(),
+ * includes/content-types.php). That leaves their native list-table and "Add
+ * New" screens still directly reachable by URL even though nothing in the
+ * plugin links to them — including the Block Editor's own "back" link
+ * (top-left, next to the WordPress logo), which always points at
+ * `edit.php?post_type=...` regardless of `show_in_menu`. Without this, a
+ * click there would land an author on a plain, mostly-empty native list
+ * screen instead of back on the book they were just working on. This
  * redirects those specific URLs back to the app.
  *
  * Deliberately does NOT touch:
- * - post.php?action=edit (needed to write a Book/Chapter's actual content).
+ * - post.php?action=edit (needed to write a Book/Chapter/Section's actual content).
  * - The native Trash list (edit.php?...&post_status=trash) — restoring or
  *   permanently deleting a trashed Book/Chapter happens there, not in the
  *   admin app; see the "View trashed books" link in
  *   admin/app/src/screens/books-list.js, which relies on this staying
- *   reachable.
+ *   reachable. (Section has no trash concept of its own — hsrtech_delete_section()
+ *   permanently deletes — so there is no Section trash list to preserve.)
  *
- * There are no custom taxonomies in this plugin (Sections are a database
- * table, not a taxonomy — see includes/sections.php), so there is nothing to
+ * There are no custom taxonomies in this plugin, so there is nothing to
  * redirect on that front.
  *
  * @package Chapterwright
@@ -106,17 +111,34 @@ function hsrtech_redirect_target_for_list_screen() {
 		}
 	}
 
+	if ( HSRTECH_SECTION_POST_TYPE === $post_type ) {
+		// Same reasoning as Chapter above — a Section's `_hsrtech_book_id`
+		// meta is how the click-back trail is followed. This is also the one
+		// most authors actually hit: the Block Editor's own "back" link on a
+		// Section's edit screen (SectionRow's "Open in Block Editor →",
+		// admin/app/src/screens/book-detail.js) lands here with no `ids`
+		// query arg at all (WordPress only sets that after a bulk action or
+		// row action on the list screen, not on a plain "leave the editor"
+		// click) — that case falls through to $books_list_url above, same as
+		// it always has for Book/Chapter.
+		$book_id = absint( get_post_meta( $first_id, '_hsrtech_book_id', true ) );
+		if ( $book_id ) {
+			return $books_list_url . '#/books/' . $book_id;
+		}
+	}
+
 	return $books_list_url;
 }
 
 /**
- * Redirect the native "Add New Book" / "Add New Chapter" screens
- * (post-new.php?post_type=...) to the admin app, which has its own add-book
- * form (on the books list) and add-chapter form (on a book's detail page).
+ * Redirect the native "Add New Book" / "Add New Chapter" / "Add New Section"
+ * screens (post-new.php?post_type=...) to the admin app, which has its own
+ * add-book form (on the books list) and add-chapter/add-section forms (on a
+ * book's detail page).
  *
- * Creating a Chapter directly on this native screen would skip setting
- * `_hsrtech_book_id`, leaving an orphaned chapter assigned to no book — one more
- * reason this redirect matters beyond just UI consistency.
+ * Creating a Chapter or Section directly on this native screen would skip
+ * setting `_hsrtech_book_id`, leaving an orphaned post assigned to no book —
+ * one more reason this redirect matters beyond just UI consistency.
  */
 function hsrtech_redirect_post_type_new_screen() {
 	if ( ! hsrtech_current_request_targets_plugin_post_type() ) {
@@ -137,5 +159,5 @@ function hsrtech_current_request_targets_plugin_post_type() {
 	// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only redirect decision, not a form submission.
 	$post_type = isset( $_GET['post_type'] ) ? sanitize_key( wp_unslash( $_GET['post_type'] ) ) : 'post';
 
-	return in_array( $post_type, array( HSRTECH_BOOK_POST_TYPE, HSRTECH_CHAPTER_POST_TYPE ), true );
+	return in_array( $post_type, array( HSRTECH_BOOK_POST_TYPE, HSRTECH_CHAPTER_POST_TYPE, HSRTECH_SECTION_POST_TYPE ), true );
 }

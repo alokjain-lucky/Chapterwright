@@ -14,7 +14,7 @@ Opens a temporary WordPress site in your browser with Chapterwright already inst
 | WordPress | 6.4 or newer |
 | PHP | 7.4 or newer |
 | Tested through | WordPress 7.1 |
-| Plugin version | 2.8.8 |
+| Plugin version | 2.8.9 |
 
 Chapterwright adds two content types to WordPress: **Books** and **Chapters**. Each book can have its own cover, subtitle, accent color, introduction, and table of contents. Chapters can be grouped into sections — each with its own name and description — and receive automatic previous/next navigation.
 
@@ -36,6 +36,7 @@ Chapterwright adds two content types to WordPress: **Books** and **Chapters**. E
 - Style code blocks and tables for comfortable technical reading.
 - Add a **Code Snippet** block for formatted, copyable code examples with an optional caption and language label.
 - Add a **Note** block for highlighted notes, warnings, or tips, with an editable label and one or more paragraphs of content.
+- Give any Section its own standalone introduction page — write content on the section itself and its table-of-contents heading links there automatically.
 - A single **Chapterwright** admin page lists every book, and lets you manage a book's sections and chapters — adding, reordering, and reassigning them — in one place, without the classic post-type screens' back-and-forth. See [The admin app](#the-admin-app).
 - Typography inherits the active theme's fonts and heading sizes, so the reader looks like a native part of the site instead of a bundled font stack.
 - A Settings page lets you turn the reader's color-mode toggle on or off, and edit or remove the library page's heading text and each book's table-of-contents heading.
@@ -123,6 +124,18 @@ Add a **Note** block (search for "Note" in the block inserter) to call out a not
 - One or more paragraphs of content, added and reordered like any other paragraph blocks.
 - Styling that follows the reader's light/dark mode and the current book's own accent color, so it looks like part of the reader rather than a bolted-on widget.
 
+## Section introduction pages
+
+A section's name and short description (set together — see "Adding and organizing chapters") cover a line or two under its table-of-contents heading. For a fuller introduction to a section — a "Part I" overview page, say — open that same section in the Block Editor:
+
+1. From a book's page in **Chapterwright → Books & Chapters**, find the section in the Sections panel and click **Open in Block Editor →**.
+2. Write the page using normal blocks, the same as a Chapter — its title and excerpt are already filled in from the section's name and description.
+3. Save or publish.
+
+That section's heading in the table of contents becomes a link to the page. The page's own content is never shown inline in the table of contents — only the link is. A section with no content of its own keeps working exactly as before, heading and description text only, no link.
+
+A section's page uses its own `/section/{slug}/` permalink, independent of any book, and follows the reader's light/dark mode and the parent book's accent color.
+
 ## Displaying the book library
 
 The plugin automatically provides a public book archive at:
@@ -197,6 +210,7 @@ The presentation files are organized as follows:
 | --- | --- |
 | [`templates/single-hsrtech_book.php`](templates/single-hsrtech_book.php) | Book landing page and grouped table of contents |
 | [`templates/single-hsrtech_chapter.php`](templates/single-hsrtech_chapter.php) | Chapter reader and previous/next navigation |
+| [`templates/single-hsrtech_section.php`](templates/single-hsrtech_section.php) | Standalone section introduction page |
 | [`templates/archive-hsrtech_book.php`](templates/archive-hsrtech_book.php) | `/books/` archive shell |
 | [`templates/book-grid.php`](templates/book-grid.php) | Cards used by the archive and shortcode |
 | [`templates/partials/document-start.php`](templates/partials/document-start.php) | Classic- and block-theme document opening |
@@ -237,19 +251,21 @@ The plugin does not automatically discover template copies in a theme, so this f
 | --- | --- |
 | Book post type | `hsrtech_book` |
 | Chapter post type | `hsrtech_chapter` |
+| Section post type | `hsrtech_section` |
 | Book archive and single base | `/books/` |
-| Chapter base | `/book-chapter/` |
+| Chapter base | `/books/{book-slug}/{chapter-slug}/`, nested under its book |
+| Section base | `/section/{section-slug}/` |
 | Chapter parent-book metadata | `_hsrtech_book_id` |
-| Chapter section metadata | `_hsrtech_section_id` (points to a row in the `hsrtech_sections` table) |
+| Chapter section metadata | `_hsrtech_section_id` (points to a Section post) |
 | Chapter order metadata | `_hsrtech_order` |
 | Book subtitle metadata | `_hsrtech_subtitle` |
 | Book accent metadata | `_hsrtech_accent` |
-| Sections table | `{$wpdb->prefix}hsrtech_sections` (`id`, `book_id`, `name`, `description`, `menu_order`) |
+| Section parent-book metadata | `_hsrtech_book_id` |
 | Library shortcode | `[hsrtech_books]` |
 
-The `/books/` and `/book-chapter/` bases are part of the stable public URL contract and aren't configurable through plugin settings.
+The `/books/` and `/section/` bases are part of the stable public URL contract and aren't configurable through plugin settings. A chapter's URL is computed from its book's current slug, not stored, so renaming a book changes the URL of every chapter nested under it — the same way changing any post's slug changes its own URL.
 
-Books and Chapters support the block editor, revisions, and the WordPress REST API — including reading and writing `_hsrtech_subtitle`, `_hsrtech_accent`, `_hsrtech_book_id`, `_hsrtech_order`, and `_hsrtech_section_id` through the standard `/wp/v2/hsrtech_book` and `/wp/v2/hsrtech_chapter` endpoints. Books also support author selection. Sections have their own small REST namespace, `chapterwright/v1` (see `admin/rest/`), since they live in a custom table rather than post meta. Use standard WordPress APIs when reading or writing metadata, and validate that `_hsrtech_book_id` points to a Book and `_hsrtech_section_id` points to a section belonging to that same book.
+Books, Chapters, and Sections support the block editor, revisions, and the WordPress REST API — including reading and writing `_hsrtech_subtitle`, `_hsrtech_accent`, `_hsrtech_book_id`, `_hsrtech_order`, and `_hsrtech_section_id` through the standard `/wp/v2/hsrtech_book`, `/wp/v2/hsrtech_chapter`, and `/wp/v2/hsrtech_section` endpoints. Books also support author selection. Sections also have their own small REST namespace, `chapterwright/v1` (see `admin/rest/`), for the fields (name, description, order) the admin app quick-edits inline without opening the full post editor. Use standard WordPress APIs when reading or writing metadata, and validate that `_hsrtech_book_id` points to a Book and `_hsrtech_section_id` points to a section belonging to that same book.
 
 ## Capabilities and roles
 
@@ -329,6 +345,13 @@ Both run automatically on every push and pull request via GitHub Actions (`.gith
 
 The three most recent releases are below. See [CHANGELOG.md](CHANGELOG.md) for the full history back to 1.0.0.
 
+### 2.8.9
+
+- Sections can now have their own optional introduction page — write it from a section's own Block Editor screen (like a chapter) and its table-of-contents heading links there automatically. The page paginates like a chapter page too, leading into its first chapter and back to whatever chapter came right before it.
+- Chapter URLs moved from `/book-chapter/{slug}/` to `/books/{book-slug}/{chapter-slug}/`, nested under their book. An old bookmarked link still works.
+- Table-of-contents section headings now match a chapter row's own link styling (no underline, accent color on hover), and a section's edit screen now returns to the right book when you leave it, the same as a book or chapter's already does.
+- Hardened the underlying section data migration to be safely retryable, and tightened the public table of contents to never show a draft section's heading.
+
 ### 2.8.8
 
 - Added a **Note** block: an editable label above one or more paragraphs, styled as a highlighted callout for notes, warnings, or tips in a chapter. Matches the reader's light/dark mode and each book's own accent color.
@@ -336,11 +359,6 @@ The three most recent releases are below. See [CHANGELOG.md](CHANGELOG.md) for t
 ### 2.8.7
 
 - The "Created with Chapterwright" / "Powered by Chapterwright" footer credit link, and the plugin's own info link, now point to its WordPress.org page instead of GitHub, now that the plugin is listed there.
-
-### 2.8.6
-
-- Added a "Right offset" option next to "Button position" for the floating table of contents button, so you can also shift it away from the right edge, not just up, when a theme's floating element overlaps it from the side.
-- Fixed the "List books" automation ability (Abilities API) returning a chapter count that could include chapters the caller isn't allowed to see, on a book with chapters from more than one author.
 
 ## License
 

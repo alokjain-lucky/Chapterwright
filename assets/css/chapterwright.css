@@ -184,6 +184,12 @@
 .hsrtech-toc-section { display: flex; flex-direction: column; gap: .75rem; padding: 1.5rem 0; }
 .hsrtech-toc-section + .hsrtech-toc-section { border-top: 1px solid var(--hsrtech-line); }
 .hsrtech-toc-section h3 { font-size: 1.25rem; margin: .5rem 0; text-transform: uppercase; }
+/* Same link treatment as a chapter row below (.hsrtech-toc-row-link): no
+   underline, just the book's own accent color on hover — a section heading
+   that links to its own introduction page reads as part of the same table
+   of contents, not a plain inline text link. */
+.hsrtech-toc-section__link { text-decoration: none; }
+.hsrtech-toc-section__link:hover { color: var(--hsrtech-accent); }
 .hsrtech-toc-section__description { color: var(--hsrtech-muted); font-size: .88rem; line-height: 1.45; margin: 0 0 .5rem; }
 .hsrtech-toc-section ol { list-style: none; margin: 0; padding: 0; }
 /* No rule between rows on purpose — chapters within a section are grouped by

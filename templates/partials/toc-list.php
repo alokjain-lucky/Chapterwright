@@ -29,7 +29,13 @@ $hsrtech_current_chapter_id = isset( $hsrtech_current_chapter_id ) ? (int) $hsrt
 	<?php foreach ( $hsrtech_sections as $hsrtech_section ) : ?>
 		<div class="hsrtech-toc-section">
 			<div class="hsrtech-toc-section__heading">
-				<h3><?php echo esc_html( $hsrtech_section['name'] ); ?></h3>
+				<h3>
+					<?php if ( ! empty( $hsrtech_section['url'] ) ) : ?>
+						<a class="hsrtech-toc-section__link" href="<?php echo esc_url( $hsrtech_section['url'] ); ?>"><?php echo esc_html( $hsrtech_section['name'] ); ?></a>
+					<?php else : ?>
+						<?php echo esc_html( $hsrtech_section['name'] ); ?>
+					<?php endif; ?>
+				</h3>
 				<?php if ( $hsrtech_section['description'] ) : ?>
 					<p class="hsrtech-toc-section__description"><?php echo esc_html( $hsrtech_section['description'] ); ?></p>
 				<?php endif; ?>

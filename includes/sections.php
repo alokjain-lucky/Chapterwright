@@ -1,16 +1,27 @@
 <?php
 /**
- * Book sections: a small custom database table, not a taxonomy or post meta.
+ * Book sections: a chapter-grouping heading that is also, optionally, its own
+ * standalone introduction page — one `hsrtech_section` post, not a database
+ * row plus a separately-linked post.
  *
- * A section ("Part I", "Getting Started") is scoped to exactly one book and
- * needs its own describable text, so it is stored as a row rather than a
- * post-meta string (which cannot carry a description) or a taxonomy term
- * (which is shared site-wide and does not naturally scope to one book).
+ * A section's post_title is the heading shown in the table of contents, its
+ * post_excerpt is the short description shown under that heading, and its
+ * post_content is the full page an author can optionally write; the table of
+ * contents links the heading to that page only when there is actually
+ * content in it (see hsrtech_build_toc_sections(), includes/queries.php).
+ * Every function below still returns/accepts the same plain array shape
+ * (id, book_id, name, description, menu_order, has_content) callers used
+ * before this was a post type, so admin/rest/sections.php and the rest of
+ * the plugin needed no changes beyond that one new `has_content` key.
  *
- * The table is created on activation and fully dropped on uninstall — see
- * hsrtech_create_sections_table() in includes/upgrade.php and uninstall.php.
- * Deleting a section never deletes the chapters assigned to it; they simply
- * become unassigned and fall back to the default "Chapters" heading.
+ * Before 3.0.0, a section was a row in a small custom database table with no
+ * page of its own, and an author could separately create a `hsrtech_module`
+ * post and link it to a section via a meta box if they wanted a longer
+ * introduction. Those were folded into this one post type —
+ * hsrtech_migrate_sections_table_to_posts() (includes/upgrade.php) carries an
+ * existing site's old section rows over automatically. Deleting a section
+ * never deletes the chapters assigned to it; they simply become unassigned
+ * and fall back to the default "Chapters" heading.
  *
  * @package Chapterwright
  */
@@ -20,77 +31,85 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Get the sections table name, including the site's table prefix.
+ * Turn a Section post into the plain array shape the rest of the plugin
+ * (admin/rest/sections.php, includes/queries.php, the React admin app) reads
+ * and writes — the same shape this returned back when a section was a
+ * database row, plus `has_content`.
  *
- * @return string Fully-prefixed table name.
+ * @param WP_Post $post Section post.
+ * @return array<string,mixed> {
+ *     @type int    $id          Section post ID.
+ *     @type int    $book_id     Owning book's post ID.
+ *     @type string $name        Section heading (the post title).
+ *     @type string $description Short description shown under the heading (the post excerpt).
+ *     @type int    $menu_order  Display order among the book's sections.
+ *     @type bool   $has_content Whether the section has its own introduction page worth linking to.
+ * }
  */
-function hsrtech_get_sections_table() {
-	global $wpdb;
-	return $wpdb->prefix . 'hsrtech_sections';
+function hsrtech_prepare_section_post( $post ) {
+	return array(
+		'id'          => $post->ID,
+		'book_id'     => absint( get_post_meta( $post->ID, '_hsrtech_book_id', true ) ),
+		'name'        => $post->post_title,
+		'description' => $post->post_excerpt,
+		'menu_order'  => (int) $post->menu_order,
+		'has_content' => '' !== trim( wp_strip_all_tags( $post->post_content ) ),
+	);
 }
 
 /**
  * Fetch every section belonging to a book, in display order.
  *
- * @param int $book_id Book post ID.
- * @return array<int,array<string,mixed>> Section rows (id, book_id, name, description, menu_order).
+ * @param int      $book_id  Book post ID.
+ * @param string[] $statuses Post statuses to include. Defaults to only
+ *                            'publish' — mirrors hsrtech_get_chapters()'s own
+ *                            default (includes/queries.php) for the same
+ *                            reason: hsrtech_build_toc_sections() calls this
+ *                            with no status argument to build the public
+ *                            table of contents, and a draft/pending/private/
+ *                            future section's heading has no business
+ *                            appearing there for an anonymous visitor — its
+ *                            own permalink still 404s for them regardless, so
+ *                            leaving it in would only leak the title, not
+ *                            offer working access to it. Every admin-context
+ *                            caller in this file and elsewhere explicitly
+ *                            passes the full any-status array instead.
+ * @return array<int,array<string,mixed>> Section rows — see hsrtech_prepare_section_post().
  */
-function hsrtech_get_book_sections( $book_id ) {
-	global $wpdb;
-
-	$table = hsrtech_get_sections_table();
-
-	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Custom table with no WP API equivalent; not cached because sections are small, book-scoped lists edited rarely and read on every book page. $table (interpolated below) is a fixed prefix from hsrtech_get_sections_table(), not user input — flagged here rather than on the string line below because that's the line PluginCheck's DirectDB sniff reports against for a get_results() call, not the string itself.
-	$rows = $wpdb->get_results(
-		$wpdb->prepare(
-			"SELECT id, book_id, name, description, menu_order FROM {$table} WHERE book_id = %d ORDER BY menu_order ASC, id ASC", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name cannot be a placeholder; it is built from a fixed prefix by hsrtech_get_sections_table(), not user input.
-			$book_id
-		),
-		ARRAY_A
+function hsrtech_get_book_sections( $book_id, $statuses = array( 'publish' ) ) {
+	$posts = get_posts(
+		array(
+			'post_type'      => HSRTECH_SECTION_POST_TYPE,
+			'post_status'    => $statuses,
+			'posts_per_page' => -1,
+			'orderby'        => 'menu_order',
+			'order'          => 'ASC',
+			'meta_query'     => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Section-to-book relationship is stored as post meta, same as chapter-to-book.
+				array(
+					'key'   => '_hsrtech_book_id',
+					'value' => absint( $book_id ),
+				),
+			),
+		)
 	);
 
-	return $rows ? array_map( 'hsrtech_cast_section_row', $rows ) : array();
+	return array_map( 'hsrtech_prepare_section_post', $posts );
 }
 
 /**
- * Cast a section row's numeric columns to int.
+ * Fetch a single section.
  *
- * $wpdb returns every column as a string regardless of the database
- * column's actual type, which trips up strict comparisons (e.g.
- * wp_list_pluck() + assertSame()) against the ints hsrtech_insert_section()
- * returns and hsrtech_update_section() accepts.
- *
- * @param array<string,mixed> $row Raw section row from the database.
- * @return array<string,mixed> The same row with id, book_id, and menu_order cast to int.
- */
-function hsrtech_cast_section_row( $row ) {
-	$row['id']         = (int) $row['id'];
-	$row['book_id']    = (int) $row['book_id'];
-	$row['menu_order'] = (int) $row['menu_order'];
-	return $row;
-}
-
-/**
- * Fetch a single section row.
- *
- * @param int $section_id Section ID.
+ * @param int $section_id Section post ID.
  * @return array<string,mixed>|null Section row, or null if it does not exist.
  */
 function hsrtech_get_section( $section_id ) {
-	global $wpdb;
+	$post = get_post( absint( $section_id ) );
 
-	$table = hsrtech_get_sections_table();
+	if ( ! $post || HSRTECH_SECTION_POST_TYPE !== $post->post_type ) {
+		return null;
+	}
 
-	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Custom table with no WP API equivalent. $table (interpolated below) is fixed, built by hsrtech_get_sections_table(), not user input — flagged here rather than on the string line below because that's the line PluginCheck's DirectDB sniff reports against for a get_row() call, not the string itself.
-	$row = $wpdb->get_row(
-		$wpdb->prepare(
-			"SELECT id, book_id, name, description, menu_order FROM {$table} WHERE id = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is fixed, built by hsrtech_get_sections_table(), not user input.
-			$section_id
-		),
-		ARRAY_A
-	);
-
-	return $row ? hsrtech_cast_section_row( $row ) : null;
+	return hsrtech_prepare_section_post( $post );
 }
 
 /**
@@ -107,8 +126,6 @@ function hsrtech_get_section( $section_id ) {
  * @return int|WP_Error New section ID, or WP_Error when the name is missing.
  */
 function hsrtech_insert_section( $book_id, $args ) {
-	global $wpdb;
-
 	$name = isset( $args['name'] ) ? trim( sanitize_text_field( $args['name'] ) ) : '';
 	if ( '' === $name ) {
 		return new WP_Error( 'hsrtech_section_name_required', __( 'A section needs a name.', 'chapterwright' ) );
@@ -119,86 +136,70 @@ function hsrtech_insert_section( $book_id, $args ) {
 	if ( isset( $args['menu_order'] ) ) {
 		$menu_order = (int) $args['menu_order'];
 	} else {
-		$existing   = hsrtech_get_book_sections( $book_id );
+		// Any status here, not just published — a new section should never
+		// land at the same order as an existing draft one just because the
+		// default-arg publish-only query didn't see it.
+		$existing   = hsrtech_get_book_sections( $book_id, array( 'publish', 'draft', 'pending', 'private', 'future' ) );
 		$menu_order = $existing ? ( (int) end( $existing )['menu_order'] + 1 ) : 0;
 	}
 
-	$now = current_time( 'mysql' );
-
-	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table with no WP API equivalent.
-	$inserted = $wpdb->insert(
-		hsrtech_get_sections_table(),
+	$post_id = wp_insert_post(
 		array(
-			'book_id'     => absint( $book_id ),
-			'name'        => $name,
-			'description' => $description,
-			'menu_order'  => $menu_order,
-			'created_at'  => $now,
-			'updated_at'  => $now,
+			'post_type'    => HSRTECH_SECTION_POST_TYPE,
+			'post_status'  => 'publish',
+			'post_title'   => $name,
+			'post_excerpt' => $description,
+			'menu_order'   => $menu_order,
 		),
-		array( '%d', '%s', '%s', '%d', '%s', '%s' )
+		true
 	);
 
-	if ( ! $inserted ) {
+	if ( is_wp_error( $post_id ) ) {
 		return new WP_Error( 'hsrtech_section_insert_failed', __( 'The section could not be saved.', 'chapterwright' ) );
 	}
 
-	return (int) $wpdb->insert_id;
+	update_post_meta( $post_id, '_hsrtech_book_id', absint( $book_id ) );
+
+	return (int) $post_id;
 }
 
 /**
  * Update a section's name, description, and/or order.
  *
- * @param int                 $section_id Section ID.
+ * @param int                 $section_id Section post ID.
  * @param array<string,mixed> $args       Any of: name, description, menu_order.
  * @return bool|WP_Error True on success, WP_Error on failure.
  */
 function hsrtech_update_section( $section_id, $args ) {
-	global $wpdb;
-
 	if ( ! hsrtech_get_section( $section_id ) ) {
 		return new WP_Error( 'hsrtech_section_not_found', __( 'That section no longer exists.', 'chapterwright' ) );
 	}
 
-	$data   = array();
-	$format = array();
+	$postarr = array( 'ID' => absint( $section_id ) );
 
 	if ( isset( $args['name'] ) ) {
 		$name = trim( sanitize_text_field( $args['name'] ) );
 		if ( '' === $name ) {
 			return new WP_Error( 'hsrtech_section_name_required', __( 'A section needs a name.', 'chapterwright' ) );
 		}
-		$data['name'] = $name;
-		$format[]     = '%s';
+		$postarr['post_title'] = $name;
 	}
 
 	if ( isset( $args['description'] ) ) {
-		$data['description'] = sanitize_textarea_field( $args['description'] );
-		$format[]            = '%s';
+		$postarr['post_excerpt'] = sanitize_textarea_field( $args['description'] );
 	}
 
 	if ( isset( $args['menu_order'] ) ) {
-		$data['menu_order'] = (int) $args['menu_order'];
-		$format[]           = '%d';
+		$postarr['menu_order'] = (int) $args['menu_order'];
 	}
 
-	if ( ! $data ) {
+	if ( 1 === count( $postarr ) ) {
 		return true;
 	}
 
-	$data['updated_at'] = current_time( 'mysql' );
-	$format[]           = '%s';
+	$result = wp_update_post( $postarr, true );
 
-	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table with no WP API equivalent.
-	$updated = $wpdb->update(
-		hsrtech_get_sections_table(),
-		$data,
-		array( 'id' => absint( $section_id ) ),
-		$format,
-		array( '%d' )
-	);
-
-	if ( false === $updated ) {
+	if ( is_wp_error( $result ) ) {
 		return new WP_Error( 'hsrtech_section_update_failed', __( 'The section could not be updated.', 'chapterwright' ) );
 	}
 
@@ -208,12 +209,15 @@ function hsrtech_update_section( $section_id, $args ) {
 /**
  * Delete a section. Chapters assigned to it are unassigned, not deleted.
  *
- * @param int $section_id Section ID.
+ * Permanently deletes rather than trashing — sections never had a trash
+ * concept before this was a post type, and the confirmation dialog in the
+ * admin app ("Delete '%s'? Its chapters will stay, unassigned.") already
+ * tells the author this is final.
+ *
+ * @param int $section_id Section post ID.
  * @return bool|WP_Error True on success, WP_Error if the section does not exist.
  */
 function hsrtech_delete_section( $section_id ) {
-	global $wpdb;
-
 	$section = hsrtech_get_section( $section_id );
 	if ( ! $section ) {
 		return new WP_Error( 'hsrtech_section_not_found', __( 'That section no longer exists.', 'chapterwright' ) );
@@ -223,8 +227,7 @@ function hsrtech_delete_section( $section_id ) {
 		delete_post_meta( $chapter_id, '_hsrtech_section_id' );
 	}
 
-	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table with no WP API equivalent.
-	$wpdb->delete( hsrtech_get_sections_table(), array( 'id' => absint( $section_id ) ), array( '%d' ) );
+	wp_delete_post( absint( $section_id ), true );
 
 	return true;
 }
@@ -232,7 +235,7 @@ function hsrtech_delete_section( $section_id ) {
 /**
  * Get every chapter (any status) assigned to a section, for reassignment on delete.
  *
- * @param int $section_id Section ID.
+ * @param int $section_id Section post ID.
  * @return int[] Chapter post IDs.
  */
 function hsrtech_get_chapters_in_section( $section_id ) {
@@ -260,7 +263,7 @@ function hsrtech_get_chapters_in_section( $section_id ) {
  * Deleting a section also strips `_hsrtech_section_id` from every chapter
  * assigned to it (see hsrtech_delete_section()) — that's a write to each of
  * those chapters, so the caller needs edit rights on all of them too, not
- * just on the section's own book. Shared by the delete-section Ability
+ * just on the section's own post. Shared by the delete-section Ability
  * (includes/abilities.php) and the `DELETE /sections/{id}` REST route
  * (admin/rest/sections.php) so both enforce the same rule.
  *
@@ -268,7 +271,14 @@ function hsrtech_get_chapters_in_section( $section_id ) {
  * @return bool
  */
 function hsrtech_user_can_delete_section( $section ) {
+	// Same rule this checked before Section was a post type (edit rights on
+	// the owning book), plus delete rights on the section's own post now that
+	// it is one.
 	if ( ! current_user_can( 'edit_post', $section['book_id'] ) ) {
+		return false;
+	}
+
+	if ( ! current_user_can( 'delete_post', $section['id'] ) ) {
 		return false;
 	}
 
@@ -289,7 +299,10 @@ function hsrtech_user_can_delete_section( $section ) {
  * @return bool|WP_Error True on success, WP_Error if a section does not belong to the book.
  */
 function hsrtech_reorder_sections( $book_id, $ordered_ids ) {
-	$existing = wp_list_pluck( hsrtech_get_book_sections( $book_id ), 'id' );
+	// Any status — a draft section being reordered alongside published ones
+	// (both editable from the same admin app screen) must still validate as
+	// belonging to the book, not get treated as a mismatch.
+	$existing = wp_list_pluck( hsrtech_get_book_sections( $book_id, array( 'publish', 'draft', 'pending', 'private', 'future' ) ), 'id' );
 
 	foreach ( $ordered_ids as $section_id ) {
 		if ( ! in_array( (int) $section_id, array_map( 'intval', $existing ), true ) ) {
@@ -308,15 +321,17 @@ function hsrtech_reorder_sections( $book_id, $ordered_ids ) {
  * Delete every section belonging to a book.
  *
  * Used when a book is permanently (not trashed) deleted, so it does not
- * leave orphaned section rows behind. Mirrors how WordPress itself only
+ * leave orphaned section posts behind. Mirrors how WordPress itself only
  * cascades post meta on hard delete, not trash.
  *
  * @param int $book_id Book post ID.
  */
 function hsrtech_delete_book_sections( $book_id ) {
-	global $wpdb;
-	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table with no WP API equivalent.
-	$wpdb->delete( hsrtech_get_sections_table(), array( 'book_id' => absint( $book_id ) ), array( '%d' ) );
+	// Any status — a draft section must not survive its book's own permanent
+	// deletion as an orphan just because the publish-only default missed it.
+	foreach ( hsrtech_get_book_sections( $book_id, array( 'publish', 'draft', 'pending', 'private', 'future' ) ) as $section ) {
+		wp_delete_post( $section['id'], true );
+	}
 }
 add_action( 'before_delete_post', 'hsrtech_on_book_deleted' );
 

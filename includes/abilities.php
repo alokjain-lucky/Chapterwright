@@ -306,7 +306,11 @@ function hsrtech_ability_get_book_overview( $input ) {
 		'id'       => $book_id,
 		'title'    => get_the_title( $book_id ),
 		'subtitle' => get_post_meta( $book_id, '_hsrtech_subtitle', true ),
-		'sections' => hsrtech_get_book_sections( $book_id ),
+		// Any status — this ability's permission_callback already gated the
+		// whole call on edit_post for the book, so the admin-app caller is
+		// meant to see draft/pending/private/future sections too, same as it
+		// already does for chapters via hsrtech_get_all_chapters_for_admin() above.
+		'sections' => hsrtech_get_book_sections( $book_id, array( 'publish', 'draft', 'pending', 'private', 'future' ) ),
 		'chapters' => array_values(
 			array_map(
 				function ( $chapter ) {

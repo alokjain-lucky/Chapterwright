@@ -53,12 +53,12 @@ function hsrtech_get_chapters( $book_id, $statuses = array( 'publish' ) ) {
 }
 
 /**
- * Build the table-of-contents section list for a book: each of its
- * hsrtech_sections rows (in order, from hsrtech_get_book_sections()) with the
- * chapters assigned to it, plus a final unlabeled "Chapters" group for any
- * chapter not assigned to a section. A section left with no
- * currently-visible chapters (e.g. all its chapters are still drafts) is
- * dropped from the result entirely rather than rendered empty.
+ * Build the table-of-contents section list for a book: each of its Section
+ * posts (in order, from hsrtech_get_book_sections()) with the chapters
+ * assigned to it, plus a final unlabeled "Chapters" group for any chapter
+ * not assigned to a section. A section left with no currently-visible
+ * chapters (e.g. all its chapters are still drafts) is dropped from the
+ * result entirely rather than rendered empty.
  *
  * Shared by every place that needs this exact grouping so they can't drift
  * out of sync with each other: the book page's own table of contents
@@ -66,9 +66,15 @@ function hsrtech_get_chapters( $book_id, $statuses = array( 'publish' ) ) {
  * drawer (templates/single-hsrtech_chapter.php) both build `$sections` this way
  * and then both render it through the same templates/partials/toc-list.php.
  *
+ * Deliberately calls hsrtech_get_book_sections() with no status argument, so
+ * it only ever sees published sections — this builds a table of contents
+ * shown to anonymous site visitors, and a draft/pending/private/future
+ * section's own permalink already 404s for them, so surfacing its title here
+ * would only leak it, not offer working access to it.
+ *
  * @param int       $book_id  Book post ID.
  * @param WP_Post[] $chapters Chapters already fetched via hsrtech_get_chapters( $book_id ).
- * @return array<int,array{name:string,description:string,chapters:WP_Post[]}>
+ * @return array<int,array{name:string,description:string,url:string,chapters:WP_Post[]}>
  */
 function hsrtech_build_toc_sections( $book_id, $chapters ) {
 	$sections     = array();
@@ -77,10 +83,17 @@ function hsrtech_build_toc_sections( $book_id, $chapters ) {
 	$unassigned   = array();
 
 	foreach ( $section_rows as $row ) {
+		// A section's short description (above, its excerpt) and its optional
+		// full introduction page (its content) are independent: the page
+		// exists at the section's own permalink, linked from the heading,
+		// never inlined here — the description text keeps showing exactly as
+		// before, whether or not the section also has a page worth linking to
+		// (`has_content`, hsrtech_prepare_section_post(), includes/sections.php).
 		$index_by_id[ $row['id'] ] = count( $sections );
 		$sections[]                = array(
 			'name'        => $row['name'],
 			'description' => $row['description'],
+			'url'         => $row['has_content'] ? get_permalink( $row['id'] ) : '',
 			'chapters'    => array(),
 		);
 	}
@@ -98,6 +111,7 @@ function hsrtech_build_toc_sections( $book_id, $chapters ) {
 		$sections[] = array(
 			'name'        => __( 'Chapters', 'chapterwright' ),
 			'description' => '',
+			'url'         => '',
 			'chapters'    => $unassigned,
 		);
 	}
@@ -140,6 +154,38 @@ function hsrtech_locate_chapter( $chapter_id, $chapters ) {
 
 	return array(
 		'index'    => false,
+		'previous' => null,
+		'next'     => null,
+	);
+}
+
+/**
+ * Locate the previous/next chapter around a section's own introduction page.
+ *
+ * A section's page (when it has one — see hsrtech_prepare_section_post()'s
+ * `has_content`) sits in the book's reading order right before the first
+ * chapter assigned to it, the same way its heading sits right before that
+ * chapter's row in the table of contents. So "next" from a section page is
+ * that first chapter, and "previous" is whichever chapter immediately
+ * precedes it in the book's overall order — typically the last chapter of
+ * whatever section came before this one, or nothing at all if this section
+ * is first in the book.
+ *
+ * @param int       $section_id Section post ID.
+ * @param WP_Post[] $chapters   Chapters already fetched via hsrtech_get_chapters( $book_id ), in reading order.
+ * @return array{previous:WP_Post|null, next:WP_Post|null} Both null when no chapter in $chapters is assigned to this section (e.g. every chapter under it is still a draft).
+ */
+function hsrtech_locate_section_neighbors( $section_id, $chapters ) {
+	foreach ( $chapters as $index => $chapter ) {
+		if ( (int) get_post_meta( $chapter->ID, '_hsrtech_section_id', true ) === (int) $section_id ) {
+			return array(
+				'previous' => $index > 0 ? $chapters[ $index - 1 ] : null,
+				'next'     => $chapter,
+			);
+		}
+	}
+
+	return array(
 		'previous' => null,
 		'next'     => null,
 	);

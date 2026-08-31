@@ -1,6 +1,6 @@
 <?php
 /**
- * Book and Chapter post type registration.
+ * Book, Chapter, and Section post type registration.
  *
  * @package Chapterwright
  */
@@ -14,35 +14,60 @@ add_action( 'init', 'hsrtech_register_meta_fields', 20 );
 add_filter( 'rest_prepare_' . HSRTECH_BOOK_POST_TYPE, 'hsrtech_rest_prepare_book_view_link', 10, 2 );
 
 /**
- * Register the Book and Chapter custom post types.
+ * Register the Book, Chapter, and Section custom post types.
  *
- * Both types support the block editor and the WordPress REST API. Books
- * have a public archive at /books/; chapters are reached through their own
- * permalinks under /book-chapter/. The post type keys themselves live in
- * HSRTECH_BOOK_POST_TYPE / HSRTECH_CHAPTER_POST_TYPE (defined in chapterwright.php)
- * and are part of the plugin's stable data contract — see AGENTS.md.
+ * All three support the block editor and the WordPress REST API. Books have
+ * a public archive at /books/; chapters are reached through permalinks
+ * nested under their book, /books/{book-slug}/{chapter-slug}/ — Chapter
+ * registers with `'rewrite' => false` since that structure is entirely
+ * custom, computed at request time from each chapter's `_hsrtech_book_id`;
+ * see includes/permalinks.php for the rewrite rule and permalink filter that
+ * actually builds and matches those URLs.
  *
- * `show_in_menu` is false for both: the admin app (admin/app.php, top-level
- * "Chapterwright" menu) is the primary place authors browse and organize
- * Books/Chapters/Sections. `show_ui` stays true so the native edit screens
- * still exist — the admin app and the editor sidebar panel
- * (admin/app/src/editor-sidebar.js) deep-link into post.php for writing a
- * chapter's actual content.
+ * Section is a book's chapter-grouping heading ("Part I", "Getting
+ * Started") *and* its own optional standalone introduction page, both at
+ * once — a single post, not two linked things. Its title is the heading
+ * shown in the table of contents, its excerpt is the short description
+ * shown under that heading, and its content is the full page an author can
+ * optionally write; the table of contents links the heading to that page
+ * only when there is actually content in it (see hsrtech_build_toc_sections(),
+ * includes/queries.php). This used to be two separate mechanisms — a
+ * `hsrtech_sections` custom database table (name/description only, no page
+ * of its own) plus a separate `hsrtech_module` post type an author could
+ * optionally link to one — until both were folded into this single post
+ * type; see the "Following 2.8.8" entries in AGENTS.md's Notable history for
+ * why, and hsrtech_migrate_sections_table_to_posts() (includes/upgrade.php)
+ * for how an existing site's old section rows carry over. Section uses a
+ * plain, independent /section/{section-slug}/ permalink.
  *
- * `'custom-fields'` must stay in both `supports` arrays: `WP_REST_Posts_Controller`
+ * The post type keys themselves live in HSRTECH_BOOK_POST_TYPE /
+ * HSRTECH_CHAPTER_POST_TYPE / HSRTECH_SECTION_POST_TYPE (defined in
+ * chapterwright.php) and are part of the plugin's stable data contract —
+ * see AGENTS.md.
+ *
+ * `show_in_menu` is false for all three: the admin app (admin/app.php,
+ * top-level "Chapterwright" menu) is the primary place authors browse and
+ * organize Books/Chapters/Sections — a native "All Sections" (or "All
+ * Chapters"/"All Books") sidebar submenu would just be a second,
+ * disconnected way to reach the same content. `show_ui` stays true so the
+ * native edit screens still exist — the admin app and the editor sidebar
+ * panel (admin/app/src/editor-sidebar.js) deep-link straight into post.php
+ * for writing a chapter's, section's, or book's actual content.
+ *
+ * `'custom-fields'` must stay in all three `supports` arrays: `WP_REST_Posts_Controller`
  * only adds a `meta` property to a post type's REST schema when
  * `post_type_supports( $post_type, 'custom-fields' )` is true. Without it,
  * `register_post_meta()` still registers the field, but the REST controller
  * silently ignores any `meta` sent in a create/update request — no error,
  * just a dropped write.
  *
- * Both types register their own `capability_type` (`hsrtech_book`/`hsrtech_books`,
- * `hsrtech_chapter`/`hsrtech_chapters`) with `map_meta_cap => true`, instead of the
- * generic `post`/`posts` capabilities — so "who can touch Books/Chapters" is
- * a permission a site can scope independently of general post-editing
- * access. `hsrtech_add_capabilities_to_roles()` below grants the default
- * roles the same practical access they'd have under generic post
- * capabilities.
+ * All three register their own `capability_type` (`hsrtech_book`/`hsrtech_books`,
+ * `hsrtech_chapter`/`hsrtech_chapters`, `hsrtech_section`/`hsrtech_sections`) with
+ * `map_meta_cap => true`, instead of the generic `post`/`posts` capabilities —
+ * so "who can touch Books/Chapters/Sections" is a permission a site can scope
+ * independently of general post-editing access. `hsrtech_add_capabilities_to_roles()`
+ * below grants the default roles the same practical access they'd have under
+ * generic post capabilities.
  */
 function hsrtech_register_post_types() {
 	register_post_type(
@@ -66,11 +91,30 @@ function hsrtech_register_post_types() {
 			'labels'          => hsrtech_chapter_labels(),
 			'public'          => true,
 			'has_archive'     => false,
-			'rewrite'         => array( 'slug' => 'book-chapter' ),
+			// No default rewrite: includes/permalinks.php owns chapter URLs
+			// entirely (nested under their book, computed at request time),
+			// so nothing here should also register a `book-chapter/%postname%/`
+			// structure alongside it.
+			'rewrite'         => false,
 			'show_in_menu'    => false,
 			'show_in_rest'    => true,
 			'supports'        => array( 'title', 'editor', 'excerpt', 'thumbnail', 'revisions', 'custom-fields' ),
 			'capability_type' => array( 'hsrtech_chapter', 'hsrtech_chapters' ),
+			'map_meta_cap'    => true,
+		)
+	);
+
+	register_post_type(
+		HSRTECH_SECTION_POST_TYPE,
+		array(
+			'labels'          => hsrtech_section_labels(),
+			'public'          => true,
+			'has_archive'     => false,
+			'rewrite'         => array( 'slug' => 'section' ),
+			'show_in_menu'    => false,
+			'show_in_rest'    => true,
+			'supports'        => array( 'title', 'editor', 'excerpt', 'thumbnail', 'revisions', 'custom-fields' ),
+			'capability_type' => array( 'hsrtech_section', 'hsrtech_sections' ),
 			'map_meta_cap'    => true,
 		)
 	);
@@ -133,7 +177,7 @@ function hsrtech_add_capabilities_to_roles() {
 		'contributor'   => array( 'edit_posts', 'delete_posts' ),
 	);
 
-	foreach ( array( HSRTECH_BOOK_POST_TYPE, HSRTECH_CHAPTER_POST_TYPE ) as $post_type ) {
+	foreach ( array( HSRTECH_BOOK_POST_TYPE, HSRTECH_CHAPTER_POST_TYPE, HSRTECH_SECTION_POST_TYPE ) as $post_type ) {
 		$post_type_object = get_post_type_object( $post_type );
 		if ( ! $post_type_object ) {
 			continue;
@@ -246,6 +290,22 @@ function hsrtech_register_meta_fields() {
 			'auth_callback'     => 'hsrtech_meta_auth_callback',
 		)
 	);
+
+	// Which Book a Section belongs to — the same relationship Chapter's own
+	// `_hsrtech_book_id` above records, kept on the section's own post
+	// instead of a foreign-key column in a database table now that Section is
+	// a post itself.
+	register_post_meta(
+		HSRTECH_SECTION_POST_TYPE,
+		'_hsrtech_book_id',
+		array(
+			'type'              => 'integer',
+			'single'            => true,
+			'show_in_rest'      => true,
+			'sanitize_callback' => 'absint',
+			'auth_callback'     => 'hsrtech_meta_auth_callback',
+		)
+	);
 }
 
 /**
@@ -319,5 +379,27 @@ function hsrtech_chapter_labels() {
 		'not_found_in_trash' => __( 'No chapters found in Trash.', 'chapterwright' ),
 		'all_items'          => __( 'All Chapters', 'chapterwright' ),
 		'menu_name'          => __( 'Chapters', 'chapterwright' ),
+	);
+}
+
+/**
+ * Build translated labels for the Section post type editor.
+ *
+ * @return array<string,string> Post type labels.
+ */
+function hsrtech_section_labels() {
+	return array(
+		'name'               => __( 'Sections', 'chapterwright' ),
+		'singular_name'      => __( 'Section', 'chapterwright' ),
+		'add_new'            => __( 'Add New', 'chapterwright' ),
+		'add_new_item'       => __( 'Add New Section', 'chapterwright' ),
+		'edit_item'          => __( 'Edit Section', 'chapterwright' ),
+		'new_item'           => __( 'New Section', 'chapterwright' ),
+		'view_item'          => __( 'View Section', 'chapterwright' ),
+		'search_items'       => __( 'Search Sections', 'chapterwright' ),
+		'not_found'          => __( 'No sections found.', 'chapterwright' ),
+		'not_found_in_trash' => __( 'No sections found in Trash.', 'chapterwright' ),
+		'all_items'          => __( 'All Sections', 'chapterwright' ),
+		'menu_name'          => __( 'Sections', 'chapterwright' ),
 	);
 }

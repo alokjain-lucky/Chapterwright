@@ -18,7 +18,7 @@ add_action( 'wp_enqueue_scripts', 'hsrtech_enqueue_public_assets' );
 function hsrtech_enqueue_public_assets() {
 	$queried_id            = get_queried_object_id();
 	$content               = $queried_id ? get_post_field( 'post_content', $queried_id ) : '';
-	$is_view               = is_singular( array( HSRTECH_BOOK_POST_TYPE, HSRTECH_CHAPTER_POST_TYPE ) )
+	$is_view               = is_singular( array( HSRTECH_BOOK_POST_TYPE, HSRTECH_CHAPTER_POST_TYPE, HSRTECH_SECTION_POST_TYPE ) )
 		|| is_post_type_archive( HSRTECH_BOOK_POST_TYPE );
 	$has_library_shortcode = $content && has_shortcode( $content, 'hsrtech_books' );
 

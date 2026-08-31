@@ -3,7 +3,7 @@
  * Plugin Name:       Chapterwright
  * Plugin URI:        https://wordpress.org/plugins/chapterwright/
  * Description:       Create and publish multiple, beautifully readable ebooks with chapters, sections, and code-friendly formatting.
- * Version:           2.8.8
+ * Version:           2.8.9
  * Requires at least: 6.4
  * Requires PHP:      7.4
  * Author:            Alok Jain
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'HSRTECH_VERSION', '2.8.8' );
+define( 'HSRTECH_VERSION', '2.8.9' );
 define( 'HSRTECH_FILE', __FILE__ );
 define( 'HSRTECH_PATH', plugin_dir_path( __FILE__ ) );
 define( 'HSRTECH_URL', plugin_dir_url( __FILE__ ) );
@@ -33,14 +33,15 @@ define( 'HSRTECH_URL', plugin_dir_url( __FILE__ ) );
  */
 define( 'HSRTECH_BOOK_POST_TYPE', 'hsrtech_book' );
 define( 'HSRTECH_CHAPTER_POST_TYPE', 'hsrtech_chapter' );
+define( 'HSRTECH_SECTION_POST_TYPE', 'hsrtech_section' );
 
 /*
  * Component loading order matters: content types and shared queries first
- * (everything else depends on the post type keys, query helpers, and the
- * sections table they define), then admin, then public, then the bundled
- * block.
+ * (everything else depends on the post type keys and query helpers they
+ * define), then admin, then public, then the bundled block.
  */
 require_once HSRTECH_PATH . 'includes/content-types.php';
+require_once HSRTECH_PATH . 'includes/permalinks.php';
 require_once HSRTECH_PATH . 'includes/queries.php';
 require_once HSRTECH_PATH . 'includes/sections.php';
 require_once HSRTECH_PATH . 'includes/upgrade.php';

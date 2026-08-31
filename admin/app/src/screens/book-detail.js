@@ -2,10 +2,21 @@
  * Book detail screen: quick-edit subtitle/accent, manage sections, and
  * organize chapters (assign to a section, reorder, add, remove).
  *
- * Writing a chapter's or book's actual content still happens in the normal
- * block editor — this screen only manages the structural pieces (which
- * book, which section, what order) that used to live in scattered meta
- * boxes. "Edit content" links open post.php in a new tab for that reason.
+ * Writing a chapter's, section's, or book's actual content still happens in
+ * the normal block editor — this screen only manages the structural pieces
+ * (which book, which section, what order, and — for a section — its name and
+ * short description) that used to live in scattered meta boxes. "Edit
+ * content" links open post.php in a new tab for that reason.
+ *
+ * A section is a single hsrtech_section post (includes/sections.php): its
+ * title is the heading shown in the table of contents, its excerpt is the
+ * description shown under that heading (both editable inline right here,
+ * SectionRow below), and its content is an optional fuller introduction page
+ * — when there's content, the table of contents links the heading to it.
+ * Section has no native admin list screen of its own ('show_in_menu' =>
+ * false, includes/content-types.php) to avoid a second, disconnected way to
+ * find the same content — this app is the only place a section is surfaced,
+ * same as it already is for books and chapters.
  */
 
 import { useState, useEffect, useCallback, useRef } from '@wordpress/element';
@@ -133,6 +144,10 @@ export default function BookDetail( { bookId } ) {
 	}
 
 	const adminUrl = window.hsrtechApp?.adminUrl || '/wp-admin/';
+	// A section IS its post — see the file docblock above — so this same
+	// helper reaches a section's own edit screen too (SectionRow below),
+	// exactly like it already does for a book or chapter, with no separate
+	// "does this section have a linked page yet" branch needed.
 	const editLink = ( postId ) => `${ adminUrl }post.php?post=${ postId }&action=edit`;
 
 	const handleTrashBook = () => {
@@ -212,6 +227,7 @@ export default function BookDetail( { bookId } ) {
 				sections={ sections }
 				onChange={ markSections }
 				onError={ setError }
+				editLink={ editLink }
 			/>
 
 			<ChaptersManager
@@ -344,7 +360,7 @@ function BookFields( { book, onSaved, onError } ) {
 /**
  * Add, rename, describe, reorder, and delete a book's sections.
  */
-function SectionsManager( { bookId, sections, onChange, onError } ) {
+function SectionsManager( { bookId, sections, onChange, onError, editLink } ) {
 	const [ name, setName ] = useState( '' );
 	const [ description, setDescription ] = useState( '' );
 	const [ busy, setBusy ] = useState( false );
@@ -445,7 +461,7 @@ function SectionsManager( { bookId, sections, onChange, onError } ) {
 			</CardHeader>
 			<CardBody>
 				<p className="hsrtech-panel__description">
-					{ __( 'Group chapters under a heading, such as "Part I" or "Getting Started". The description shows under the heading in the table of contents. Optional — chapters with no section appear under a default "Chapters" heading.', 'chapterwright' ) }
+					{ __( 'Group chapters under a heading, such as "Part I" or "Getting Started". The description shows under the heading in the table of contents. Optional — chapters with no section appear under a default "Chapters" heading. Open a section in the Block Editor to give it its own longer introduction page — the heading links there automatically once it has content.', 'chapterwright' ) }
 				</p>
 
 				{ 0 === sections.length && (
@@ -464,6 +480,7 @@ function SectionsManager( { bookId, sections, onChange, onError } ) {
 								onDelete={ () => removeSection( section ) }
 								onMoveUp={ index > 0 ? () => move( index, -1 ) : null }
 								onMoveDown={ index < sections.length - 1 ? () => move( index, 1 ) : null }
+								editLink={ editLink }
 							/>
 						) ) }
 					</div>
@@ -503,7 +520,7 @@ function SectionsManager( { bookId, sections, onChange, onError } ) {
 	);
 }
 
-function SectionRow( { section, onSave, onDelete, onMoveUp, onMoveDown } ) {
+function SectionRow( { section, onSave, onDelete, onMoveUp, onMoveDown, editLink } ) {
 	const [ editing, setEditing ] = useState( false );
 	const [ name, setName ] = useState( section.name );
 	const [ description, setDescription ] = useState( section.description );
@@ -520,6 +537,19 @@ function SectionRow( { section, onSave, onDelete, onMoveUp, onMoveDown } ) {
 					{ section.description && <p className="hsrtech-row__meta">{ section.description }</p> }
 				</div>
 				<div className="hsrtech-row__actions">
+					{ /* A section is a real post (see the file docblock above) — this
+					     opens its own edit screen for writing the optional longer
+					     introduction, same link pattern and wording as the Book
+					     title row's own "Open in Block Editor" button. */ }
+					<Button
+						variant="tertiary"
+						size="small"
+						href={ editLink( section.id ) }
+						target="_blank"
+						rel="noopener"
+					>
+						{ __( 'Open in Block Editor →', 'chapterwright' ) }
+					</Button>
 					<Button variant="tertiary" size="small" onClick={ () => setEditing( true ) }>{ __( 'Edit', 'chapterwright' ) }</Button>
 					<Button variant="tertiary" isDestructive size="small" onClick={ onDelete }>{ __( 'Delete', 'chapterwright' ) }</Button>
 				</div>

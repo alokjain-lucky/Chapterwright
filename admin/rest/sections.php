@@ -2,12 +2,15 @@
 /**
  * REST controller for book sections.
  *
- * Sections live in a custom table (includes/sections.php), so unlike Book
- * and Chapter fields — which piggyback on the core `/wp/v2/{post_type}`
- * endpoints via register_post_meta() — sections need their own routes.
- * Every route is scoped to a specific book and checked against that book's
- * `edit_post` capability, the same permission the classic editor already
- * required to change a book's structure.
+ * Section is a post type (includes/sections.php) and its title/excerpt/content
+ * are already reachable through the core `/wp/v2/hsrtech_section` endpoint —
+ * this controller instead exists for the quick-edit fields the admin app's
+ * `SectionRow` (admin/app/src/screens/book-detail.js) writes inline without
+ * opening the full post editor (name, description, order), plus listing a
+ * book's sections and reordering them, neither of which the core endpoint
+ * expresses in one request. Every route is scoped to a specific book and
+ * checked against that book's `edit_post` capability, the same permission
+ * the classic editor already required to change a book's structure.
  *
  * @package Chapterwright
  */
@@ -193,7 +196,10 @@ function hsrtech_rest_can_delete_section( $request ) {
  * @return WP_REST_Response
  */
 function hsrtech_rest_get_sections( $request ) {
-	return rest_ensure_response( hsrtech_get_book_sections( (int) $request['book_id'] ) );
+	// Any status — this route is gated behind hsrtech_rest_can_edit_book()
+	// above, and the admin app's SectionsManager needs to show and let an
+	// author manage draft sections too, not only published ones.
+	return rest_ensure_response( hsrtech_get_book_sections( (int) $request['book_id'], array( 'publish', 'draft', 'pending', 'private', 'future' ) ) );
 }
 
 /**
@@ -233,7 +239,10 @@ function hsrtech_rest_reorder_sections( $request ) {
 		return $result;
 	}
 
-	return rest_ensure_response( hsrtech_get_book_sections( (int) $request['book_id'] ) );
+	// Any status — same reasoning as hsrtech_rest_get_sections() above; this
+	// response is what SectionsManager re-renders its list from after a
+	// reorder, so it needs to keep seeing draft sections too.
+	return rest_ensure_response( hsrtech_get_book_sections( (int) $request['book_id'], array( 'publish', 'draft', 'pending', 'private', 'future' ) ) );
 }
 
 /**

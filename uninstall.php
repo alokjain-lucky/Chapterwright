@@ -2,8 +2,10 @@
 /**
  * Uninstall handler.
  *
- * Uninstalling Chapterwright performs a full clean sweep: every Book and
- * Chapter post (and their post meta), the hsrtech_sections table, and every
+ * Uninstalling Chapterwright performs a full clean sweep: every Book,
+ * Chapter, and Section post (and their post meta), the now-retired
+ * hsrtech_sections table and hsrtech_module post type from before 3.0.0 (see
+ * hsrtech_migrate_sections_table_to_posts(), includes/upgrade.php), and every
  * option the plugin created are all removed. Nothing the plugin added is
  * left behind. This only runs when a site owner actually deletes the plugin
  * from the Plugins screen (never on deactivation or update), so it is not
@@ -36,6 +38,13 @@ if ( is_multisite() ) {
 function hsrtech_uninstall_clean_sweep() {
 	hsrtech_uninstall_delete_posts( 'hsrtech_book' );
 	hsrtech_uninstall_delete_posts( 'hsrtech_chapter' );
+	hsrtech_uninstall_delete_posts( 'hsrtech_section' );
+	// A pre-3.0.0 site that updates the plugin's files and is deleted again
+	// before ever loading a page in between never gets a chance to run
+	// hsrtech_migrate_sections_table_to_posts() (includes/upgrade.php) — this
+	// covers that edge case directly, since uninstall.php runs standalone and
+	// cannot rely on that migration having already happened.
+	hsrtech_uninstall_delete_posts( 'hsrtech_module' );
 	hsrtech_uninstall_drop_sections_table();
 	hsrtech_uninstall_remove_capabilities();
 
@@ -107,6 +116,10 @@ function hsrtech_uninstall_remove_capabilities() {
 		array(
 			array( 'hsrtech_book', 'hsrtech_books' ),
 			array( 'hsrtech_chapter', 'hsrtech_chapters' ),
+			array( 'hsrtech_section', 'hsrtech_sections' ),
+			// Pre-3.0.0 capability names — see the hsrtech_uninstall_delete_posts()
+			// call above for why this file cannot assume the migration already ran.
+			array( 'hsrtech_module', 'hsrtech_modules' ),
 		) as $names
 	) {
 		list( $singular, $plural ) = $names;

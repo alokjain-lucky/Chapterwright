@@ -4,7 +4,7 @@ Tags: ebook, books, publishing, reading, chapters
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 2.8.8
+Stable tag: 2.8.9
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -29,6 +29,7 @@ It adds two content types, **Books** and **Chapters**. Each book can have its ow
 * Book and Chapter schema.org structured data.
 * Accessible skip links, landmarks, focus indicators, and reduced-motion support.
 * Styled code blocks (with a dedicated **Code Snippet** block: syntax coloring, a language label, an optional caption, and a copy button), tables, and a **Note** block for highlighted notes, warnings, or tips.
+* An optional standalone introduction page for any section — write content on the section itself and its table-of-contents heading links there automatically.
 * A single **Chapterwright** admin page to manage every book, its sections, and its chapters — adding, reordering, and reassigning them — without the classic post-type screens' back-and-forth.
 * A Settings page to turn the reader's color-mode toggle on or off, and edit or remove page headings.
 * Registers with the WordPress Abilities API (WordPress 6.9+) so AI agents and automation tools can discover and use the plugin's book/chapter/section operations in a standardized, permission-checked way.
@@ -81,6 +82,14 @@ Yes. Every string (PHP and the admin app's JavaScript) is wrapped for translatio
 5. The **Code Snippet** block with syntax coloring and a copy button.
 
 == Changelog ==
+
+= 2.8.9 =
+* Sections can now have their own optional introduction page — write it from a section's own Block Editor screen (like a chapter) and its table-of-contents heading links there automatically. A section with nothing written keeps working exactly as before.
+* A section's introduction page now paginates like a chapter page, leading straight into its first chapter and back to whichever chapter came right before it, instead of only linking back to the table of contents.
+* Chapter URLs moved from `/book-chapter/{slug}/` to `/books/{book-slug}/{chapter-slug}/`, nested under their book. An old bookmarked link still works.
+* Table-of-contents section headings now match a chapter row's own link styling (no underline, accent color on hover) instead of a plain underlined link.
+* A section's edit screen now returns to the right book when you leave it, the same way a book or chapter's edit screen already does.
+* Hardened the section data migration to be safely retryable, and tightened the public table of contents to never show a draft section's heading.
 
 = 2.8.8 =
 * Added a **Note** block: an editable label above one or more paragraphs, styled as a highlighted callout for notes, warnings, or tips in a chapter. Matches the reader's light/dark mode and each book's own accent color.

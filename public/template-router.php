@@ -28,6 +28,8 @@ function hsrtech_template_include( $template ) {
 		$plugin_template = HSRTECH_PATH . 'templates/single-hsrtech_book.php';
 	} elseif ( is_singular( HSRTECH_CHAPTER_POST_TYPE ) ) {
 		$plugin_template = HSRTECH_PATH . 'templates/single-hsrtech_chapter.php';
+	} elseif ( is_singular( HSRTECH_SECTION_POST_TYPE ) ) {
+		$plugin_template = HSRTECH_PATH . 'templates/single-hsrtech_section.php';
 	} elseif ( is_post_type_archive( HSRTECH_BOOK_POST_TYPE ) ) {
 		$plugin_template = HSRTECH_PATH . 'templates/archive-hsrtech_book.php';
 	}
