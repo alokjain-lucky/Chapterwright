@@ -94,10 +94,11 @@ $hsrtech_current_chapter_id           = 0;
 			aria-expanded="false"
 			aria-haspopup="dialog"
 			data-hsrtech-toc-trigger
-			aria-label="<?php esc_attr_e( 'Table of contents', 'chapterwright' ); ?>"
 			data-tooltip="<?php esc_attr_e( 'Table of contents', 'chapterwright' ); ?>"
 		>
 			<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="17" x2="14" y2="17"></line></svg>
+			<?php /* Real, present (if visually hidden) text rather than an aria-label alone — see templates/single-hsrtech_chapter.php's identical block for why. */ ?>
+			<span class="hsrtech-sr-only"><?php esc_html_e( 'Back to table of contents', 'chapterwright' ); ?></span>
 		</a>
 		<div class="hsrtech-toc-drawer-backdrop" data-hsrtech-toc-backdrop hidden></div>
 		<aside class="hsrtech-toc-drawer" id="hsrtech-toc-drawer" role="dialog" aria-modal="true" aria-labelledby="hsrtech-toc-drawer-title" hidden>

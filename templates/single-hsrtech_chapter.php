@@ -132,10 +132,11 @@ $hsrtech_book_progress = ( false !== $hsrtech_current && count( $hsrtech_chapter
 			aria-expanded="false"
 			aria-haspopup="dialog"
 			data-hsrtech-toc-trigger
-			aria-label="<?php esc_attr_e( 'Table of contents', 'chapterwright' ); ?>"
 			data-tooltip="<?php esc_attr_e( 'Table of contents', 'chapterwright' ); ?>"
 		>
 			<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="17" x2="14" y2="17"></line></svg>
+			<?php /* Real, present (if visually hidden) text rather than an aria-label alone — an icon-only link with nothing but aria-label has no visible anchor text at all, which reads to search engines and several third-party accessibility/SEO auditing tools as an empty or "bare URL" link, even though screen readers themselves already handled aria-label correctly. This is the same .hsrtech-sr-only pattern the archive page's fallback <h1> already uses. */ ?>
+			<span class="hsrtech-sr-only"><?php esc_html_e( 'Back to table of contents', 'chapterwright' ); ?></span>
 		</a>
 		<div class="hsrtech-toc-drawer-backdrop" data-hsrtech-toc-backdrop hidden></div>
 		<aside class="hsrtech-toc-drawer" id="hsrtech-toc-drawer" role="dialog" aria-modal="true" aria-labelledby="hsrtech-toc-drawer-title" hidden>
