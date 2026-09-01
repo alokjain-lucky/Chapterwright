@@ -72,18 +72,26 @@ class Test_Sections extends WP_UnitTestCase {
 
 	/**
 	 * New sections are appended to the end of the existing menu order.
+	 *
+	 * A newly inserted section is a draft (see test_new_sections_are_created_as_drafts()
+	 * below), so hsrtech_get_book_sections() is called with the same
+	 * any-status array the admin app itself uses — this test is about menu
+	 * order, not publish status, matching hsrtech_reorder_sections()'s own
+	 * any-status lookups in includes/sections.php.
 	 */
 	public function test_new_sections_append_to_the_end_of_menu_order() {
 		$first  = hsrtech_insert_section( $this->book_id, array( 'name' => 'First' ) );
 		$second = hsrtech_insert_section( $this->book_id, array( 'name' => 'Second' ) );
 
-		$sections = hsrtech_get_book_sections( $this->book_id );
+		$sections = hsrtech_get_book_sections( $this->book_id, array( 'publish', 'draft', 'pending', 'private', 'future' ) );
 
 		$this->assertSame( array( $first, $second ), wp_list_pluck( $sections, 'id' ) );
 	}
 
 	/**
 	 * Reordering sections persists the new order.
+	 *
+	 * Same any-status lookup as the test above, for the same reason.
 	 */
 	public function test_reorder_sections_persists_the_new_order() {
 		$first  = hsrtech_insert_section( $this->book_id, array( 'name' => 'First' ) );
@@ -92,8 +100,21 @@ class Test_Sections extends WP_UnitTestCase {
 		$result = hsrtech_reorder_sections( $this->book_id, array( $second, $first ) );
 
 		$this->assertTrue( $result );
-		$sections = hsrtech_get_book_sections( $this->book_id );
+		$sections = hsrtech_get_book_sections( $this->book_id, array( 'publish', 'draft', 'pending', 'private', 'future' ) );
 		$this->assertSame( array( $second, $first ), wp_list_pluck( $sections, 'id' ) );
+	}
+
+	/**
+	 * A newly inserted section starts as a draft, matching a newly inserted
+	 * chapter's own draft-first workflow — it must be explicitly published
+	 * before it appears in a publish-only lookup like the public table of
+	 * contents.
+	 */
+	public function test_new_sections_are_created_as_drafts() {
+		$section_id = hsrtech_insert_section( $this->book_id, array( 'name' => 'Part One' ) );
+
+		$this->assertSame( 'draft', get_post_status( $section_id ) );
+		$this->assertSame( array(), hsrtech_get_book_sections( $this->book_id ) );
 	}
 
 	/**
