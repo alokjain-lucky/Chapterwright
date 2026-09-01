@@ -24,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$hsrtech_current_chapter_id            = isset( $hsrtech_current_chapter_id ) ? (int) $hsrtech_current_chapter_id : 0;
+$hsrtech_current_chapter_id           = isset( $hsrtech_current_chapter_id ) ? (int) $hsrtech_current_chapter_id : 0;
 $hsrtech_show_toc_section_description = isset( $hsrtech_show_toc_section_description ) ? $hsrtech_show_toc_section_description : true;
 ?>
 <?php if ( $hsrtech_sections ) : ?>

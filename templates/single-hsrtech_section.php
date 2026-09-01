@@ -42,8 +42,8 @@ $hsrtech_next      = $hsrtech_neighbors['next'];
 // as a reader on any chapter's page does. $hsrtech_current_chapter_id stays
 // 0: no single chapter row is "current" on a section's own page, the same
 // way none is on the book page itself (see templates/partials/toc-list.php).
-$hsrtech_show_drawer_toc    = $hsrtech_book_id && hsrtech_show_toc_button();
-$hsrtech_toc_chapters       = ( $hsrtech_show_drawer_toc && hsrtech_show_draft_chapters() )
+$hsrtech_show_drawer_toc              = $hsrtech_book_id && hsrtech_show_toc_button();
+$hsrtech_toc_chapters                 = ( $hsrtech_show_drawer_toc && hsrtech_show_draft_chapters() )
 	? hsrtech_get_chapters( $hsrtech_book_id, array( 'publish', 'draft' ) )
 	: $hsrtech_chapters;
 $hsrtech_sections                     = $hsrtech_show_drawer_toc ? hsrtech_build_toc_sections( $hsrtech_book_id, $hsrtech_toc_chapters ) : array();

@@ -38,8 +38,8 @@ $hsrtech_next              = $hsrtech_reading_neighbors['next'];
 // turns that on; $hsrtech_chapters above stays published-only since it also drives
 // prev/next navigation and the "X of Y" counter, which must never count or
 // link to an unpublished chapter.
-$hsrtech_show_drawer_toc    = $hsrtech_book_id && hsrtech_show_toc_button();
-$hsrtech_toc_chapters       = ( $hsrtech_show_drawer_toc && hsrtech_show_draft_chapters() )
+$hsrtech_show_drawer_toc              = $hsrtech_book_id && hsrtech_show_toc_button();
+$hsrtech_toc_chapters                 = ( $hsrtech_show_drawer_toc && hsrtech_show_draft_chapters() )
 	? hsrtech_get_chapters( $hsrtech_book_id, array( 'publish', 'draft' ) )
 	: $hsrtech_chapters;
 $hsrtech_sections                     = $hsrtech_show_drawer_toc ? hsrtech_build_toc_sections( $hsrtech_book_id, $hsrtech_toc_chapters ) : array();

@@ -40,19 +40,19 @@ add_action( 'admin_init', 'hsrtech_register_settings' );
  */
 function hsrtech_default_settings() {
 	return array(
-		'show_mode_toggle'              => '0',
-		'show_credit'                   => '0',
-		'show_toc_excerpt'              => '1',
-		'show_toc_section_description'  => '1',
-		'show_toc_button'               => '1',
-		'toc_button_offset'             => '0',
-		'toc_button_right_offset'       => '0',
-		'show_draft_chapters'           => '0',
-		'disable_code_snippet_block'    => '0',
-		'archive_eyebrow'               => __( 'The library', 'chapterwright' ),
-		'archive_heading'               => __( 'Books worth opening', 'chapterwright' ),
-		'archive_subheading'            => __( 'Read one chapter at a time, right here on the web.', 'chapterwright' ),
-		'toc_heading'                   => __( 'Read at your own pace', 'chapterwright' ),
+		'show_mode_toggle'             => '0',
+		'show_credit'                  => '0',
+		'show_toc_excerpt'             => '1',
+		'show_toc_section_description' => '1',
+		'show_toc_button'              => '1',
+		'toc_button_offset'            => '0',
+		'toc_button_right_offset'      => '0',
+		'show_draft_chapters'          => '0',
+		'disable_code_snippet_block'   => '0',
+		'archive_eyebrow'              => __( 'The library', 'chapterwright' ),
+		'archive_heading'              => __( 'Books worth opening', 'chapterwright' ),
+		'archive_subheading'           => __( 'Read one chapter at a time, right here on the web.', 'chapterwright' ),
+		'toc_heading'                  => __( 'Read at your own pace', 'chapterwright' ),
 	);
 }
 
@@ -85,25 +85,25 @@ function hsrtech_sanitize_settings( $input ) {
 	$defaults = hsrtech_default_settings();
 
 	return array(
-		'show_mode_toggle'              => empty( $input['show_mode_toggle'] ) ? '0' : '1',
-		'show_credit'                   => empty( $input['show_credit'] ) ? '0' : '1',
-		'show_toc_excerpt'              => empty( $input['show_toc_excerpt'] ) ? '0' : '1',
-		'show_toc_section_description'  => empty( $input['show_toc_section_description'] ) ? '0' : '1',
-		'show_toc_button'               => empty( $input['show_toc_button'] ) ? '0' : '1',
+		'show_mode_toggle'             => empty( $input['show_mode_toggle'] ) ? '0' : '1',
+		'show_credit'                  => empty( $input['show_credit'] ) ? '0' : '1',
+		'show_toc_excerpt'             => empty( $input['show_toc_excerpt'] ) ? '0' : '1',
+		'show_toc_section_description' => empty( $input['show_toc_section_description'] ) ? '0' : '1',
+		'show_toc_button'              => empty( $input['show_toc_button'] ) ? '0' : '1',
 		// Clamped to a sane range rather than left open-ended — mainly to
 		// keep a typo (an extra digit) from pushing the button fully off
 		// screen, not because a legitimate value would ever need to be
 		// anywhere near 500px.
-		'toc_button_offset'             => isset( $input['toc_button_offset'] ) ? (string) min( 500, absint( $input['toc_button_offset'] ) ) : $defaults['toc_button_offset'],
+		'toc_button_offset'            => isset( $input['toc_button_offset'] ) ? (string) min( 500, absint( $input['toc_button_offset'] ) ) : $defaults['toc_button_offset'],
 		// Same clamping rationale as toc_button_offset above, applied to the
 		// horizontal axis instead of the vertical one.
-		'toc_button_right_offset'       => isset( $input['toc_button_right_offset'] ) ? (string) min( 500, absint( $input['toc_button_right_offset'] ) ) : $defaults['toc_button_right_offset'],
-		'show_draft_chapters'           => empty( $input['show_draft_chapters'] ) ? '0' : '1',
-		'disable_code_snippet_block'    => empty( $input['disable_code_snippet_block'] ) ? '0' : '1',
-		'archive_eyebrow'               => isset( $input['archive_eyebrow'] ) ? sanitize_text_field( wp_unslash( $input['archive_eyebrow'] ) ) : $defaults['archive_eyebrow'],
-		'archive_heading'               => isset( $input['archive_heading'] ) ? sanitize_text_field( wp_unslash( $input['archive_heading'] ) ) : $defaults['archive_heading'],
-		'archive_subheading'            => isset( $input['archive_subheading'] ) ? sanitize_text_field( wp_unslash( $input['archive_subheading'] ) ) : $defaults['archive_subheading'],
-		'toc_heading'                   => isset( $input['toc_heading'] ) ? sanitize_text_field( wp_unslash( $input['toc_heading'] ) ) : $defaults['toc_heading'],
+		'toc_button_right_offset'      => isset( $input['toc_button_right_offset'] ) ? (string) min( 500, absint( $input['toc_button_right_offset'] ) ) : $defaults['toc_button_right_offset'],
+		'show_draft_chapters'          => empty( $input['show_draft_chapters'] ) ? '0' : '1',
+		'disable_code_snippet_block'   => empty( $input['disable_code_snippet_block'] ) ? '0' : '1',
+		'archive_eyebrow'              => isset( $input['archive_eyebrow'] ) ? sanitize_text_field( wp_unslash( $input['archive_eyebrow'] ) ) : $defaults['archive_eyebrow'],
+		'archive_heading'              => isset( $input['archive_heading'] ) ? sanitize_text_field( wp_unslash( $input['archive_heading'] ) ) : $defaults['archive_heading'],
+		'archive_subheading'           => isset( $input['archive_subheading'] ) ? sanitize_text_field( wp_unslash( $input['archive_subheading'] ) ) : $defaults['archive_subheading'],
+		'toc_heading'                  => isset( $input['toc_heading'] ) ? sanitize_text_field( wp_unslash( $input['toc_heading'] ) ) : $defaults['toc_heading'],
 	);
 }
 
