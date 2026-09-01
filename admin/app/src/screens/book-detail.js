@@ -534,6 +534,11 @@ function SectionRow( { section, onSave, onDelete, onMoveUp, onMoveDown, editLink
 				</div>
 				<div className="hsrtech-row__text">
 					<strong>{ section.name }</strong>
+					{ /* Same status pill as a chapter row (ChaptersManager below) —
+					     a new section starts as a draft, same as a new chapter, so
+					     this is the one place that shows whether it's actually live
+					     in the public table of contents yet. */ }
+					<span className={ `hsrtech-status-pill hsrtech-status-pill--${ section.status }` }>{ section.status }</span>
 					{ section.description && <p className="hsrtech-row__meta">{ section.description }</p> }
 				</div>
 				<div className="hsrtech-row__actions">

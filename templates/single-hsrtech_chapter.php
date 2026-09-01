@@ -17,9 +17,17 @@ $hsrtech_book_id    = absint( get_post_meta( $hsrtech_chapter_id, '_hsrtech_book
 $hsrtech_chapters   = $hsrtech_book_id ? hsrtech_get_chapters( $hsrtech_book_id ) : array();
 $hsrtech_accent     = $hsrtech_book_id ? get_post_meta( $hsrtech_book_id, '_hsrtech_accent', true ) : '';
 $hsrtech_neighbors  = hsrtech_locate_chapter( $hsrtech_chapter_id, $hsrtech_chapters );
-$hsrtech_current    = $hsrtech_neighbors['index'];
-$hsrtech_previous   = $hsrtech_neighbors['previous'];
-$hsrtech_next       = $hsrtech_neighbors['next'];
+$hsrtech_current    = $hsrtech_neighbors['index']; // Chapter-only position — the "X of Y" counter and progress bar below must never count a section's own intro page as one of the Y.
+
+// Previous/Next themselves splice a section's own intro page into the
+// sequence when there is one — see hsrtech_locate_chapter_reading_neighbors()
+// (includes/queries.php). $hsrtech_previous/$hsrtech_next may each end up
+// being either a hsrtech_chapter or a hsrtech_section post; get_permalink()/
+// get_the_title() work the same either way, so the markup below needs no
+// special-casing.
+$hsrtech_reading_neighbors = hsrtech_locate_chapter_reading_neighbors( $hsrtech_chapter_id, $hsrtech_chapters );
+$hsrtech_previous          = $hsrtech_reading_neighbors['previous'];
+$hsrtech_next              = $hsrtech_reading_neighbors['next'];
 
 // For the table-of-contents drawer (below). See hsrtech_build_toc_sections(),
 // includes/queries.php — the exact same grouping the book page itself uses,
@@ -34,9 +42,10 @@ $hsrtech_show_drawer_toc    = $hsrtech_book_id && hsrtech_show_toc_button();
 $hsrtech_toc_chapters       = ( $hsrtech_show_drawer_toc && hsrtech_show_draft_chapters() )
 	? hsrtech_get_chapters( $hsrtech_book_id, array( 'publish', 'draft' ) )
 	: $hsrtech_chapters;
-$hsrtech_sections           = $hsrtech_show_drawer_toc ? hsrtech_build_toc_sections( $hsrtech_book_id, $hsrtech_toc_chapters ) : array();
-$hsrtech_show_toc_excerpt   = hsrtech_show_toc_excerpt();
-$hsrtech_current_chapter_id = $hsrtech_chapter_id;
+$hsrtech_sections                     = $hsrtech_show_drawer_toc ? hsrtech_build_toc_sections( $hsrtech_book_id, $hsrtech_toc_chapters ) : array();
+$hsrtech_show_toc_excerpt             = hsrtech_show_toc_excerpt();
+$hsrtech_show_toc_section_description = hsrtech_show_toc_section_description();
+$hsrtech_current_chapter_id           = $hsrtech_chapter_id;
 
 // How far into the *book* this chapter sits, inclusive of itself (chapter 2
 // of 2 is "100% through" — not this single chapter's own scroll position,

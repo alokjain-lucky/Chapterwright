@@ -37,8 +37,10 @@ add_filter( 'rest_prepare_' . HSRTECH_BOOK_POST_TYPE, 'hsrtech_rest_prepare_book
  * optionally link to one — until both were folded into this single post
  * type; see the "Following 2.8.8" entries in AGENTS.md's Notable history for
  * why, and hsrtech_migrate_sections_table_to_posts() (includes/upgrade.php)
- * for how an existing site's old section rows carry over. Section uses a
- * plain, independent /section/{section-slug}/ permalink.
+ * for how an existing site's old section rows carry over. Section is nested
+ * under its book the same way Chapter is, /books/{book-slug}/{section-slug}/
+ * — also entirely owned by includes/permalinks.php, so Section registers
+ * with `'rewrite' => false` too.
  *
  * The post type keys themselves live in HSRTECH_BOOK_POST_TYPE /
  * HSRTECH_CHAPTER_POST_TYPE / HSRTECH_SECTION_POST_TYPE (defined in
@@ -110,7 +112,10 @@ function hsrtech_register_post_types() {
 			'labels'          => hsrtech_section_labels(),
 			'public'          => true,
 			'has_archive'     => false,
-			'rewrite'         => array( 'slug' => 'section' ),
+			// No default rewrite: includes/permalinks.php owns section URLs
+			// entirely (nested under their book, computed at request time),
+			// same as Chapter above.
+			'rewrite'         => false,
 			'show_in_menu'    => false,
 			'show_in_rest'    => true,
 			'supports'        => array( 'title', 'editor', 'excerpt', 'thumbnail', 'revisions', 'custom-fields' ),

@@ -46,7 +46,10 @@ function hsrtech_print_chapter_prefetch_links() {
 		return;
 	}
 
-	$neighbors = hsrtech_locate_chapter( $chapter_id, hsrtech_get_chapters( $book_id ) );
+	// Matches whatever the chapter template's own Previous/Next nav actually
+	// links to — which may be a section's own intro page, not only another
+	// chapter (see hsrtech_locate_chapter_reading_neighbors(), includes/queries.php).
+	$neighbors = hsrtech_locate_chapter_reading_neighbors( $chapter_id, hsrtech_get_chapters( $book_id ) );
 
 	foreach ( array( $neighbors['previous'], $neighbors['next'] ) as $neighbor ) {
 		if ( $neighbor ) {

@@ -2,6 +2,15 @@
 
 All notable changes to Chapterwright. See [README.md](README.md#changelog) for the most recent entries — this file is the full history.
 
+### 2.9.0
+
+- **Section URLs nested under their book**, moving from the flat `/section/{section-slug}/` shape 2.8.9 shipped to `/books/{book-slug}/{section-slug}/`, matching a chapter's own nested URL exactly. Chapter and Section share the identical URL shape one level under `/books/`, resolved by a single combined rewrite rule rather than two separate ones (WordPress only ever lets one of two identical-pattern rules match, so both post types are now matched together the same way core's own `'post_type' => 'any'` queries work).
+- **"Start reading" now opens a book's first section's own introduction page when it has one**, instead of always linking straight to the first chapter.
+- **Chapter Previous/Next navigation now includes a section's own introduction page as a stop**, not just other chapters — advancing into a chapter that starts a new section lands on that section's page first when it has content, and stepping back off that section's first chapter lands back on the section's page.
+- **The floating "table of contents" button, missing from a section's own introduction page since it became a post type in 2.8.9, has been added** — same button and slide-in drawer a chapter page already has.
+- **Sections now default to draft on create**, matching how a new chapter has always started. Publish a section from the Block Editor when it's ready; a draft section's own page doesn't resolve publicly and its heading doesn't yet appear in the table of contents, the same as a draft chapter.
+- **Added a "Table of contents section descriptions" setting** (Settings → Reading experience, on by default) to turn a section's description on or off in the table of contents list. Turning it off only shortens the list to headings alone — the description itself is unaffected everywhere else, including on the section's own introduction page.
+
 ### 2.8.9
 
 - **Breaking (internal data model): a book's sections are now `hsrtech_section` posts, not rows in the `hsrtech_sections` database table.** A section's post title is its table-of-contents heading and its post excerpt is the short description shown under that heading — both unchanged from before, still quick-editable inline from a book's page in the admin app — and its post content is new: an optional standalone introduction page. Existing sites migrate automatically on the first request after updating (`hsrtech_migrate_sections_table_to_posts()`, `includes/upgrade.php`): every row becomes a post with the same name/description/order, every chapter's section assignment is repointed at the new post, and the old table is dropped once every row has migrated. The migration is resumable — each row is removed from the old table immediately after its replacement post is created, not in one final sweep, so a request that's interrupted partway through only reprocesses what's actually left next time and never creates a duplicate post for a row that already succeeded.

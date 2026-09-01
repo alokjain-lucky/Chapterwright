@@ -44,6 +44,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *     @type string $description Short description shown under the heading (the post excerpt).
  *     @type int    $menu_order  Display order among the book's sections.
  *     @type bool   $has_content Whether the section has its own introduction page worth linking to.
+ *     @type string $status      The post's own status (draft, publish, etc.) — same field name and meaning as a chapter's own `status`, admin/rest/chapters.php's `hsrtech_prepare_chapter_for_response()`, so the admin app can show the same status pill for both.
  * }
  */
 function hsrtech_prepare_section_post( $post ) {
@@ -54,6 +55,7 @@ function hsrtech_prepare_section_post( $post ) {
 		'description' => $post->post_excerpt,
 		'menu_order'  => (int) $post->menu_order,
 		'has_content' => '' !== trim( wp_strip_all_tags( $post->post_content ) ),
+		'status'      => $post->post_status,
 	);
 }
 
@@ -115,6 +117,12 @@ function hsrtech_get_section( $section_id ) {
 /**
  * Create a section for a book.
  *
+ * Created as a draft, same as a new chapter (`createChapter()`,
+ * admin/app/src/api.js) — an author writes and organizes a section before
+ * its heading appears in the public table of contents, rather than it going
+ * live the moment "Add section" is clicked. Publishing happens from the
+ * section's own Block Editor screen, same as any other post.
+ *
  * @param int                 $book_id Book post ID.
  * @param array<string,mixed> $args {
  *     Section fields.
@@ -146,7 +154,7 @@ function hsrtech_insert_section( $book_id, $args ) {
 	$post_id = wp_insert_post(
 		array(
 			'post_type'    => HSRTECH_SECTION_POST_TYPE,
-			'post_status'  => 'publish',
+			'post_status'  => 'draft',
 			'post_title'   => $name,
 			'post_excerpt' => $description,
 			'menu_order'   => $menu_order,

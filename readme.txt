@@ -4,7 +4,7 @@ Tags: ebook, books, publishing, reading, chapters
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 2.8.9
+Stable tag: 2.9.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -82,6 +82,14 @@ Yes. Every string (PHP and the admin app's JavaScript) is wrapped for translatio
 5. The **Code Snippet** block with syntax coloring and a copy button.
 
 == Changelog ==
+
+= 2.9.0 =
+* Section (module) URLs are now nested under their book, `/books/{book-slug}/{section-slug}/`, matching a chapter's own URL shape.
+* "Start reading" now opens a book's first section's own introduction page when it has one, instead of always jumping straight to the first chapter.
+* Previous/next chapter navigation now stops at a section's own introduction page when advancing into or out of that section, instead of skipping past it.
+* The floating table of contents button, missing from a section's own introduction page, has been added.
+* Sections now start as a draft when created, the same as a new chapter — publish from the Block Editor when ready.
+* Added a "Table of contents section descriptions" setting to show or hide each section's description in the table of contents list (on by default).
 
 = 2.8.9 =
 * Sections can now have their own optional introduction page — write it from a section's own Block Editor screen (like a chapter) and its table-of-contents heading links there automatically. A section with nothing written keeps working exactly as before.

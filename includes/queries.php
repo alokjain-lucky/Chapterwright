@@ -192,6 +192,65 @@ function hsrtech_locate_section_neighbors( $section_id, $chapters ) {
 }
 
 /**
+ * Locate a chapter's previous/next stop in the book's actual reading order —
+ * including a section's own introduction page as a stop in that order,
+ * when it has one, not just the previous/next chapter in isolation.
+ *
+ * The full reading order is: a section's own intro page (when it has
+ * content), followed by every chapter assigned to it, section by section —
+ * the exact order hsrtech_build_toc_sections() groups the table of contents
+ * into. So stepping forward out of a section's last chapter lands on the
+ * *next* section's own intro page first, when it has one, before that
+ * section's first chapter; and stepping back off a section's *first*
+ * chapter lands back on that same section's intro page, when it has one,
+ * rather than on the chapter before it in the flat list (which belongs to a
+ * different section, or none). Wraps hsrtech_locate_chapter() and
+ * hsrtech_locate_section_neighbors() rather than duplicating either's own
+ * chapter-finding logic.
+ *
+ * @param int       $chapter_id Chapter post ID to locate.
+ * @param WP_Post[] $chapters   Chapters already fetched via hsrtech_get_chapters( $book_id ), in reading order.
+ * @return array{index:int|false, previous:WP_Post|null, next:WP_Post|null} 'previous'/'next' may each be either a hsrtech_chapter or a hsrtech_section post — check ->post_type to tell them apart. 'index' is unchanged from hsrtech_locate_chapter() (always the chapter's own position, never a section's), so callers needing a chapter-only "X of Y" count can keep using it as before.
+ */
+function hsrtech_locate_chapter_reading_neighbors( $chapter_id, $chapters ) {
+	$neighbors = hsrtech_locate_chapter( $chapter_id, $chapters );
+
+	if ( false === $neighbors['index'] ) {
+		return $neighbors;
+	}
+
+	$current_section_id = absint( get_post_meta( $chapter_id, '_hsrtech_section_id', true ) );
+
+	// Stepping forward into a different section: land on that section's own
+	// intro page first, when it has one, instead of skipping straight to
+	// its first chapter.
+	if ( $neighbors['next'] ) {
+		$next_section_id = absint( get_post_meta( $neighbors['next']->ID, '_hsrtech_section_id', true ) );
+		if ( $next_section_id && $next_section_id !== $current_section_id ) {
+			$next_section = hsrtech_get_section( $next_section_id );
+			if ( $next_section && $next_section['has_content'] ) {
+				$neighbors['next'] = get_post( $next_section_id );
+			}
+		}
+	}
+
+	// This chapter is its own section's first chapter: step back onto that
+	// section's own intro page, when it has one, rather than the chapter
+	// before it in the flat list.
+	if ( $current_section_id ) {
+		$section_neighbors = hsrtech_locate_section_neighbors( $current_section_id, $chapters );
+		if ( $section_neighbors['next'] && $section_neighbors['next']->ID === $chapter_id ) {
+			$current_section = hsrtech_get_section( $current_section_id );
+			if ( $current_section && $current_section['has_content'] ) {
+				$neighbors['previous'] = get_post( $current_section_id );
+			}
+		}
+	}
+
+	return $neighbors;
+}
+
+/**
  * Fetch chapters assigned to a book regardless of status, for admin screens.
  *
  * Used by the Book Details meta box so authors can see draft and pending

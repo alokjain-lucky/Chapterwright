@@ -85,10 +85,11 @@ function hsrtech_enqueue_public_assets() {
 		);
 	}
 
-	// The table-of-contents drawer only exists on the chapter template
-	// (templates/single-hsrtech_chapter.php) — no reason to load its script on
-	// the book page, archive, or shortcode-embedded pages.
-	if ( is_singular( HSRTECH_CHAPTER_POST_TYPE ) ) {
+	// The table-of-contents drawer only exists on the chapter and section
+	// templates (templates/single-hsrtech_chapter.php, templates/single-hsrtech_section.php)
+	// — no reason to load its script on the book page, archive, or
+	// shortcode-embedded pages.
+	if ( is_singular( array( HSRTECH_CHAPTER_POST_TYPE, HSRTECH_SECTION_POST_TYPE ) ) ) {
 		wp_enqueue_script( 'chapterwright-toc-drawer', HSRTECH_URL . 'assets/js/toc-drawer.js', array(), HSRTECH_VERSION, true );
 	}
 }

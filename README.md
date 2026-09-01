@@ -14,7 +14,7 @@ Opens a temporary WordPress site in your browser with Chapterwright already inst
 | WordPress | 6.4 or newer |
 | PHP | 7.4 or newer |
 | Tested through | WordPress 7.1 |
-| Plugin version | 2.8.9 |
+| Plugin version | 2.9.0 |
 
 Chapterwright adds two content types to WordPress: **Books** and **Chapters**. Each book can have its own cover, subtitle, accent color, introduction, and table of contents. Chapters can be grouped into sections — each with its own name and description — and receive automatic previous/next navigation.
 
@@ -73,6 +73,7 @@ Go to **Chapterwright → Settings** to:
 
 - Turn the reader's own light/dark color-mode toggle on or off (shown on book and chapter pages). This is separate from any color-mode switch your theme puts in the site header — turn this off if the two feel redundant.
 - Turn the "This book is created with Chapterwright" credit line at the bottom of book, chapter, and library pages on or off.
+- Turn each section's description on or off in the table of contents (on by default). Turning it off only shortens the list to headings alone — the description itself still shows in full on the section's own introduction page, if it has one.
 - Edit or remove the library page's (`/books/`) eyebrow label, heading, and subheading.
 - Edit or remove the "Read at your own pace" heading shown above each book's table of contents.
 
@@ -98,7 +99,7 @@ Open a book in **Chapterwright → Books & Chapters** to see its sections and ch
 3. Add an optional featured image. It appears below the chapter header.
 4. Publish the chapter.
 
-Sections are their own thing, not just a text label: create one from the book's admin-app page with a name (such as `Getting Started` or `Part II`) and an optional description, which appears under the heading in the table of contents. Assign a chapter to a section — or move it between sections — from the same page, or from the "Chapter Details" panel in the chapter's own block-editor sidebar. Chapters left unassigned appear under the default **Chapters** heading.
+Sections are their own thing, not just a text label: create one from the book's admin-app page with a name (such as `Getting Started` or `Part II`) and an optional description, which appears under the heading in the table of contents. Like a chapter, a newly created section starts as a draft — publish it from the Block Editor when it's ready, the same "Open in Block Editor →" link used for its introduction page (see "Section introduction pages" below). A draft section's own page doesn't resolve publicly, and its heading doesn't yet appear in the table of contents. Assign a chapter to a section — or move it between sections — from the same page, or from the "Chapter Details" panel in the chapter's own block-editor sidebar. Chapters left unassigned appear under the default **Chapters** heading.
 
 Chapter order runs from the lowest number to the highest and controls both the table of contents and previous/next navigation; reorder chapters with the up/down controls on the book's admin-app page. Publication date breaks ties if two chapters ever share a number.
 
@@ -134,7 +135,7 @@ A section's name and short description (set together — see "Adding and organiz
 
 That section's heading in the table of contents becomes a link to the page. The page's own content is never shown inline in the table of contents — only the link is. A section with no content of its own keeps working exactly as before, heading and description text only, no link.
 
-A section's page uses its own `/section/{slug}/` permalink, independent of any book, and follows the reader's light/dark mode and the parent book's accent color.
+A section's page uses the same nested permalink as a chapter, `/books/{book-slug}/{section-slug}/`, and follows the reader's light/dark mode and the parent book's accent color.
 
 ## Displaying the book library
 
@@ -254,7 +255,7 @@ The plugin does not automatically discover template copies in a theme, so this f
 | Section post type | `hsrtech_section` |
 | Book archive and single base | `/books/` |
 | Chapter base | `/books/{book-slug}/{chapter-slug}/`, nested under its book |
-| Section base | `/section/{section-slug}/` |
+| Section base | `/books/{book-slug}/{section-slug}/`, nested under its book, same as Chapter |
 | Chapter parent-book metadata | `_hsrtech_book_id` |
 | Chapter section metadata | `_hsrtech_section_id` (points to a Section post) |
 | Chapter order metadata | `_hsrtech_order` |
@@ -345,6 +346,14 @@ Both run automatically on every push and pull request via GitHub Actions (`.gith
 
 The three most recent releases are below. See [CHANGELOG.md](CHANGELOG.md) for the full history back to 1.0.0.
 
+### 2.9.0
+
+- Section URLs are now nested under their book, `/books/{book-slug}/{section-slug}/`, matching a chapter's own URL shape.
+- "Start reading" now opens a book's first section's own introduction page when it has one, instead of always jumping straight to the first chapter, and previous/next chapter navigation now stops at a section's own introduction page when advancing into or out of that section rather than skipping past it.
+- The floating table of contents button, missing from a section's own introduction page, has been added.
+- Sections now start as a draft when created, the same as a new chapter — publish from the Block Editor when ready.
+- Added a "Table of contents section descriptions" setting to show or hide each section's description in the table of contents list (on by default).
+
 ### 2.8.9
 
 - Sections can now have their own optional introduction page — write it from a section's own Block Editor screen (like a chapter) and its table-of-contents heading links there automatically. The page paginates like a chapter page too, leading into its first chapter and back to whatever chapter came right before it.
@@ -355,10 +364,6 @@ The three most recent releases are below. See [CHANGELOG.md](CHANGELOG.md) for t
 ### 2.8.8
 
 - Added a **Note** block: an editable label above one or more paragraphs, styled as a highlighted callout for notes, warnings, or tips in a chapter. Matches the reader's light/dark mode and each book's own accent color.
-
-### 2.8.7
-
-- The "Created with Chapterwright" / "Powered by Chapterwright" footer credit link, and the plugin's own info link, now point to its WordPress.org page instead of GitHub, now that the plugin is listed there.
 
 ## License
 

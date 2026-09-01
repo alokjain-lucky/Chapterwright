@@ -154,6 +154,17 @@ function hsrtech_maybe_upgrade() {
 			update_option( 'hsrtech_db_version', '3.0.0' );
 		}
 	}
+
+	if ( version_compare( $installed, '3.0.1', '<' ) ) {
+		// Section moved again, from the flat /section/%postname%/ permalink
+		// the 3.0.0 block above set up to one nested under its book,
+		// /books/{book-slug}/{section-slug}/ (includes/permalinks.php) —
+		// matching how Chapter already works. Needs the rewrite rules
+		// regenerated once for an existing site, same reasoning as the
+		// 2.9.0 and 3.0.0 blocks above.
+		flush_rewrite_rules();
+		update_option( 'hsrtech_db_version', '3.0.1' );
+	}
 }
 
 /**

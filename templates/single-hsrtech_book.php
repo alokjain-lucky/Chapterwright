@@ -26,10 +26,27 @@ $hsrtech_toc_chapters = hsrtech_show_draft_chapters() ? hsrtech_get_chapters( $h
 
 // See hsrtech_build_toc_sections(), includes/queries.php, for what this
 // actually builds and why it's shared with the chapter-page TOC drawer.
-$hsrtech_sections           = hsrtech_build_toc_sections( $hsrtech_book_id, $hsrtech_toc_chapters );
-$hsrtech_toc_heading        = hsrtech_get_text( 'toc_heading' );
-$hsrtech_show_toc_excerpt   = hsrtech_show_toc_excerpt();
-$hsrtech_current_chapter_id = 0; // Nothing is "current" on the book's own page — see templates/partials/toc-list.php.
+$hsrtech_sections                     = hsrtech_build_toc_sections( $hsrtech_book_id, $hsrtech_toc_chapters );
+$hsrtech_toc_heading                  = hsrtech_get_text( 'toc_heading' );
+$hsrtech_show_toc_excerpt             = hsrtech_show_toc_excerpt();
+$hsrtech_show_toc_section_description = hsrtech_show_toc_section_description();
+$hsrtech_current_chapter_id           = 0; // Nothing is "current" on the book's own page — see templates/partials/toc-list.php.
+
+// "Start reading" leads into the book's actual reading order: the first
+// chapter's own section, when that section has its own introduction page
+// worth reading first, otherwise straight to the first chapter itself —
+// same reasoning as hsrtech_locate_section_neighbors() (includes/queries.php),
+// just at the very start of the book rather than mid-book.
+$hsrtech_start_reading_id = $hsrtech_chapters ? $hsrtech_chapters[0]->ID : 0;
+if ( $hsrtech_start_reading_id ) {
+	$hsrtech_first_section_id = absint( get_post_meta( $hsrtech_start_reading_id, '_hsrtech_section_id', true ) );
+	if ( $hsrtech_first_section_id ) {
+		$hsrtech_first_section = hsrtech_get_section( $hsrtech_first_section_id );
+		if ( $hsrtech_first_section && $hsrtech_first_section['has_content'] ) {
+			$hsrtech_start_reading_id = $hsrtech_first_section_id;
+		}
+	}
+}
 ?>
 <a class="hsrtech-skip-link" href="#hsrtech-main-content"><?php esc_html_e( 'Skip to book content', 'chapterwright' ); ?></a>
 <main id="hsrtech-main-content" class="hsrtech-page hsrtech-book" style="--hsrtech-accent:<?php echo esc_attr( $hsrtech_accent ? $hsrtech_accent : '#f45d48' ); ?>" tabindex="-1">
@@ -54,7 +71,7 @@ $hsrtech_current_chapter_id = 0; // Nothing is "current" on the book's own page 
 			<?php if ( $hsrtech_chapters && ! $hsrtech_coming_soon ) : ?>
 				<div class="hsrtech-book-hero__actions">
 					<a class="hsrtech-button hsrtech-button--outline" href="#hsrtech-toc"><?php esc_html_e( 'Table of contents', 'chapterwright' ); ?> <span aria-hidden="true">↓</span></a>
-					<a class="hsrtech-button" href="<?php echo esc_url( get_permalink( $hsrtech_chapters[0] ) ); ?>"><?php esc_html_e( 'Start reading', 'chapterwright' ); ?> <span aria-hidden="true">→</span></a>
+					<a class="hsrtech-button" href="<?php echo esc_url( get_permalink( $hsrtech_start_reading_id ) ); ?>"><?php esc_html_e( 'Start reading', 'chapterwright' ); ?> <span aria-hidden="true">→</span></a>
 				</div>
 			<?php endif; ?>
 		</div>

@@ -40,18 +40,19 @@ add_action( 'admin_init', 'hsrtech_register_settings' );
  */
 function hsrtech_default_settings() {
 	return array(
-		'show_mode_toggle'           => '0',
-		'show_credit'                => '0',
-		'show_toc_excerpt'           => '1',
-		'show_toc_button'            => '1',
-		'toc_button_offset'          => '0',
-		'toc_button_right_offset'    => '0',
-		'show_draft_chapters'        => '0',
-		'disable_code_snippet_block' => '0',
-		'archive_eyebrow'            => __( 'The library', 'chapterwright' ),
-		'archive_heading'            => __( 'Books worth opening', 'chapterwright' ),
-		'archive_subheading'         => __( 'Read one chapter at a time, right here on the web.', 'chapterwright' ),
-		'toc_heading'                => __( 'Read at your own pace', 'chapterwright' ),
+		'show_mode_toggle'              => '0',
+		'show_credit'                   => '0',
+		'show_toc_excerpt'              => '1',
+		'show_toc_section_description'  => '1',
+		'show_toc_button'               => '1',
+		'toc_button_offset'             => '0',
+		'toc_button_right_offset'       => '0',
+		'show_draft_chapters'           => '0',
+		'disable_code_snippet_block'    => '0',
+		'archive_eyebrow'               => __( 'The library', 'chapterwright' ),
+		'archive_heading'               => __( 'Books worth opening', 'chapterwright' ),
+		'archive_subheading'            => __( 'Read one chapter at a time, right here on the web.', 'chapterwright' ),
+		'toc_heading'                   => __( 'Read at your own pace', 'chapterwright' ),
 	);
 }
 
@@ -84,24 +85,25 @@ function hsrtech_sanitize_settings( $input ) {
 	$defaults = hsrtech_default_settings();
 
 	return array(
-		'show_mode_toggle'           => empty( $input['show_mode_toggle'] ) ? '0' : '1',
-		'show_credit'                => empty( $input['show_credit'] ) ? '0' : '1',
-		'show_toc_excerpt'           => empty( $input['show_toc_excerpt'] ) ? '0' : '1',
-		'show_toc_button'            => empty( $input['show_toc_button'] ) ? '0' : '1',
+		'show_mode_toggle'              => empty( $input['show_mode_toggle'] ) ? '0' : '1',
+		'show_credit'                   => empty( $input['show_credit'] ) ? '0' : '1',
+		'show_toc_excerpt'              => empty( $input['show_toc_excerpt'] ) ? '0' : '1',
+		'show_toc_section_description'  => empty( $input['show_toc_section_description'] ) ? '0' : '1',
+		'show_toc_button'               => empty( $input['show_toc_button'] ) ? '0' : '1',
 		// Clamped to a sane range rather than left open-ended — mainly to
 		// keep a typo (an extra digit) from pushing the button fully off
 		// screen, not because a legitimate value would ever need to be
 		// anywhere near 500px.
-		'toc_button_offset'          => isset( $input['toc_button_offset'] ) ? (string) min( 500, absint( $input['toc_button_offset'] ) ) : $defaults['toc_button_offset'],
+		'toc_button_offset'             => isset( $input['toc_button_offset'] ) ? (string) min( 500, absint( $input['toc_button_offset'] ) ) : $defaults['toc_button_offset'],
 		// Same clamping rationale as toc_button_offset above, applied to the
 		// horizontal axis instead of the vertical one.
-		'toc_button_right_offset'    => isset( $input['toc_button_right_offset'] ) ? (string) min( 500, absint( $input['toc_button_right_offset'] ) ) : $defaults['toc_button_right_offset'],
-		'show_draft_chapters'        => empty( $input['show_draft_chapters'] ) ? '0' : '1',
-		'disable_code_snippet_block' => empty( $input['disable_code_snippet_block'] ) ? '0' : '1',
-		'archive_eyebrow'            => isset( $input['archive_eyebrow'] ) ? sanitize_text_field( wp_unslash( $input['archive_eyebrow'] ) ) : $defaults['archive_eyebrow'],
-		'archive_heading'            => isset( $input['archive_heading'] ) ? sanitize_text_field( wp_unslash( $input['archive_heading'] ) ) : $defaults['archive_heading'],
-		'archive_subheading'         => isset( $input['archive_subheading'] ) ? sanitize_text_field( wp_unslash( $input['archive_subheading'] ) ) : $defaults['archive_subheading'],
-		'toc_heading'                => isset( $input['toc_heading'] ) ? sanitize_text_field( wp_unslash( $input['toc_heading'] ) ) : $defaults['toc_heading'],
+		'toc_button_right_offset'       => isset( $input['toc_button_right_offset'] ) ? (string) min( 500, absint( $input['toc_button_right_offset'] ) ) : $defaults['toc_button_right_offset'],
+		'show_draft_chapters'           => empty( $input['show_draft_chapters'] ) ? '0' : '1',
+		'disable_code_snippet_block'    => empty( $input['disable_code_snippet_block'] ) ? '0' : '1',
+		'archive_eyebrow'               => isset( $input['archive_eyebrow'] ) ? sanitize_text_field( wp_unslash( $input['archive_eyebrow'] ) ) : $defaults['archive_eyebrow'],
+		'archive_heading'               => isset( $input['archive_heading'] ) ? sanitize_text_field( wp_unslash( $input['archive_heading'] ) ) : $defaults['archive_heading'],
+		'archive_subheading'            => isset( $input['archive_subheading'] ) ? sanitize_text_field( wp_unslash( $input['archive_subheading'] ) ) : $defaults['archive_subheading'],
+		'toc_heading'                   => isset( $input['toc_heading'] ) ? sanitize_text_field( wp_unslash( $input['toc_heading'] ) ) : $defaults['toc_heading'],
 	);
 }
 
@@ -157,6 +159,23 @@ function hsrtech_show_credit() {
 function hsrtech_show_toc_excerpt() {
 	$settings = hsrtech_get_settings();
 	return '1' === $settings['show_toc_excerpt'];
+}
+
+/**
+ * Whether a section's description is shown under its heading in the table
+ * of contents (a book's own page, and the chapter-page TOC drawer). On by
+ * default; a site owner can turn it off in Settings for a more compact
+ * heading-only list of sections, the same idea as hsrtech_show_toc_excerpt()
+ * above but for a section's description rather than a chapter's excerpt.
+ * Turning this off never touches the description text itself — it stays
+ * exactly as written, and still shows on the section's own introduction
+ * page (if it has one), just not repeated under the heading in the list.
+ *
+ * @return bool
+ */
+function hsrtech_show_toc_section_description() {
+	$settings = hsrtech_get_settings();
+	return '1' === $settings['show_toc_section_description'];
 }
 
 /**
@@ -312,6 +331,18 @@ function hsrtech_render_settings_page() {
 						</label>
 						<p class="description">
 							<?php esc_html_e( 'Turn this off for a shorter, title-and-number-only chapter list.', 'chapterwright' ); ?>
+						</p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Table of contents section descriptions', 'chapterwright' ); ?></th>
+					<td>
+						<label>
+							<input type="checkbox" name="hsrtech_settings[show_toc_section_description]" value="1" <?php checked( '1', $settings['show_toc_section_description'] ); ?> />
+							<?php esc_html_e( 'Show each section\'s description below its heading in the table of contents', 'chapterwright' ); ?>
+						</label>
+						<p class="description">
+							<?php esc_html_e( 'Turn this off for a shorter list of section headings only. The description itself is unaffected everywhere else, including on a section\'s own introduction page.', 'chapterwright' ); ?>
 						</p>
 					</td>
 				</tr>

@@ -14,8 +14,9 @@
  *
  * @package Chapterwright
  *
- * @var array<int,array>  $hsrtech_sections           From hsrtech_build_toc_sections().
- * @var bool              $hsrtech_show_toc_excerpt   From hsrtech_show_toc_excerpt().
+ * @var array<int,array>  $hsrtech_sections                       From hsrtech_build_toc_sections().
+ * @var bool              $hsrtech_show_toc_excerpt               From hsrtech_show_toc_excerpt().
+ * @var bool              $hsrtech_show_toc_section_description   From hsrtech_show_toc_section_description().
  * @var int                $hsrtech_current_chapter_id The chapter currently being read, or 0 on the book page itself (nothing is ever "current" there). Used only to mark that one row with aria-current="page".
  */
 
@@ -23,7 +24,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$hsrtech_current_chapter_id = isset( $hsrtech_current_chapter_id ) ? (int) $hsrtech_current_chapter_id : 0;
+$hsrtech_current_chapter_id            = isset( $hsrtech_current_chapter_id ) ? (int) $hsrtech_current_chapter_id : 0;
+$hsrtech_show_toc_section_description = isset( $hsrtech_show_toc_section_description ) ? $hsrtech_show_toc_section_description : true;
 ?>
 <?php if ( $hsrtech_sections ) : ?>
 	<?php foreach ( $hsrtech_sections as $hsrtech_section ) : ?>
@@ -36,7 +38,7 @@ $hsrtech_current_chapter_id = isset( $hsrtech_current_chapter_id ) ? (int) $hsrt
 						<?php echo esc_html( $hsrtech_section['name'] ); ?>
 					<?php endif; ?>
 				</h3>
-				<?php if ( $hsrtech_section['description'] ) : ?>
+				<?php if ( $hsrtech_section['description'] && $hsrtech_show_toc_section_description ) : ?>
 					<p class="hsrtech-toc-section__description"><?php echo esc_html( $hsrtech_section['description'] ); ?></p>
 				<?php endif; ?>
 			</div>
