@@ -4,7 +4,7 @@ Tags: ebook, books, publishing, reading, chapters
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 2.9.0
+Stable tag: 2.9.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -82,6 +82,9 @@ Yes. Every string (PHP and the admin app's JavaScript) is wrapped for translatio
 5. The **Code Snippet** block with syntax coloring and a copy button.
 
 == Changelog ==
+
+= 2.9.1 =
+* Fixed a crash ("Something went wrong loading this screen") right after adding a chapter in the Books & Chapters admin app — the new chapter was actually created fine, but the screen broke until a refresh. Only affected sites with "Table of contents excerpts" shown in the admin app's chapter list.
 
 = 2.9.0 =
 * Section (module) URLs are now nested under their book, `/books/{book-slug}/{section-slug}/`, matching a chapter's own URL shape.

@@ -14,7 +14,7 @@ Opens a temporary WordPress site in your browser with Chapterwright already inst
 | WordPress | 6.4 or newer |
 | PHP | 7.4 or newer |
 | Tested through | WordPress 7.1 |
-| Plugin version | 2.9.0 |
+| Plugin version | 2.9.1 |
 
 Chapterwright adds two content types to WordPress: **Books** and **Chapters**. Each book can have its own cover, subtitle, accent color, introduction, and table of contents. Chapters can be grouped into sections — each with its own name and description — and receive automatic previous/next navigation.
 
@@ -346,6 +346,10 @@ Both run automatically on every push and pull request via GitHub Actions (`.gith
 
 The three most recent releases are below. See [CHANGELOG.md](CHANGELOG.md) for the full history back to 1.0.0.
 
+### 2.9.1
+
+- Fixed a crash right after adding a chapter in the Books & Chapters admin app ("Something went wrong loading this screen") — the new chapter was actually created fine, but the screen broke until a refresh. Only affected sites with "Table of contents excerpts" shown in the admin app's chapter list.
+
 ### 2.9.0
 
 - Section URLs are now nested under their book, `/books/{book-slug}/{section-slug}/`, matching a chapter's own URL shape.
@@ -360,10 +364,6 @@ The three most recent releases are below. See [CHANGELOG.md](CHANGELOG.md) for t
 - Chapter URLs moved from `/book-chapter/{slug}/` to `/books/{book-slug}/{chapter-slug}/`, nested under their book. An old bookmarked link still works.
 - Table-of-contents section headings now match a chapter row's own link styling (no underline, accent color on hover), and a section's edit screen now returns to the right book when you leave it, the same as a book or chapter's already does.
 - Hardened the underlying section data migration to be safely retryable, and tightened the public table of contents to never show a draft section's heading.
-
-### 2.8.8
-
-- Added a **Note** block: an editable label above one or more paragraphs, styled as a highlighted callout for notes, warnings, or tips in a chapter. Matches the reader's light/dark mode and each book's own accent color.
 
 ## License
 

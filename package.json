@@ -1,6 +1,6 @@
 {
   "name": "chapterwright",
-  "version": "2.9.0",
+  "version": "2.9.1",
   "private": true,
   "description": "Local WordPress test environment and admin-app build for the Chapterwright plugin.",
   "scripts": {

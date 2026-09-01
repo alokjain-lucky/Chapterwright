@@ -2,6 +2,10 @@
 
 All notable changes to Chapterwright. See [README.md](README.md#changelog) for the most recent entries — this file is the full history.
 
+### 2.9.1
+
+- **Fixed a crash right after adding a chapter in the Books & Chapters admin app.** Reported live: the new chapter was created fine (correct ID and meta, visible on refresh), but the screen immediately broke with a minified React error — "object with keys `{raw, rendered, protected}`". `addChapter()`'s success handler appends the create request's response object straight into `chapters` state rather than re-fetching (deliberate — a re-fetch right after create can lag behind on some hosts, per the comment already in `book-detail.js`). That response comes from core's own `/wp/v2/hsrtech_chapter` POST endpoint, whose `excerpt` field is the standard `WP_REST_Posts_Controller` `{ raw, rendered, protected }` shape — every *other* chapter in the list comes from `getBookChapters()` (the plugin's own `chapterwright/v1` route), whose `excerpt` is a plain string (`get_the_excerpt()`). The chapter row's `chapter.excerpt && ... { chapter.excerpt }` assumed the plain-string shape and rendered the raw object directly as a React child, which is exactly what that error means. `chapter.title` already tolerated both shapes at its two render sites (`chapter.title?.raw || chapter.title?.rendered`) for the same underlying reason; applied the identical fallback to excerpt instead of normalizing the create response upstream. Only visible on sites with "Table of contents excerpts" turned on in the admin app's chapter list.
+
 ### 2.9.0
 
 - **Section URLs nested under their book**, moving from the flat `/section/{section-slug}/` shape 2.8.9 shipped to `/books/{book-slug}/{section-slug}/`, matching a chapter's own nested URL exactly. Chapter and Section share the identical URL shape one level under `/books/`, resolved by a single combined rewrite rule rather than two separate ones (WordPress only ever lets one of two identical-pattern rules match, so both post types are now matched together the same way core's own `'post_type' => 'any'` queries work).
