@@ -747,9 +747,25 @@ function ChaptersManager( { bookId, sections, chapters, onChange, onError, editL
 									     thing — and unlike the front end, shown for a draft chapter too:
 									     there's no reason to hide it here just because a chapter isn't
 									     published yet, since this screen already manages every chapter
-									     regardless of status. */ }
-									{ window.hsrtechApp?.showTocExcerpt && chapter.excerpt && (
-										<p className="hsrtech-row__meta">{ chapter.excerpt }</p>
+									     regardless of status.
+
+									     chapter.excerpt is a plain string for every chapter this list
+									     loads normally (getBookChapters(), the custom chapterwright/v1
+									     route — see admin/rest/chapters.php's get_the_excerpt() call),
+									     but the one row appended straight from createChapter()'s create
+									     response below is different: that goes through core's own
+									     /wp/v2/hsrtech_chapter endpoint, whose `excerpt` is the standard
+									     WP_REST_Posts_Controller `{ raw, rendered, protected }` shape,
+									     not a plain string. Rendering that object directly crashed the
+									     whole screen with a React "object as child" error the moment a
+									     chapter was added — reported live, only ever on create, never
+									     surviving a refresh (which reloads through getBookChapters()
+									     and gets the plain-string shape back). Same `?.raw || ?.rendered`
+									     fallback already used for chapter.title above, for the same
+									     reason: tolerate either shape at the render site rather than
+									     normalizing the create response upstream. */ }
+									{ window.hsrtechApp?.showTocExcerpt && ( chapter.excerpt?.rendered || chapter.excerpt ) && (
+										<p className="hsrtech-row__meta">{ chapter.excerpt?.rendered || chapter.excerpt }</p>
 									) }
 								</div>
 								<SelectControl
