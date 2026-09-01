@@ -4,7 +4,7 @@ Tags: ebook, books, publishing, reading, chapters
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 2.9.1
+Stable tag: 2.9.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -26,6 +26,7 @@ It adds two content types, **Books** and **Chapters**. Each book can have its ow
 * Full block editor, revisions, and REST API support.
 * Reader-selectable system, light, or dark color mode.
 * Reading progress indicator and estimated reading time per chapter.
+* A progress bar on each book's page for how much of it is published and ready to read.
 * Book and Chapter schema.org structured data.
 * Accessible skip links, landmarks, focus indicators, and reduced-motion support.
 * Styled code blocks (with a dedicated **Code Snippet** block: syntax coloring, a language label, an optional caption, and a copy button), tables, and a **Note** block for highlighted notes, warnings, or tips.
@@ -82,6 +83,9 @@ Yes. Every string (PHP and the admin app's JavaScript) is wrapped for translatio
 5. The **Code Snippet** block with syntax coloring and a copy button.
 
 == Changelog ==
+
+= 2.9.2 =
+* Added a progress bar to each book's page showing how much of it is published and ready to read — counts published chapters against every chapter assigned to the book, drafts included. Shown below the title, on by default; turn it off in Settings under "Book progress bar".
 
 = 2.9.1 =
 * Fixed a crash ("Something went wrong loading this screen") right after adding a chapter in the Books & Chapters admin app — the new chapter was actually created fine, but the screen broke until a refresh. Only affected sites with "Table of contents excerpts" shown in the admin app's chapter list.

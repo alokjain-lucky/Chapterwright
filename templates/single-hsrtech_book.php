@@ -18,6 +18,28 @@ $hsrtech_subtitle    = get_post_meta( $hsrtech_book_id, '_hsrtech_subtitle', tru
 $hsrtech_accent      = get_post_meta( $hsrtech_book_id, '_hsrtech_accent', true );
 $hsrtech_coming_soon = (bool) get_post_meta( $hsrtech_book_id, '_hsrtech_coming_soon', true );
 
+// Every chapter assigned to the book, any status — the denominator for the
+// progress bar below. Deliberately not $hsrtech_chapters (published-only,
+// computed above): "how much of the book is written" needs to count drafts
+// too, or a book with 3 published chapters and 20 more still drafted would
+// misleadingly read as "done". This is a different number from a chapter
+// page's own $hsrtech_book_progress (templates/single-hsrtech_chapter.php),
+// which tracks how far a reader is through the published chapters only.
+$hsrtech_all_chapters       = hsrtech_get_chapters( $hsrtech_book_id, array( 'publish', 'draft', 'pending', 'private', 'future' ) );
+$hsrtech_show_book_progress = hsrtech_show_book_progress() && count( $hsrtech_all_chapters ) > 0;
+$hsrtech_book_completion    = $hsrtech_show_book_progress ? round( count( $hsrtech_chapters ) / count( $hsrtech_all_chapters ) * 100 ) : 0;
+
+// Two states rather than one static "X% published" line for every book: a
+// finished book gets its own honest label instead of a slightly odd
+// "100% published — more chapters on the way".
+$hsrtech_book_progress_label = ( 100 === $hsrtech_book_completion )
+	? __( 'Complete — every chapter is up', 'chapterwright' )
+	: sprintf(
+		/* translators: %d: percentage of the book's chapters currently published. */
+		__( '%d%% published — more chapters on the way', 'chapterwright' ),
+		$hsrtech_book_completion
+	);
+
 // The TOC shows draft chapters too (unlinked, faded — see
 // templates/partials/toc-list.php) when the site owner turns that on in
 // Settings; $hsrtech_chapters above stays published-only since it also drives the
@@ -65,6 +87,14 @@ if ( $hsrtech_start_reading_id ) {
 			<h1><?php the_title(); ?></h1>
 			<?php if ( $hsrtech_subtitle ) : ?>
 				<p class="hsrtech-book-hero__subtitle"><?php echo esc_html( $hsrtech_subtitle ); ?></p>
+			<?php endif; ?>
+			<?php if ( $hsrtech_show_book_progress ) : ?>
+				<div class="hsrtech-book-progress" role="group" aria-label="<?php esc_attr_e( 'Book progress', 'chapterwright' ); ?>">
+					<div class="hsrtech-book-progress__bar" role="progressbar" aria-valuenow="<?php echo esc_attr( $hsrtech_book_completion ); ?>" aria-valuemin="0" aria-valuemax="100">
+						<span class="hsrtech-book-progress__fill" style="--hsrtech-progress:<?php echo esc_attr( $hsrtech_book_completion ); ?>%;"></span>
+					</div>
+					<p class="hsrtech-book-progress__label"><?php echo esc_html( $hsrtech_book_progress_label ); ?></p>
+				</div>
 			<?php endif; ?>
 			<div class="hsrtech-book-hero__description"><?php the_excerpt(); ?></div>
 			<?php // Coming-soon books never show "Start reading", even if a draft-preview chapter or two already exists — the flag means "not open yet," not "no chapters". ?>

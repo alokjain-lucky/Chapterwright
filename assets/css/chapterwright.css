@@ -164,6 +164,17 @@
 .hsrtech-book-hero h1 { margin: 0; }
 .hsrtech-book-hero__copy { display: flex; flex-direction: column; justify-content: center; }
 .hsrtech-book-hero__subtitle { font-family: inherit; font-size: clamp(1.25rem, 1.8vw, 1.6rem); line-height: 1.4; margin: 1.25rem 0 1rem; max-width: 29ch; text-wrap: balance; }
+/* How much of the book is published, not how far a reader is through it —
+   see hsrtech_show_book_progress()'s own docblock (admin/settings.php) for
+   that distinction. A track-and-fill bar rather than reusing the chapter
+   page's gradient-divider idiom (--hsrtech-progress on a 2px ::after line):
+   this one stands alone in the hero rather than doubling as an existing
+   border, so a visible rounded track reads more like a real progress bar
+   and less like a coincidentally-tinted rule. */
+.hsrtech-book-progress { margin: 1.25rem 0 0; max-width: 29ch; }
+.hsrtech-book-progress__bar { background: var(--hsrtech-line); border-radius: 999px; height: 6px; overflow: hidden; width: 100%; }
+.hsrtech-book-progress__fill { background: var(--hsrtech-accent); border-radius: inherit; display: block; height: 100%; width: var(--hsrtech-progress, 0%); }
+.hsrtech-book-progress__label { color: var(--hsrtech-muted); font-size: .8rem; margin: .5rem 0 0; }
 .hsrtech-book-hero__description { color: var(--hsrtech-muted); font-size: 1.05rem; line-height: 1.6; max-width: 48ch; }
 .hsrtech-book-hero__cover img { box-shadow: 1.4rem 1.4rem 0 var(--hsrtech-accent); display: block; height: 100%; object-fit: cover; transform: rotate(1.5deg); width: 100%; }
 .hsrtech-book-hero__actions { align-items: center; display: flex; flex-wrap: wrap; gap: 1rem; }

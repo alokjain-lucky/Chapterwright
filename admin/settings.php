@@ -45,6 +45,7 @@ function hsrtech_default_settings() {
 		'show_toc_excerpt'             => '1',
 		'show_toc_section_description' => '1',
 		'show_toc_button'              => '1',
+		'show_book_progress'           => '1',
 		'toc_button_offset'            => '0',
 		'toc_button_right_offset'      => '0',
 		'show_draft_chapters'          => '0',
@@ -90,6 +91,7 @@ function hsrtech_sanitize_settings( $input ) {
 		'show_toc_excerpt'             => empty( $input['show_toc_excerpt'] ) ? '0' : '1',
 		'show_toc_section_description' => empty( $input['show_toc_section_description'] ) ? '0' : '1',
 		'show_toc_button'              => empty( $input['show_toc_button'] ) ? '0' : '1',
+		'show_book_progress'           => empty( $input['show_book_progress'] ) ? '0' : '1',
 		// Clamped to a sane range rather than left open-ended — mainly to
 		// keep a typo (an extra digit) from pushing the button fully off
 		// screen, not because a legitimate value would ever need to be
@@ -188,6 +190,22 @@ function hsrtech_show_toc_section_description() {
 function hsrtech_show_toc_button() {
 	$settings = hsrtech_get_settings();
 	return '1' === $settings['show_toc_button'];
+}
+
+/**
+ * Whether a book's landing page shows a progress bar for how much of the
+ * book is published and ready to read (published chapters ÷ every chapter
+ * assigned to the book, drafts included) — a different number from the
+ * reading-progress bar already on a chapter page, which tracks how far a
+ * reader is through the *published* chapters only (see
+ * templates/single-hsrtech_chapter.php's own $hsrtech_book_progress). On by
+ * default; a site owner can turn it off in Settings.
+ *
+ * @return bool
+ */
+function hsrtech_show_book_progress() {
+	$settings = hsrtech_get_settings();
+	return '1' === $settings['show_book_progress'];
 }
 
 /**
@@ -353,6 +371,18 @@ function hsrtech_render_settings_page() {
 							<input type="checkbox" name="hsrtech_settings[show_toc_button]" value="1" <?php checked( '1', $settings['show_toc_button'] ); ?> />
 							<?php esc_html_e( 'Show a floating button on chapter pages that opens the book\'s table of contents in a side panel', 'chapterwright' ); ?>
 						</label>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Book progress bar', 'chapterwright' ); ?></th>
+					<td>
+						<label>
+							<input type="checkbox" name="hsrtech_settings[show_book_progress]" value="1" <?php checked( '1', $settings['show_book_progress'] ); ?> />
+							<?php esc_html_e( 'Show a progress bar on each book\'s page for how much of it is published and ready to read', 'chapterwright' ); ?>
+						</label>
+						<p class="description">
+							<?php esc_html_e( 'Counts published chapters against every chapter assigned to the book, drafts included — a rough sense of how much is left to write, not a reading-progress indicator.', 'chapterwright' ); ?>
+						</p>
 					</td>
 				</tr>
 				<tr>

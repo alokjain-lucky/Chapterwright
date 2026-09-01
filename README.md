@@ -14,7 +14,7 @@ Opens a temporary WordPress site in your browser with Chapterwright already inst
 | WordPress | 6.4 or newer |
 | PHP | 7.4 or newer |
 | Tested through | WordPress 7.1 |
-| Plugin version | 2.9.1 |
+| Plugin version | 2.9.2 |
 
 Chapterwright adds two content types to WordPress: **Books** and **Chapters**. Each book can have its own cover, subtitle, accent color, introduction, and table of contents. Chapters can be grouped into sections — each with its own name and description — and receive automatic previous/next navigation.
 
@@ -31,6 +31,7 @@ Chapterwright adds two content types to WordPress: **Books** and **Chapters**. E
 - Support the block editor, revisions, and the WordPress REST API.
 - Let readers choose system, light, or dark color mode.
 - Provide reading progress and estimated reading time.
+- Show a progress bar on each book's page for how much of it is published and ready to read.
 - Add Book and Chapter schema.org structured data.
 - Provide accessible skip links, landmarks, focus indicators, and reduced-motion support.
 - Style code blocks and tables for comfortable technical reading.
@@ -74,6 +75,7 @@ Go to **Chapterwright → Settings** to:
 - Turn the reader's own light/dark color-mode toggle on or off (shown on book and chapter pages). This is separate from any color-mode switch your theme puts in the site header — turn this off if the two feel redundant.
 - Turn the "This book is created with Chapterwright" credit line at the bottom of book, chapter, and library pages on or off.
 - Turn each section's description on or off in the table of contents (on by default). Turning it off only shortens the list to headings alone — the description itself still shows in full on the section's own introduction page, if it has one.
+- Turn a book's progress bar on or off (on by default). Shown below the title on each book's page, it's the share of the book's chapters that are published — drafts still count toward the total, so a book with 3 published chapters and 20 more drafted reads as 13% done, not 100%. Only appears on a book that has at least one chapter, and reads "Complete — every chapter is up" once every chapter is published.
 - Edit or remove the library page's (`/books/`) eyebrow label, heading, and subheading.
 - Edit or remove the "Read at your own pace" heading shown above each book's table of contents.
 
@@ -346,6 +348,10 @@ Both run automatically on every push and pull request via GitHub Actions (`.gith
 
 The three most recent releases are below. See [CHANGELOG.md](CHANGELOG.md) for the full history back to 1.0.0.
 
+### 2.9.2
+
+- Added a progress bar to each book's page for how much of it is published and ready to read — published chapters against every chapter assigned to the book, drafts included. Shown below the title; reads "Complete — every chapter is up" once every chapter is published. On by default, with a Settings toggle to turn it off.
+
 ### 2.9.1
 
 - Fixed a crash right after adding a chapter in the Books & Chapters admin app ("Something went wrong loading this screen") — the new chapter was actually created fine, but the screen broke until a refresh. Only affected sites with "Table of contents excerpts" shown in the admin app's chapter list.
@@ -357,13 +363,6 @@ The three most recent releases are below. See [CHANGELOG.md](CHANGELOG.md) for t
 - The floating table of contents button, missing from a section's own introduction page, has been added.
 - Sections now start as a draft when created, the same as a new chapter — publish from the Block Editor when ready.
 - Added a "Table of contents section descriptions" setting to show or hide each section's description in the table of contents list (on by default).
-
-### 2.8.9
-
-- Sections can now have their own optional introduction page — write it from a section's own Block Editor screen (like a chapter) and its table-of-contents heading links there automatically. The page paginates like a chapter page too, leading into its first chapter and back to whatever chapter came right before it.
-- Chapter URLs moved from `/book-chapter/{slug}/` to `/books/{book-slug}/{chapter-slug}/`, nested under their book. An old bookmarked link still works.
-- Table-of-contents section headings now match a chapter row's own link styling (no underline, accent color on hover), and a section's edit screen now returns to the right book when you leave it, the same as a book or chapter's already does.
-- Hardened the underlying section data migration to be safely retryable, and tightened the public table of contents to never show a draft section's heading.
 
 ## License
 
