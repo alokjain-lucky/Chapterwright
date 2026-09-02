@@ -96,6 +96,34 @@ function hsrtech_filter_chapter_permalink( $post_link, $post ) {
 		return $post_link;
 	}
 
+	// A chapter that isn't published yet can't be reliably *previewed* at its
+	// pretty /books/{book}/{chapter}/ URL: that URL only resolves through the
+	// name-based rewrite rule above, and WordPress's own preview machinery
+	// (redirect_canonical()'s is_preview()/nonce check, WP_Query's own status
+	// widening) only ever trusts a preview request that identifies the post by
+	// numeric ID (`?p=123`), the same way get_permalink() itself falls back to
+	// a plain `?p=123` URL for a draft 'post'/'page' whose slug hasn't been
+	// saved yet. Chapters always have *some* slug (the fallback below computes
+	// one from the title even before the post is ever saved), so that same
+	// core fallback never kicks in for us — without this, get_preview_post_link()
+	// (admin/rest/chapters.php's "View" action, and WordPress's own built-in
+	// block-editor "Preview" button, which both build the preview URL from
+	// this filter's return value) hands back a pretty URL that 404s, and
+	// redirect_canonical() strips the `preview` query arg on the way there.
+	// Matches how WP core's own draft-preview fallback behaves; only the base
+	// URL shape changes; get_preview_post_link() layers `preview=true` (and,
+	// for the block editor's autosave-backed Preview button, `preview_nonce`)
+	// on top of whatever this returns either way.
+	if ( 'publish' !== $post->post_status ) {
+		return add_query_arg(
+			array(
+				'p'         => $post->ID,
+				'post_type' => HSRTECH_CHAPTER_POST_TYPE,
+			),
+			home_url( '/' )
+		);
+	}
+
 	$slug    = $post->post_name ? $post->post_name : sanitize_title( $post->post_title );
 	$book_id = absint( get_post_meta( $post->ID, '_hsrtech_book_id', true ) );
 	$book    = $book_id ? get_post( $book_id ) : null;
@@ -130,6 +158,19 @@ function hsrtech_filter_chapter_permalink( $post_link, $post ) {
 function hsrtech_filter_section_permalink( $post_link, $post ) {
 	if ( ! is_object( $post ) || HSRTECH_SECTION_POST_TYPE !== $post->post_type ) {
 		return $post_link;
+	}
+
+	// Same preview-safety fallback as hsrtech_filter_chapter_permalink() above
+	// — see that function's docblock for why a non-published post needs the
+	// plain ?p=ID form rather than the pretty nested URL.
+	if ( 'publish' !== $post->post_status ) {
+		return add_query_arg(
+			array(
+				'p'         => $post->ID,
+				'post_type' => HSRTECH_SECTION_POST_TYPE,
+			),
+			home_url( '/' )
+		);
 	}
 
 	$slug    = $post->post_name ? $post->post_name : sanitize_title( $post->post_title );
