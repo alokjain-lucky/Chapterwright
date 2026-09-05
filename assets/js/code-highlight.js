@@ -419,7 +419,15 @@
 				row.appendChild( number );
 			}
 
-			var codeSpan = document.createElement( 'span' );
+			// A real <code> element, not a <span> — matches render.php's own
+			// server-rendered row (see that file's comment on the identical
+			// element): keeps this JS rebuild's markup shape consistent with
+			// what a no-JS visitor already received, rather than diverging
+			// from it. wptexturize() itself never runs in the browser, so
+			// this particular tag choice doesn't independently fix anything
+			// here — but a <code> is also the semantically correct element for
+			// a line of source code either way.
+			var codeSpan = document.createElement( 'code' );
 			codeSpan.className = 'hsrtech-code__line-code';
 			codeSpan.appendChild( buildTokenFragment( lineTokens ) );
 			row.appendChild( codeSpan );

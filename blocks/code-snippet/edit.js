@@ -197,7 +197,11 @@
 					'div',
 					{ className: rowClassName, key: index },
 					showNumbers ? el( 'span', { className: 'hsrtech-code__line-number' }, String( startLine + index ) ) : null,
-					el( 'span', { className: 'hsrtech-code__line-code' }, codeChildren )
+					// A real <code> element — matches render.php/code-highlight.js's
+					// own row markup (see render.php's comment on the same element
+					// for why: wptexturize() protects <code>, not <span>, from
+					// rewriting "..." into "…").
+					el( 'code', { className: 'hsrtech-code__line-code' }, codeChildren )
 				);
 			} )
 		);

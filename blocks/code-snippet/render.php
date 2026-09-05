@@ -131,7 +131,24 @@ $hsrtech_line_digits = strlen( (string) ( $hsrtech_start_line + count( $hsrtech_
 						<?php if ( $hsrtech_show_line_numbers ) : ?>
 							<span class="hsrtech-code__line-number" aria-hidden="true"><?php echo esc_html( (string) ( $hsrtech_start_line + $hsrtech_row_index ) ); ?></span>
 						<?php endif; ?>
-						<span class="hsrtech-code__line-code"><?php echo esc_html( $hsrtech_row_text ); ?></span>
+						<?php
+						/*
+						 * A real <code> element, not a <span> — this used to be a
+						 * <span>, which silently let WordPress's wptexturize() (run on
+						 * `the_content` like everything else the block ends up inside)
+						 * rewrite "..." into a single "…" character here, since
+						 * wptexturize()'s own no-texturize tag list is exactly
+						 * ( 'pre', 'code', 'kbd', 'style', 'script', 'tt' ) — <span>
+						 * was never on it. The flat <pre><code> branch below (line
+						 * numbers/highlighting both off) was never affected, since it
+						 * already used a real <code> tag; this just brings the
+						 * per-line row markup in line with that. esc_html() here was
+						 * always safe — this was wptexturize() rewriting the already-
+						 * escaped output afterward, as part of the wider `the_content`
+						 * filter chain the whole post runs through, not an escaping bug.
+						 */
+						?>
+						<code class="hsrtech-code__line-code"><?php echo esc_html( $hsrtech_row_text ); ?></code>
 					</div>
 				<?php endforeach; ?>
 			</div>
