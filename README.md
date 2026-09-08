@@ -14,7 +14,7 @@ Opens a temporary WordPress site in your browser with Chapterwright already inst
 | WordPress | 6.4 or newer |
 | PHP | 7.4 or newer |
 | Tested through | WordPress 7.1 |
-| Plugin version | 2.9.2 |
+| Plugin version | 2.9.3 |
 
 Chapterwright adds two content types to WordPress: **Books** and **Chapters**. Each book can have its own cover, subtitle, accent color, introduction, and table of contents. Chapters can be grouped into sections — each with its own name and description — and receive automatic previous/next navigation.
 
@@ -348,6 +348,14 @@ Both run automatically on every push and pull request via GitHub Actions (`.gith
 
 The three most recent releases are below. See [CHANGELOG.md](CHANGELOG.md) for the full history back to 1.0.0.
 
+### 2.9.3
+
+- Fixed a draft chapter or section's Preview link (the block editor's own "Preview" button, and the admin app's "View" action) redirecting to the live URL and 404ing, instead of showing the draft.
+- Fixed a bare URL showing up as the floating "table of contents" button's accessible text in some SEO/accessibility auditing tools, despite screen readers already announcing it correctly.
+- Fixed `...` (as in a code spread operator) silently turning into a single `…` character inside a Code Snippet block whenever "Show line numbers" or "Highlight lines" was on.
+- Fixed chapter numbers leaving a permanent gap after a chapter was permanently deleted (e.g. a section and its chapters removed together) — remaining chapters now automatically renumber to close the gap.
+- Enriched the author `Person` schema.org data on Book/Chapter/Section pages with optional `sameAs` links — add a LinkedIn/GitHub URL under your user profile's new fields to have them picked up.
+
 ### 2.9.2
 
 - Added a progress bar to each book's page for how much of it is published and ready to read — published chapters against every chapter assigned to the book, drafts included. Shown below the title; reads "Complete — every chapter is up" once every chapter is published. On by default, with a Settings toggle to turn it off.
@@ -355,13 +363,6 @@ The three most recent releases are below. See [CHANGELOG.md](CHANGELOG.md) for t
 ### 2.9.1
 
 - Fixed a crash right after adding a chapter in the Books & Chapters admin app ("Something went wrong loading this screen") — the new chapter was actually created fine, but the screen broke until a refresh. Only affected sites with "Table of contents excerpts" shown in the admin app's chapter list.
-
-### 2.9.0
-
-- Section URLs are now nested under their book, `/books/{book-slug}/{section-slug}/`, matching a chapter's own URL shape.
-- "Start reading" now opens a book's first section's own introduction page when it has one, instead of always jumping straight to the first chapter, and previous/next chapter navigation now stops at a section's own introduction page when advancing into or out of that section rather than skipping past it.
-- The floating table of contents button, missing from a section's own introduction page, has been added.
-- Sections now start as a draft when created, the same as a new chapter — publish from the Block Editor when ready.
 - Added a "Table of contents section descriptions" setting to show or hide each section's description in the table of contents list (on by default).
 
 ## License

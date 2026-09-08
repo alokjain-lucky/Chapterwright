@@ -4,7 +4,7 @@ Tags: ebook, books, publishing, reading, chapters
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 2.9.2
+Stable tag: 2.9.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -83,6 +83,13 @@ Yes. Every string (PHP and the admin app's JavaScript) is wrapped for translatio
 5. The **Code Snippet** block with syntax coloring and a copy button.
 
 == Changelog ==
+
+= 2.9.3 =
+* Fixed a draft chapter or section's Preview link (both the block editor's own "Preview" button and the admin app's "View" action) redirecting to the live URL and 404ing instead of showing the draft.
+* Fixed a bare URL showing up as the floating "table of contents" button's accessible text in some SEO/accessibility auditing tools.
+* Fixed "..." (three dots, as in a code spread operator) silently turning into a single "…" character inside a Code Snippet block whenever "Show line numbers" or "Highlight lines" was on.
+* Fixed chapter numbers leaving a permanent gap after a chapter was permanently deleted (e.g. a section and its chapters removed together) — remaining chapters are now automatically renumbered with no gap.
+* Enriched the author `Person` schema.org data on Book/Chapter/Section pages with optional LinkedIn/GitHub links — add them under your user profile's new "LinkedIn URL"/"GitHub URL" fields.
 
 = 2.9.2 =
 * Added a progress bar to each book's page showing how much of it is published and ready to read — counts published chapters against every chapter assigned to the book, drafts included. Shown below the title, on by default; turn it off in Settings under "Book progress bar".

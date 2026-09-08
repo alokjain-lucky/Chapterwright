@@ -300,3 +300,70 @@ function hsrtech_get_next_chapter_order( $book_id ) {
 
 	return $highest + 1;
 }
+
+/**
+ * Reassign every chapter in a book to a dense, gap-free `_hsrtech_order`
+ * sequence (1, 2, 3, ...), preserving their existing relative order.
+ *
+ * `_hsrtech_order` is otherwise append-only (see
+ * hsrtech_get_next_chapter_order() above) and nothing ever renumbers the
+ * chapters that come after one once it's assigned, so permanently deleting a
+ * chapter — on its own, or as part of deleting the section it lived in —
+ * used to leave a hole where its number used to be (e.g. 27, 30, 31 instead
+ * of 27, 28, 29). See hsrtech_renumber_chapters_after_delete() below for
+ * where this actually gets called from.
+ *
+ * @param int $book_id Book post ID.
+ */
+function hsrtech_renumber_chapters( $book_id ) {
+	$position = 1;
+
+	foreach ( hsrtech_get_all_chapters_for_admin( $book_id ) as $chapter ) {
+		if ( absint( get_post_meta( $chapter->ID, '_hsrtech_order', true ) ) !== $position ) {
+			update_post_meta( $chapter->ID, '_hsrtech_order', $position );
+		}
+		++$position;
+	}
+}
+
+/**
+ * Stash a chapter's book ID just before it's permanently deleted.
+ *
+ * The actual renumbering (hsrtech_renumber_chapters_after_delete() below)
+ * has to run on `deleted_post`, once the chapter is truly gone — running it
+ * any earlier would still count the chapter being deleted, hand it a number,
+ * and reopen the exact gap this is meant to close one request later. But by
+ * `deleted_post` time, wp_delete_post() has already removed the chapter's
+ * post meta along with the post itself, so `_hsrtech_book_id` is no longer
+ * readable from there. Grabbing it here, one hook earlier while the row
+ * still exists, is the only way to know which book to renumber afterward.
+ *
+ * @param int $post_id Post being deleted.
+ */
+function hsrtech_stash_chapter_book_id_before_delete( $post_id ) {
+	if ( HSRTECH_CHAPTER_POST_TYPE !== get_post_type( $post_id ) ) {
+		return;
+	}
+
+	$GLOBALS['hsrtech_deleted_chapter_book_ids'][ $post_id ] = absint( get_post_meta( $post_id, '_hsrtech_book_id', true ) );
+}
+add_action( 'before_delete_post', 'hsrtech_stash_chapter_book_id_before_delete' );
+
+/**
+ * Close the chapter-numbering gap once a chapter has actually been deleted.
+ *
+ * @param int $post_id Post that was just permanently deleted.
+ */
+function hsrtech_renumber_chapters_after_delete( $post_id ) {
+	if ( ! isset( $GLOBALS['hsrtech_deleted_chapter_book_ids'][ $post_id ] ) ) {
+		return;
+	}
+
+	$book_id = $GLOBALS['hsrtech_deleted_chapter_book_ids'][ $post_id ];
+	unset( $GLOBALS['hsrtech_deleted_chapter_book_ids'][ $post_id ] );
+
+	if ( $book_id ) {
+		hsrtech_renumber_chapters( $book_id );
+	}
+}
+add_action( 'deleted_post', 'hsrtech_renumber_chapters_after_delete' );
