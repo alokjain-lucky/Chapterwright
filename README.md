@@ -14,7 +14,7 @@ Opens a temporary WordPress site in your browser with Chapterwright already inst
 | WordPress | 6.4 or newer |
 | PHP | 7.4 or newer |
 | Tested through | WordPress 7.1 |
-| Plugin version | 2.9.3 |
+| Plugin version | 2.9.4 |
 
 Chapterwright adds two content types to WordPress: **Books** and **Chapters**. Each book can have its own cover, subtitle, accent color, introduction, and table of contents. Chapters can be grouped into sections — each with its own name and description — and receive automatic previous/next navigation.
 
@@ -348,6 +348,10 @@ Both run automatically on every push and pull request via GitHub Actions (`.gith
 
 The three most recent releases are below. See [CHANGELOG.md](CHANGELOG.md) for the full history back to 1.0.0.
 
+### 2.9.4
+
+- Fixed a code block's background color changing per line when "Show line numbers" or "Highlight lines" was on — a styling side effect of the 2.9.3 fix for the "..." corruption bug below, where each line's code element started picking up unrelated inline-code styling meant for backtick-style code mentions in prose.
+
 ### 2.9.3
 
 - Fixed a draft chapter or section's Preview link (the block editor's own "Preview" button, and the admin app's "View" action) redirecting to the live URL and 404ing, instead of showing the draft.
@@ -359,11 +363,6 @@ The three most recent releases are below. See [CHANGELOG.md](CHANGELOG.md) for t
 ### 2.9.2
 
 - Added a progress bar to each book's page for how much of it is published and ready to read — published chapters against every chapter assigned to the book, drafts included. Shown below the title; reads "Complete — every chapter is up" once every chapter is published. On by default, with a Settings toggle to turn it off.
-
-### 2.9.1
-
-- Fixed a crash right after adding a chapter in the Books & Chapters admin app ("Something went wrong loading this screen") — the new chapter was actually created fine, but the screen broke until a refresh. Only affected sites with "Table of contents excerpts" shown in the admin app's chapter list.
-- Added a "Table of contents section descriptions" setting to show or hide each section's description in the table of contents list (on by default).
 
 ## License
 

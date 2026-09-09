@@ -4,7 +4,7 @@ Tags: ebook, books, publishing, reading, chapters
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 2.9.3
+Stable tag: 2.9.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -83,6 +83,9 @@ Yes. Every string (PHP and the admin app's JavaScript) is wrapped for translatio
 5. The **Code Snippet** block with syntax coloring and a copy button.
 
 == Changelog ==
+
+= 2.9.4 =
+* Fixed a code block's background color changing per line when "Show line numbers" or "Highlight lines" was on — a styling side effect of the 2.9.3 fix for the "..." corruption bug, where each line's code element started picking up unrelated inline-code styling.
 
 = 2.9.3 =
 * Fixed a draft chapter or section's Preview link (both the block editor's own "Preview" button and the admin app's "View" action) redirecting to the live URL and 404ing instead of showing the draft.
