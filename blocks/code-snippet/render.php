@@ -148,12 +148,12 @@ $hsrtech_line_digits = strlen( (string) ( $hsrtech_start_line + count( $hsrtech_
 						 * filter chain the whole post runs through, not an escaping bug.
 						 */
 						?>
-						<code class="hsrtech-code__line-code"><?php echo esc_html( $hsrtech_row_text ); ?></code>
+						<code class="hsrtech-code__line-code"><?php echo hsrtech_esc_code_html( $hsrtech_row_text ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- hsrtech_esc_code_html() (blocks/code-snippet/code-snippet.php) is htmlspecialchars() with $double_encode forced true; esc_html()'s default false would leave an already-entity-shaped "&..." run in the source code alone instead of escaping it, corrupting exactly the kind of literal text this block exists to show verbatim. See that function's docblock. ?></code>
 					</div>
 				<?php endforeach; ?>
 			</div>
 		<?php else : ?>
-			<pre data-hsrtech-language="<?php echo esc_attr( $hsrtech_language ); ?>"><code><?php echo esc_html( $hsrtech_code ); ?></code></pre>
+			<pre data-hsrtech-language="<?php echo esc_attr( $hsrtech_language ); ?>"><code><?php echo hsrtech_esc_code_html( $hsrtech_code ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Same reasoning as the row-based branch above: hsrtech_esc_code_html() forces double-encoding so a literal "&amp;"/"&lt;"/"&gt;" in the code text isn't left half-escaped by esc_html()'s default. ?></code></pre>
 		<?php endif; ?>
 	</div>
 </figure>

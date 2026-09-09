@@ -273,3 +273,32 @@ function hsrtech_parse_code_snippet_line_ranges( $raw ) {
 
 	return $lines;
 }
+
+/**
+ * Escape a line of raw source code for safe HTML output — deliberately not
+ * `esc_html()`.
+ *
+ * `esc_html()` (via WordPress core's `_wp_specialchars()`) defaults to
+ * `$double_encode = false`: an `&` that's already part of a sequence which
+ * *looks like* a valid HTML entity (`&amp;`, `&lt;`, `&gt;`, `&#039;`, and so
+ * on) is deliberately left alone, on the assumption the string might already
+ * be partially-escaped HTML that shouldn't be mangled further. That's the
+ * right call for most WordPress output, but wrong here: a code block's text
+ * is always 100% literal — never partially-escaped markup — so a source
+ * line that itself happens to contain the text `'&amp;'` (e.g. demonstrating
+ * an escaping function, exactly the kind of code this block exists to show)
+ * gets `esc_html()`'s "leave it alone" heuristic applied to that `&`, and the
+ * browser then decodes `&amp;` on display back down to a single `&` — one
+ * level of decoding the reader never asked for, silently corrupting the
+ * exact literal text the block was supposed to preserve. Forcing
+ * `$double_encode = true` (htmlspecialchars()'s 4th argument, matching what
+ * `_wp_specialchars()` accepts as well) escapes every `&` unconditionally,
+ * regardless of what follows it, which is the only correct behavior for
+ * text that is never anything but literal source.
+ *
+ * @param string $text Raw source code text (one line, or a whole snippet).
+ * @return string Escaped for safe HTML output, with every `&` real.
+ */
+function hsrtech_esc_code_html( $text ) {
+	return htmlspecialchars( (string) $text, ENT_QUOTES, get_bloginfo( 'charset' ), true );
+}
